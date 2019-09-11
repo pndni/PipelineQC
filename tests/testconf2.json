@@ -1,0 +1,34 @@
+{
+    "page_keys": ["sub"],
+    "page_filename_template": "sub-{sub}[/ses-{ses}]/sub-{sub}[_ses-{ses}][_acq-{acq}][_rec-{rec}][_run-{run}]_QC.html",
+    "index_filename": "QC_index.html",
+    "patterns": {
+        "derivatives": "(?P<dir>[^/]+)/(?P<sub>sub[0-9]+_[0-9]+)[0-9_]*mri(_(?P<suffix>.*))?\\.(?P<extension>.*)"
+    },
+    "files": {
+        "T1w": {
+            "pattern": "derivatives",
+            "filter": {"dir": "orig"}
+        },
+        "bet": {
+            "pattern": "derivatives",
+            "filter": {"suffix": "bet"}
+        },
+        "normalized": {
+            "pattern": "derivatives",
+            "filter": {"suffix": "normalized"}
+        },
+        "features": {
+            "pattern": "derivatives",
+            "filter": {"extension": "tag"}
+        },
+        "classified": {
+            "pattern": "derivatives",
+            "filter": {"suffix": "classify"}
+        },
+        "transformed_atlas": {
+            "pattern": "derivatives",
+            "filter": {"dir": "transformed", "suffix": "atlasRes"}
+        }
+    }
+}

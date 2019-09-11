@@ -1,0 +1,129 @@
+{
+    "page_keys": ["sub", "acq", "rec", "run", "ses"],
+    "page_filename_template": "sub-{sub}[/ses-{ses}]/sub-{sub}[_ses-{ses}][_acq-{acq}][_rec-{rec}][_run-{run}]_QC.html",
+    "index_filename": "QC_index.html",
+    "patterns": {
+        "T1w": "sub-(?P<sub>[a-zA-Z0-9]+)(/ses-(?P<ses>[a-zA-Z0-9]+))?/anat/sub-(?P=sub)(_ses-(?P=ses))?(_acq-(?P<acq>[a-zA-Z0-9]+))?(_rec-(?P<rec>[a-zA-Z0-9]+))?(_run-(?P<run>[0-9]+))?_T1w\\.nii(\\.gz)?",
+        "derivatives": "sub-(?P<sub>[a-zA-Z0-9]+)(/ses-(?P<ses>[a-zA-Z0-9]+))?/anat/sub-(?P=sub)(_ses-(?P=ses))?(_acq-(?P<acq>[a-zA-Z0-9]+))?(_rec-(?P<rec>[a-zA-Z0-9]+))?(_run-(?P<run>[0-9]+))?(_space-(?P<space>[a-zA-Z0-9]+))?(_label-(?P<label>[a-zA-Z0-9]+))?(_skullstripped-(?P<skullstripped>[a-zA-Z0-9]+))?(_desc-(?P<desc>[a-zA-Z0-9]+))?(_map-(?P<map>[a-zA-Z0-9]+))?_(?P<suffix>[a-zA-Z0-9]+)(_(?P<labels>labels))?\\.(?P<extension>.*)",
+        "simple": "(?P<base>.*)\\.(?P<extension>.*)",
+        "crash": "sub-(?P<sub>[a-zA-Z0-9]+)(/ses-(?P<ses>[a-zA-Z0-9]+))?/logs/sub-(?P=sub)(_ses-(?P=ses))?(_acq-(?P<acq>[a-zA-Z0-9]+))?(_rec-(?P<rec>[a-zA-Z0-9]+))?(_run-(?P<run>[0-9]+))?/crash.*\\.pklz"
+    },
+    "files": {
+        "model": {
+            "pattern": "simple",
+            "filter": {"base": "model"},
+            "global": true
+        },
+        "T1w": {
+            "pattern": "T1w",
+            "filter": {}
+        },
+        "nu_bet": {
+            "pattern": "derivatives",
+            "filter": {"desc": "nucor"}
+        },
+        "normalized": {
+            "pattern": "derivatives",
+            "filter": {"desc": "normalized"}
+        },
+        "warped_model": {
+            "pattern": "derivatives",
+            "filter": {"space": "T1w", "suffix": "T1w"}
+        },
+        "features": {
+            "pattern": "derivatives",
+            "filter": {"suffix": "features", "labels": null}
+        },
+        "features_label": {
+            "pattern": "derivatives",
+            "filter": {"suffix": "features", "labels": "labels"}
+        },
+        "classified": {
+            "pattern": "derivatives",
+            "filter": {"suffix": "dseg", "desc": "tissue"}
+        },
+        "transformed_atlas": {
+            "pattern": "derivatives",
+            "filter": {"suffix": "dseg", "desc": "lobes"}
+        },
+        "crashfiles": {
+            "pattern": "crash",
+            "filter": {},
+            "allow_multiple": true
+        }
+    },
+    "reportlets": [
+        {
+            "type": "compare",
+            "name1": "Non-uniformity corrected",
+            "image1": "nu_bet",
+            "name2": "Inormalized",
+            "image2": "normalized"
+        },
+        {
+            "type": "compare",
+            "name1": "Non-uniformity corrected",
+            "image1": "nu_bet",
+            "name2": "Inormalized",
+            "image2": "normalized",
+            "nslices": 3
+        },
+        {
+            "type": "compare",
+            "name1": "Non-uniformity corrected",
+            "image1": "nu_bet",
+            "name2": "Inormalized",
+            "image2": "normalized",
+            "qcform": false
+        },
+        {
+            "type": "single",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet"
+        },
+        {
+            "type": "single",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet",
+            "nslices": 3
+        },
+        {
+            "type": "single",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet",
+            "qcform": false
+        },
+        {
+            "type": "contour",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet",
+            "labelimage": "transformed_atlas"
+        },
+        {
+            "type": "contour",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet",
+            "labelimage": "transformed_atlas",
+            "nslices": 3
+        },
+        {
+            "type": "contour",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet",
+            "labelimage": "transformed_atlas",
+            "qcform": false
+        },
+        {
+            "type": "distributions",
+            "name": "features",
+            "distsfile": "features"
+        },
+        {
+            "type": "distributions",
+            "name": "features",
+            "distsfile": "features",
+            "labelfile": "features_label",
+            "qcform": false
+        }
+    ]
+}

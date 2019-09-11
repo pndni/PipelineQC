@@ -1,0 +1,61 @@
+{
+    "$schema": "http://json-schema.org/schema$",
+    "type": "object",
+    "properties": {
+        "page_keys": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "page_filename_template": {
+            "type": "string"
+        },
+        "index_filename": {
+            "type": "string"
+        },
+        "patterns": {
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "type": "string"
+                }
+            }
+        },
+        "files": {
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "type": "object",
+                    "properties": {
+                        "pattern": {
+                            "type": "string"
+                        },
+                        "filter": {
+                            "type": "object"
+                        },
+                        "global": {
+                            "type": "boolean"
+                        },
+                        "allow_multiple": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "reportlets": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": ["single", "contour", "compare", "distributions", "crash"]
+                    }
+                }
+            }
+        }
+    }
+}
+
