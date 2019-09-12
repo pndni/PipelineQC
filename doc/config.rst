@@ -31,11 +31,16 @@ For example if our output folder has the following structure::
 where we have multiple subjects, and some subjects also have a "fast" acquisition. Then we might have
 
 .. code-block:: javascript
+   
+   |patterns|
 
-   "patterns": {
-       "pattern1": "sub-(?P<sub>[a-zA-Z0-9]+)/(?P<dir>[^/]*)/sub-(?P=sub)(_acq-(?P<acq>[a-zA-Z0-9]+))?_(?P<suffix>[a-zA-Z0-9]+)\\.nii"
-   }
+blah
     
+.. |patterns| replace::
+   "patterns": {
+   pattern1": "sub-(?P<sub>[a-zA-Z0-9]+)/(?P<dir>[^/]*)/sub-(?P=sub)(_acq-(?P<acq>[a-zA-Z0-9]+))?_(?P<suffix>[a-zA-Z0-9]+)\\.nii"
+   }
+
 
 page_keys
 ---------
@@ -73,3 +78,16 @@ We will have the following output files
 * ``sub-1_QC.html``
 * ``sub-1_acq-fast_QC.html``
 * ``sub-2_QC.html``
+
+
+index_filename
+--------------
+
+A string giving the name of the output index file, i.e., the file
+containing a list of all the QC pages.
+
+.. code-block:: javascript
+
+   "index_filename": "QC_index.html",
+
+asd 

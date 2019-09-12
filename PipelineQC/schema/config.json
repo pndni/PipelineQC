@@ -1,6 +1,7 @@
 {
     "$schema": "http://json-schema.org/schema$",
     "type": "object",
+    "required": ["page_keys", "page_filename_template", "index_filename", "patterns", "files", "reportlets"],
     "properties": {
         "page_keys": {
             "type": "array",
@@ -29,6 +30,7 @@
             "patternProperties": {
                 ".*": {
                     "type": "object",
+                    "required": ["pattern", "filter"],
                     "properties": {
                         "pattern": {
                             "type": "string"
@@ -42,8 +44,7 @@
                         "allow_multiple": {
                             "type": "boolean"
                         }
-                    },
-                    "required": ["pattern", "filter"]
+                    }
                 }
             }
         },
@@ -51,6 +52,8 @@
             "type": "array",
             "items": {
                 "type": "object",
+                "additionalProperties": false,
+                "required": ["type"],
                 "properties": {
                     "type": {
                         "type": "string",
@@ -63,28 +66,91 @@
                         "type": "integer"
                     }
                 },
-                "patternProperties": {
-                    "^name[12]?$": {
-                        "type": "string"
+                "allOf": [
+                    {
+                        "if": {
+                            "properties": { "type": { "const": "single" } }
+                        },
+                        "then": {
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "image": {
+                                    "type": "string"
+                                }
+                            }
+                        }
                     },
-                    "^image[12]?$": {
-                        "type": "string"
+                    {
+                        "if": {
+                            "properties": { "type": { "const": "compare" } }
+                        },
+                        "then": {
+                            "properties": {
+                                "name1": {
+                                    "type": "string"
+                                },
+                                "image1": {
+                                    "type": "string"
+                                },
+                                "name2": {
+                                    "type": "string"
+                                },
+                                "image2": {
+                                    "type": "string"
+                                }
+                            }
+                        }
                     },
-                    "labelimage": {
-                        "type": "string"
+                    {
+                        "if": {
+                            "properties": { "type": { "const": "contour" } }
+                        },
+                        "then": {
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "image": {
+                                    "type": "string"
+                                },
+                                "labelimage": {
+                                    "type": "string"
+                                }
+                            }
+                        }
                     },
-                    "labelfile": {
-                        "type": "string"
+                    {
+                        "if": {
+                            "properties": { "type": { "const": "distributions" } }
+                        },
+                        "then": {
+                            "properties": {
+                                "distsfile": {
+                                    "type": "string"
+                                },
+                                "labelfile": {
+                                    "type": "string"
+                                }
+                            }
+                        }
                     },
-                    "distsfile": {
-                        "type": "string"
+                    {
+                        "if": {
+                            "properties": { "type": { "const": "crash" } }
+                        },
+                        "then": {
+                            "properties": {
+                                "crashfiles": {
+                                    "type": "string"
+                                }
+                            }
+                        }
                     }
-                },
-                "additionalProperties": false,
-                "required": ["type"]
+                ]
             }
         }
-    },
-    "required": ["page_keys", "page_filename_template", "index_filename", "patterns", "files", "reportlets"]
+    }
 }
 

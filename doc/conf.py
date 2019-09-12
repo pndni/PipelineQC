@@ -33,7 +33,6 @@ master_doc = 'index'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx_rtd_theme',
-    'sphinx-jsonschema',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
