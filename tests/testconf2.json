@@ -30,5 +30,6 @@
             "pattern": "derivatives",
             "filter": {"dir": "transformed", "suffix": "atlasRes"}
         }
-    }
+    },
+    "reportlets": []
 }

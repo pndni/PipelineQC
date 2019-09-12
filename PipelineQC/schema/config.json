@@ -5,11 +5,13 @@
         "page_keys": {
             "type": "array",
             "items": {
-                "type": "string"
+                "type": "string",
+        "pattern": "^[a-zA-Z0-9]*$"
             }
         },
         "page_filename_template": {
-            "type": "string"
+            "type": "string",
+        "pattern": "^([^][]*(\\[[^][}{]*\\{[a-zA-Z0-9]*\\}[^][}{]*\\]*)*)*$"
         },
         "index_filename": {
             "type": "string"
@@ -40,7 +42,8 @@
                         "allow_multiple": {
                             "type": "boolean"
                         }
-                    }
+                    },
+                    "required": ["pattern", "filter"]
                 }
             }
         },
@@ -52,10 +55,36 @@
                     "type": {
                         "type": "string",
                         "enum": ["single", "contour", "compare", "distributions", "crash"]
+                    },
+                    "qcform": {
+                        "type": "boolean"
+                    },
+                    "nslices": {
+                        "type": "integer"
                     }
-                }
+                },
+                "patternProperties": {
+                    "^name[12]?$": {
+                        "type": "string"
+                    },
+                    "^image[12]?$": {
+                        "type": "string"
+                    },
+                    "labelimage": {
+                        "type": "string"
+                    },
+                    "labelfile": {
+                        "type": "string"
+                    },
+                    "distsfile": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "required": ["type"]
             }
         }
-    }
+    },
+    "required": ["page_keys", "page_filename_template", "index_filename", "patterns", "files", "reportlets"]
 }
 
