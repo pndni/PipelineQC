@@ -2,4 +2,4 @@ sphinx
 autodoc
 sphinx-argparse
 sphinx-rtd-theme
-pndniworkflows @ git+https://github.com/pndni/pndniworkflows.git
+git+https://github.com/pndni/pndniworkflows.git
