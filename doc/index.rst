@@ -10,7 +10,10 @@ Welcome to PipelineQC's documentation!
    :maxdepth: 2
    :caption: Contents
 
+   installation
+   usage
    config
+   interfaces
 
 
 
@@ -20,8 +23,4 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-
-Json schema
-===========
 

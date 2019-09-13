@@ -1,5 +1,7 @@
 import pytest
 from PipelineQC import configure as conf
+import json
+import jsonschema
 
 
 def test_format_output():
@@ -17,3 +19,33 @@ def test_format_output_invalid():
          "page_filename_template": "sub-{sub}[/ses-{ses}{sub}]/sub-{sub}[_ses-{ses}][_acq-{acq}][_rec-{rec}][_run-{run}]_QC.html"}
     with pytest.raises(conf.InvalidFormatError):
         conf.format_output(c, (1, None, None, None, None))
+
+
+@pytest.fixture
+def baseconf():
+    conf = {'page_keys': ['sub'],
+            'page_filename_template': '{sub}.html',
+            'index_filename': 'index.html',
+            'patterns': {'pattern1': '^.*$'},
+            'files': {'file1': {'pattern': 'pattern1', 'filter': {}}},
+            'reportlets': [{'type': 'single', 'name': 'test', 'image': 'file1'}]}
+    return conf
+
+
+def _write(tmp, conf):
+    fname = tmp / 'conf.json'
+    fname.write_text(json.dumps(conf))
+    return fname
+
+
+def test_conf_succ(baseconf, tmp_path):
+    conf.load_config(_write(tmp_path, baseconf))
+
+
+@pytest.mark.parametrize('key', ['page_keys', 'page_filename_template', 'index_filename', 'patterns', 'files', 'reportlets'])
+def test_conf_fail1(baseconf, tmp_path, key):
+    del baseconf[key]
+    fname = _write(tmp_path, baseconf)
+    with pytest.raises(jsonschema.ValidationError):
+        conf.load_config(fname)
+            

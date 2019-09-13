@@ -1,0 +1,57 @@
+{
+   "patterns": {
+       "derivatives": "sub-(?P<sub>[a-zA-Z0-9]+)/(?P<dir>[^/]*)/sub-(?P=sub)(_acq-(?P<acq>[a-zA-Z0-9]+))?_(?P<suffix>[a-zA-Z0-9]+)\\.nii",
+       "models": "(?P<base>[a-zA-Z0-9]+)\\.nii",
+       "crash": "sub-(?P<sub>[a-zA-Z0-9]+)/logs/sub-(?P=sub)(_acq-(?P<acq>[a-zA-Z0-9]+))?/crash.*\\.pklz"
+   },
+   "page_keys": [
+       "sub",
+       "acq"
+   ],
+   "page_filename_template": "sub-{sub}[_acq-{acq}]_QC.html",
+   "index_filename": "QC_index.html",
+   "files": {
+       "T1": {
+	   "pattern": "derivatives",
+	   "filter": {"suffix": "T1w"}
+       },
+       "BET": {
+	   "pattern": "derivatives",
+	   "filter": {"suffix": "bet"}
+       },
+       "classified": {
+	   "pattern": "derivatives",
+	   "filter": {"suffix": "dseg"}
+       },
+       "MNI": {
+	   "pattern": "models",
+	   "filter": {"base": "MNI152"},
+	   "global": true
+       },
+       "crashfiles": {
+	   "pattern": "crash",
+	   "filter": {},
+	   "allow_multiple": true
+       }
+   },
+   "reportlets": [
+       {
+	   "type": "compare",
+	   "name1": "T1w input file",
+	   "image1": "T1",
+	   "name2": "Brain extracted files",
+	   "image2": "BET"
+       },
+       {
+	   "type": "contour",
+	   "name": "Tissue classification",
+	   "image": "BET",
+	   "labelimage": "classified"
+       },
+       {
+	   "type": "crash",
+	   "name": "Errors",
+	   "crashfiles": "crashfiles"
+       }
+   ]
+}

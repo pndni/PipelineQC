@@ -32,7 +32,9 @@ master_doc = 'index'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinxarg.ext',
     'sphinx_rtd_theme',
+    'pndniworkflows.sphinxext.interfaces',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

@@ -8,11 +8,11 @@ import os
 FileMatch = namedtuple('FileMatch', ['name', 'page_key'])
 
 
-class MultipleFilterResultsException(Exception):
+class MultipleFilterResultsError(Exception):
     pass
 
 
-class MultipleFilesFoundException(Exception):
+class MultipleFilesFoundError(Exception):
     pass
 
 
@@ -41,7 +41,7 @@ def parse_file(fname, conf):
         errstr = f'{fname} matches multiple files in configuration file. '
         errstr += 'Matching file names: {}. '.format(', '.join((outmatch.name for outmatch in out)))
         errstr += ' Add more elements to "filter" to uniquely identify files.'
-        raise MultipleFilterResultsException(errstr)
+        raise MultipleFilterResultsError(errstr)
     if len(out) == 1:
         return list(out)[0]
 
@@ -69,7 +69,7 @@ def get_files(dirs, conf):
                     out[parse_result.page_key][parse_result.name].append(fname)
                 else:
                     if parse_result.name in out[parse_result.page_key]:
-                        raise MultipleFilesFoundException('Multiple files found for {} with key {}'.format(parse_result.name, parse_result.page_key))
+                        raise MultipleFilesFoundError('Multiple files found for {} with key {}'.format(parse_result.name, parse_result.page_key))
                     out[parse_result.page_key][parse_result.name] = fname
     out = dict(out)
     if 'global' not in out:

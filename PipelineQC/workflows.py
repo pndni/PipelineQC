@@ -1,12 +1,12 @@
 from nipype.pipeline import engine as pe
 from nipype import Merge
-from pndniworkflows.interfaces.reports import (ReportletSingle,
-                                               ReportletContour,
-                                               ReportletCompare,
-                                               ReportletDistributions,
-                                               ReportletCrash,
-                                               AssembleReport,
-                                               IndexReport)
+from .interfaces import (Single,
+                         Contour,
+                         Compare,
+                         Distributions,
+                         Crash,
+                         AssembleReport,
+                         IndexReport)
 from pathlib import Path
 
 from .configure import format_output
@@ -24,15 +24,15 @@ def report_workflow(page_dict, page_key, conf, global_dict, output_dir):
     reportlets = pe.Node(Merge(len(conf['reportlets'])), 'reportlets')
     for reportletnum, rpspec in enumerate(conf['reportlets'], start=1):
         if rpspec['type'] == 'single':
-            node = pe.Node(ReportletSingle(), f'single{reportletnum}')
+            node = pe.Node(Single(), f'single{reportletnum}')
         elif rpspec['type'] == 'contour':
-            node = pe.Node(ReportletContour(), f'contour{reportletnum}')
+            node = pe.Node(Contour(), f'contour{reportletnum}')
         elif rpspec['type'] == 'compare':
-            node = pe.Node(ReportletCompare(), f'compare{reportletnum}')
+            node = pe.Node(Compare(), f'compare{reportletnum}')
         elif rpspec['type'] == 'distributions':
-            node = pe.Node(ReportletDistributions(), f'distributions{reportletnum}')
+            node = pe.Node(Distributions(), f'distributions{reportletnum}')
         elif rpspec['type'] == 'crash':
-            node = pe.Node(ReportletCrash(), f'crash{reportletnum}')
+            node = pe.Node(Crash(), f'crash{reportletnum}')
         else:
             raise InvalidReportletTypeError(f'{rpspec["type"]} is not a recognized reportlet')
         for rpkey, rpval in rpspec.items():

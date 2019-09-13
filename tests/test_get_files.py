@@ -96,7 +96,7 @@ def test_conf1_multfiles(tmp_path, input_files_conf1):
     input_files_conf1[('1', None, None, None, None)]['nu_bet2'] = Path(f'sub-1/anat/sub-1_skullstripped-false_desc-nucor_T1w.nii')
     _make_files(tmp_path, input_files_conf1)
     conffile = Path(__file__).parent / 'testconf1.json'
-    with pytest.raises(get_files.MultipleFilesFoundException):
+    with pytest.raises(get_files.MultipleFilesFoundError):
         get_files.get_files([tmp_path], conf.load_config(conffile))
 
 
@@ -104,7 +104,7 @@ def test_conf1_multfilt(tmp_path, input_files_conf1):
     input_files_conf1[('1', None, None, None, None)]['anotherfile'] = Path(f'sub-1/anat/sub-1_skullstripped-true_desc-nucor_features.nii')
     _make_files(tmp_path, input_files_conf1)
     conffile = Path(__file__).parent / 'testconf1.json'
-    with pytest.raises(get_files.MultipleFilterResultsException):
+    with pytest.raises(get_files.MultipleFilterResultsError):
         get_files.get_files([tmp_path], conf.load_config(conffile))
 
 

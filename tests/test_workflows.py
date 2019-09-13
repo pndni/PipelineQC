@@ -1,4 +1,4 @@
-from PipelineQC import report
+from PipelineQC import workflows
 from PipelineQC.configure import load_config
 import pytest
 from collections import defaultdict
@@ -16,6 +16,7 @@ def input_files_conf1():
         out[(str(subnum), '10', '11', '12', None)]['transformed_atlas'] = Path(f'sub-{subnum}/anat/sub-{subnum}_acq-10_rec-11_run-12_space-T1w_desc-lobes_dseg.nii')
         out[(str(subnum), '10', '11', '12', None)]['features'] = Path(f'sub-{subnum}/anat/sub-{subnum}_acq-10_rec-11_run-12_space-T1w_desc-tissue_features.txt')
         out[(str(subnum), '10', '11', '12', None)]['features_label'] = Path(f'sub-{subnum}/anat/sub-{subnum}_acq-10_rec-11_run-12_space-T1w_desc-tissue_features_labels.tsv')
+        out[(str(subnum), '10', '11', '12', None)]['crashfiles'] = Path(f'sub-{subnum}/logs/sub-{subnum}_acq-10_rec-11_run-12/crash.pklz')
     return out
 
 
@@ -38,7 +39,7 @@ def test_all_wf(tmp_path, input_files_conf1):
     conffile = Path(__file__).parent / 'testconf1.json'
     conf = load_config(conffile)
     out = get_files.get_files([tmp_path], conf)
-    wf = report.all_workflow(out, tmp_path, conf)
+    wf = workflows.all_workflow(out, tmp_path, conf)
 
     defaultnslices = 7
     defaultqcform = True
@@ -109,6 +110,7 @@ def test_all_wf(tmp_path, input_files_conf1):
              'report.page_sub-1_acq-10_rec-11_run-12.distributions10':
              {'name': 'features',
               'distsfile': str(infull[('1', '10', '11', '12', None)]['features']),
+              'labelfile': str(infull[('1', '10', '11', '12', None)]['features_label']),
               'qcform': defaultqcform,
               'relative_dir': str(tmp_path.resolve() / 'sub-1')},
              'report.page_sub-1_acq-10_rec-11_run-12.distributions11':
@@ -116,6 +118,10 @@ def test_all_wf(tmp_path, input_files_conf1):
               'distsfile': str(infull[('1', '10', '11', '12', None)]['features']),
               'labelfile': str(infull[('1', '10', '11', '12', None)]['features_label']),
               'qcform': False,
+              'relative_dir': str(tmp_path.resolve() / 'sub-1')},
+             'report.page_sub-1_acq-10_rec-11_run-12.crash12':
+             {'name': 'error',
+              'crashfiles': [str(infull[('1', '10', '11', '12', None)]['crashfiles'])],
               'relative_dir': str(tmp_path.resolve() / 'sub-1')},
              'report.page_sub-2_acq-10_rec-11_run-12.compare1':
              {'name1': 'Non-uniformity corrected',
@@ -183,6 +189,7 @@ def test_all_wf(tmp_path, input_files_conf1):
              'report.page_sub-2_acq-10_rec-11_run-12.distributions10':
              {'name': 'features',
               'distsfile': str(infull[('2', '10', '11', '12', None)]['features']),
+              'labelfile': str(infull[('2', '10', '11', '12', None)]['features_label']),
               'qcform': defaultqcform,
               'relative_dir': str(tmp_path.resolve() / 'sub-2')},
              'report.page_sub-2_acq-10_rec-11_run-12.distributions11':
@@ -190,7 +197,11 @@ def test_all_wf(tmp_path, input_files_conf1):
               'distsfile': str(infull[('2', '10', '11', '12', None)]['features']),
               'labelfile': str(infull[('2', '10', '11', '12', None)]['features_label']),
               'qcform': False,
-              'relative_dir': str(tmp_path.resolve() / 'sub-2')}
+              'relative_dir': str(tmp_path.resolve() / 'sub-2')},
+             'report.page_sub-2_acq-10_rec-11_run-12.crash12':
+             {'name': 'error',
+              'crashfiles': [str(infull[('2', '10', '11', '12', None)]['crashfiles'])],
+              'relative_dir': str(tmp_path.resolve() / 'sub-2')},
              }
 
     def callable(node, graph):

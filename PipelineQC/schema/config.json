@@ -1,5 +1,134 @@
 {
-    "$schema": "http://json-schema.org/schema$",
+    "$schema": "http://json-schema.org/draft-07/schema$",
+    "definitions": {
+	"singlereportlet": {
+	    "type": "object",
+	    "additionalProperties": false,
+	    "required": ["type", "name", "image"],
+	    "properties": {
+		"type": {
+		    "type": "string",
+		    "const": "single"
+		},
+		"qcform": {
+		    "type": "boolean"
+		},
+		"nslices": {
+		    "type": "integer"
+		},
+		"name": {
+		    "type": "string"
+		},
+		"image": {
+		    "type": "string"
+		}
+	    }
+	},
+	"comparereportlet": {
+	    "type": "object",
+	    "additionalProperties": false,
+	    "required": ["type", "name1", "image1", "name2", "image2"],
+	    "properties": {
+		"type": {
+		    "type": "string",
+		    "const": "compare"
+		},
+		"qcform": {
+		    "type": "boolean"
+		},
+		"nslices": {
+		    "type": "integer"
+		},
+		"name1": {
+		    "type": "string"
+		},
+		"image1": {
+		    "type": "string"
+		},
+		"name2": {
+		    "type": "string"
+		},
+		"image2": {
+		    "type": "string"
+		}
+	    }
+	},
+	"contourreportlet": {
+	    "type": "object",
+	    "additionalProperties": false,
+	    "required": ["type", "name", "image", "labelimage"],
+	    "properties": {
+		"type": {
+		    "type": "string",
+		    "const": "contour"
+		},
+		"qcform": {
+		    "type": "boolean"
+		},
+		"nslices": {
+		    "type": "integer"
+		},
+		"name": {
+		    "type": "string"
+		},
+		"image": {
+		    "type": "string"
+		},
+		"labelimage": {
+		    "type": "string"
+		}
+	    }
+	},
+	"distributionsreportlet": {
+	    "type": "object",
+	    "additionalProperties": false,
+	    "required": ["type", "name", "distsfile", "labelfile"],
+	    "properties": {
+		"type": {
+		    "type": "string",
+		    "const": "distributions"
+		},
+		"qcform": {
+		    "type": "boolean"
+		},
+		"nslices": {
+		    "type": "integer"
+		},
+		"name": {
+		    "type": "string"
+		},
+		"distsfile": {
+		    "type": "string"
+		},
+		"labelfile": {
+		    "type": "string"
+		}
+	    }
+	},
+	"crashreportlet": {
+	    "type": "object",
+	    "additionalProperties": false,
+	    "required": ["type", "name", "crashfiles"],
+	    "properties": {
+		"type": {
+		    "type": "string",
+		    "const": "crash"
+		},
+		"qcform": {
+		    "type": "boolean"
+		},
+		"nslices": {
+		    "type": "integer"
+		},
+		"name": {
+		    "type": "string"
+		},
+		"crashfiles": {
+		    "type": "string"
+		}
+	    }
+	}
+    },
     "type": "object",
     "required": ["page_keys", "page_filename_template", "index_filename", "patterns", "files", "reportlets"],
     "properties": {
@@ -7,8 +136,9 @@
             "type": "array",
             "items": {
                 "type": "string",
-        "pattern": "^[a-zA-Z0-9]*$"
-            }
+		"pattern": "^[a-zA-Z0-9]*$"
+            },
+	    "minItems": 1
         },
         "page_filename_template": {
             "type": "string",
@@ -51,103 +181,12 @@
         "reportlets": {
             "type": "array",
             "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": ["type"],
-                "properties": {
-                    "type": {
-                        "type": "string",
-                        "enum": ["single", "contour", "compare", "distributions", "crash"]
-                    },
-                    "qcform": {
-                        "type": "boolean"
-                    },
-                    "nslices": {
-                        "type": "integer"
-                    }
-                },
-                "allOf": [
-                    {
-                        "if": {
-                            "properties": { "type": { "const": "single" } }
-                        },
-                        "then": {
-                            "properties": {
-                                "name": {
-                                    "type": "string"
-                                },
-                                "image": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "if": {
-                            "properties": { "type": { "const": "compare" } }
-                        },
-                        "then": {
-                            "properties": {
-                                "name1": {
-                                    "type": "string"
-                                },
-                                "image1": {
-                                    "type": "string"
-                                },
-                                "name2": {
-                                    "type": "string"
-                                },
-                                "image2": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "if": {
-                            "properties": { "type": { "const": "contour" } }
-                        },
-                        "then": {
-                            "properties": {
-                                "name": {
-                                    "type": "string"
-                                },
-                                "image": {
-                                    "type": "string"
-                                },
-                                "labelimage": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "if": {
-                            "properties": { "type": { "const": "distributions" } }
-                        },
-                        "then": {
-                            "properties": {
-                                "distsfile": {
-                                    "type": "string"
-                                },
-                                "labelfile": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "if": {
-                            "properties": { "type": { "const": "crash" } }
-                        },
-                        "then": {
-                            "properties": {
-                                "crashfiles": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
+		"anyOf": [
+		    { "$ref": "#/definitions/singlereportlet" },
+		    { "$ref": "#/definitions/comparereportlet" },
+		    { "$ref": "#/definitions/contourreportlet" },
+		    { "$ref": "#/definitions/distributionsreportlet" },
+		    { "$ref": "#/definitions/crashreportlet" }
                 ]
             }
         }

@@ -1,5 +1,5 @@
 from .get_files import get_files
-from .report import all_workflow
+from .workflows import all_workflow
 from .configure import load_config
 from pathlib import Path
 import argparse

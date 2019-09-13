@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 import re
+import jsonschema
+from pkg_resources import resource_filename
 
 
 class InvalidFormatError(Exception):
@@ -8,7 +10,10 @@ class InvalidFormatError(Exception):
 
 
 def load_config(conffile):
-    return json.loads(Path(conffile).read_text())
+    conf = json.loads(Path(conffile).read_text())
+    schema = json.loads(Path(resource_filename('PipelineQC', 'schema/config.json')).read_text())
+    jsonschema.validate(conf, schema)
+    return conf
 
 
 def format_output(conf, page_key):
