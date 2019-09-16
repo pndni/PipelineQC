@@ -9,10 +9,11 @@ setup(
         'matplotlib>=3',
         'Jinja2>=2.10.1',
         'nibabel>=2.4.0',
+        'jsonschema',
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
-    extra_require={
+    extras_require={
         'doc': ['Sphinx', 'sphinx-argparse', 'sphinx-rtd-theme', 'pndniworkflows @ git+https://github.com/pndni/pndniworkflows.git']
     },
     packages=find_packages(),
