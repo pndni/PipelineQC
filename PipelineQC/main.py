@@ -1,6 +1,7 @@
 from .get_files import get_files
 from .workflows import all_workflow
 from .configure import load_config
+from . import group
 from pathlib import Path
 import argparse
 
@@ -23,20 +24,38 @@ def qc_all(dirs, output_dir, configfile, plugin='MultiProc', plugin_args=None,
 
 def get_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('config_file', type=Path,
-                        help='JSON configuration file. See the documentation for details')
-    parser.add_argument('output_dir', type=Path,
-                        help='Output root for QC pages and index file')
-    parser.add_argument('search_dirs', type=Path, nargs='+',
-                        help='Search these directories for files')
-    parser.add_argument('--nipype_plugin', type=str, default='MultiProc',
-                        help='Passed directly to the nipype workflow run method')
-    parser.add_argument('--working_directory', type=Path,
-                        help='Working directory for nipype workflow (i.e., "base_dir")')
+    subparsers = parser.add_subparsers()
+    qcpages = subparsers.add_parser('qcpages', help='Create QC pages.')
+    qcpages.set_defaults(func=run_qcpages)
+    qcpages.add_argument('config_file', type=Path,
+                         help='JSON configuration file. See the documentation for details',
+                         metavar='config_file')
+    qcpages.add_argument('output_dir', type=Path,
+                         help='Output root for QC pages and index file')
+    qcpages.add_argument('search_dirs', type=Path, nargs='+',
+                         help='Search these directories for files')
+    qcpages.add_argument('--nipype_plugin', type=str, default='MultiProc',
+                         help='Passed directly to the nipype workflow run method')
+    qcpages.add_argument('--working_directory', type=Path,
+                         help='Working directory for nipype workflow (i.e., "base_dir")')
+    combine = subparsers.add_parser('combine', help='Combine json QC forms downloaded from QC pages into a TSV file.')
+    combine.set_defaults(func=run_combine)
+    combine.add_argument('output_file', type=Path,
+                         help='Output filename for tsv file')
+    combine.add_argument('input_files', type=Path, nargs='+',
+                         help='Input json files')
     return parser
 
 
 def run():
     args = get_parser().parse_args()
+    args.func(args)
+
+
+def run_qcpages(args):
     qc_all(args.search_dirs, args.output_dir, args.config_file, plugin=args.nipype_plugin,
            working_directory=args.working_directory)
+
+
+def run_combine(args):
+    group.make_tsv(args.input_files, args.output_file)
