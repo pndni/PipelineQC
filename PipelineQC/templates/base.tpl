@@ -30,6 +30,7 @@
     <script language="Javascript">
       function submitform(){
 	  var outobj = {};
+	  outobj["title"] = document.title;
 	  for (e of document["forms"]){
 	      if (e.className == "radioform"){
 		  for (r of e){

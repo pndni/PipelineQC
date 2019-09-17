@@ -151,6 +151,7 @@ def _single_opt_contours(name, image, out_file, nslices=7, label=None, form=True
     out = {'name': name, 'form': form, 'name_no_spaces': name.replace(' ', '_')}
     out['svg'] = _imshow(image, nslices, labelfile=label)
     out['filename'] = str(image)
+    out['formfile'] = 'form_simple.tpl'
     if label is not None:
         out['labelfilename'] = str(label)
     if relative_dir is not None:
@@ -209,6 +210,7 @@ def compare(name1, image1, name2, image2, out_file, nslices=7, form=True, relati
 
     out = {'name1': name1, 'name2': name2,
            'form': form,
+           'formfile': 'form_simple.tpl',
            'name_no_spaces': '_'.join([nametmp.replace(' ', '_') for nametmp in [name1, name2]])}
 
     if image1 is None or image2 is None:
@@ -256,7 +258,7 @@ def contours(name, image, label, out_file, nslices=7, form=True, relative_dir=No
     :type relative_dir: path-like object
     """
     if image is None or label is None:
-        out = {'name': name, 'form': form, 'name_no_spaces': name.replace(' ', '_')}
+        out = {'name': name, 'form': form, 'formfile': 'form_simple.tpl', 'name_no_spaces': name.replace(' ', '_')}
         errormessages = []
         if image is None:
             errormessages.append('image')
@@ -301,7 +303,8 @@ def distributions(name, distfile, out_file, labelfile, form=True, relative_dir=N
     """
     out = {'name': name,
            'name_no_spaces': name.replace(' ', '_'),
-           'form': form}
+           'form': form,
+           'formfile': 'form_simple.tpl'}
     if distfile is None or labelfile is None:
         errormessages = []
         if distfile is None:
