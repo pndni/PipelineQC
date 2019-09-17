@@ -1,1 +1,6 @@
 *~
+**/#*#
+__pycache__
+doc/_build
+.eggs/**
+PipelineQC.egg-info/**
