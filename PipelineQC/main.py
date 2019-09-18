@@ -23,13 +23,6 @@ def qc_all(dirs, output_dir, configfile, plugin='MultiProc', plugin_args=None,
     wf.run(plugin=plugin, plugin_args=plugin_args)
 
 
-def SVGPath(p):
-    p = Path(p)
-    if p.suffix != '.svg':
-        raise ValueError('Extension must be .svg')
-    return p
-
-
 def get_parser():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
@@ -54,11 +47,13 @@ def get_parser():
                          help='Input json files')
     contours = subparsers.add_parser('image', help='Create an image of a scan and optional contours')
     contours.set_defaults(func=run_image)
-    contours.add_argument('output_file', type=SVGPath, help='Filename for resultant svg file')
+    contours.add_argument('output_file', type=Path)
     contours.add_argument('image', type=Path, help='Input image')
     contours.add_argument('--nslices', type=int, default=7,
                           help='The number of slices to display for each anatomical plane.')
     contours.add_argument('--labelimage', type=Path, help='Label image from which to draw contours')
+    contours.add_argument('--output_type', type=str, help='Output file type', choices=['svg', 'png'],
+                          default='svg')
     return parser
 
 
@@ -77,4 +72,8 @@ def run_combine(args):
 
 
 def run_image(args):
-    args.output_file.write_text(reportlets._imshow(args.image, args.nslices, labelfile=args.labelimage))
+    out = reportlets._imshow(args.image, args.nslices, labelfile=args.labelimage, outtype=args.output_type)
+    if args.output_type == 'svg':
+        args.output_file.write_text(out)
+    else:
+        args.output_file.write_bytes(out)

@@ -4,7 +4,8 @@ from matplotlib import figure
 from matplotlib import gridspec
 from matplotlib import style
 from matplotlib.backends.backend_svg import FigureCanvasSVG
-from io import StringIO
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+from io import StringIO, BytesIO
 import jinja2
 import re
 import csv
@@ -95,8 +96,7 @@ def _get_row_col(viewnum, slicenum, nslices):
     return row, col
 
 
-def _imshow(imgfile, nslices, labelfile=None):
-    svg = StringIO()
+def _imshowfig(imgfile, nslices, labelfile=None):
     img = _load_and_orient(imgfile)
     if labelfile is not None:
         label = _load_and_orient(labelfile)
@@ -109,9 +109,9 @@ def _imshow(imgfile, nslices, labelfile=None):
             raise RuntimeError('Not enough defined colors for label image')
     with style.context({'image.origin': 'lower',
                         'image.cmap': 'Greys_r',
-                        'savefig.dpi': 300,
                         'axes.facecolor': 'black',
-                        'figure.facecolor': 'black'}):
+                        'figure.facecolor': 'black',
+                        'figure.dpi': int(np.ceil(np.max(img.shape) / INDIVIDUAL_IMAGE_HEIGHT))}):
         nrows, ncols = _calc_nrows_ncols(nslices)
         fig = figure.Figure(figsize=(ncols * INDIVIDUAL_IMAGE_HEIGHT, nrows * INDIVIDUAL_IMAGE_HEIGHT))
         gs = gridspec.GridSpec(nrows, ncols, figure=fig, hspace=0.05, wspace=0.05, left=0, right=1, top=1, bottom=0)
@@ -134,9 +134,19 @@ def _imshow(imgfile, nslices, labelfile=None):
                     labeldata = np.squeeze(np.asarray(label.slicer[slicespec].dataobj), axis=(ind,))
                     for lvind, lv in enumerate(labelvals):
                         ax.contour(labeldata == lv, levels=[0.5], colors=[COLORLIST[lvind]], linewidths=[0.5])
-    FigureCanvasSVG(fig).print_svg(svg)
-    svg.seek(0)
-    return svg.read()
+    return fig
+
+
+def _imshow(imgfile, nslices, labelfile=None, outtype='svg'):
+    fig = _imshowfig(imgfile, nslices, labelfile=labelfile)
+    if outtype == 'svg':
+        out = StringIO()
+        FigureCanvasSVG(fig).print_svg(out)
+    elif outtype == 'png':
+        out = BytesIO()
+        FigureCanvasAgg(fig).print_png(out)
+    out.seek(0)
+    return out.read()
 
 
 def _set_svg_class(svgstr, classname):
