@@ -18,6 +18,7 @@ ORIENTATION = [[2, 1],
                [1, 1],
                [0, 1]]
 INDIVIDUAL_IMAGE_HEIGHT = 1.5
+MAXCOLS = 8
 PLOTSIZE = 5, 4
 
 
@@ -67,6 +68,8 @@ def _calcslices(s, nslices):
     if nslices == 1:
         return [s // 2]
     step = (s - 1) // (nslices - 1)
+    if step == 0:
+        raise RuntimeError('step size is 0. nslices is probably too large')
     last = (nslices - 1) * step
     offset = (s - last - 1) // 2
     last += offset
@@ -78,6 +81,18 @@ def _get_vlims(x):
     vals = np.sort(x.ravel())
     ind = int(0.99 * len(vals))
     return 0.0, vals[ind]
+
+
+def _calc_nrows_ncols(nslices):
+    nrows_per_view = int(np.ceil(nslices / MAXCOLS))
+    return nrows_per_view * 3, min(nslices, MAXCOLS)
+
+
+def _get_row_col(viewnum, slicenum, nslices):
+    nrows_per_view = int(np.ceil(nslices / MAXCOLS))
+    row = viewnum * nrows_per_view + slicenum // MAXCOLS
+    col = slicenum % MAXCOLS
+    return row, col
 
 
 def _imshow(imgfile, nslices, labelfile=None):
@@ -97,8 +112,9 @@ def _imshow(imgfile, nslices, labelfile=None):
                         'savefig.dpi': 300,
                         'axes.facecolor': 'black',
                         'figure.facecolor': 'black'}):
-        fig = figure.Figure(figsize=(nslices * INDIVIDUAL_IMAGE_HEIGHT, 3 * INDIVIDUAL_IMAGE_HEIGHT))
-        gs = gridspec.GridSpec(3, nslices, figure=fig, hspace=0.05, wspace=0.05, left=0, right=1, top=1, bottom=0)
+        nrows, ncols = _calc_nrows_ncols(nslices)
+        fig = figure.Figure(figsize=(ncols * INDIVIDUAL_IMAGE_HEIGHT, nrows * INDIVIDUAL_IMAGE_HEIGHT))
+        gs = gridspec.GridSpec(nrows, ncols, figure=fig, hspace=0.05, wspace=0.05, left=0, right=1, top=1, bottom=0)
         vmin, vmax = _get_vlims(img.get_fdata())
         pitch = np.sqrt(np.sum(img.affine[:3, :3] ** 2.0, axis=0))
         for rowind, ind in enumerate([2, 0, 1]):
@@ -109,7 +125,8 @@ def _imshow(imgfile, nslices, labelfile=None):
             for colind, sl in enumerate(slice_locations):
                 slicespec = tuple(slice(sl, sl + 1) if i == ind else slice(None) for i in range(3))
                 imgslice = np.squeeze(np.asarray(img.slicer[slicespec].dataobj), axis=(ind,))
-                ax = fig.add_subplot(gs[rowind, colind])
+                rowind_adj, colind_adj = _get_row_col(rowind, colind, nslices)
+                ax = fig.add_subplot(gs[rowind_adj, colind_adj])
                 ax.imshow(imgslice, vmin=vmin, vmax=vmax, aspect=aspect)
                 ax.set_xticks([])
                 ax.set_yticks([])
