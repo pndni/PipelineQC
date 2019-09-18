@@ -2,6 +2,7 @@ from .get_files import get_files
 from .workflows import all_workflow
 from .configure import load_config
 from . import group
+from . import reportlets
 from pathlib import Path
 import argparse
 
@@ -20,6 +21,13 @@ def qc_all(dirs, output_dir, configfile, plugin='MultiProc', plugin_args=None,
     if plugin_args is None:
         plugin_args = {}
     wf.run(plugin=plugin, plugin_args=plugin_args)
+
+
+def SVGPath(p):
+    p = Path(p)
+    if p.suffix != '.svg':
+        raise ValueError('Extension must be .svg')
+    return p
 
 
 def get_parser():
@@ -44,6 +52,13 @@ def get_parser():
                          help='Output filename for tsv file')
     combine.add_argument('input_files', type=Path, nargs='+',
                          help='Input json files')
+    contours = subparsers.add_parser('image', help='Create an image of a scan and optional contours')
+    contours.set_defaults(func=run_image)
+    contours.add_argument('output_file', type=SVGPath, help='Filename for resultant svg file')
+    contours.add_argument('image', type=Path, help='Input image')
+    contours.add_argument('--nslices', type=int, default=7,
+                          help='The number of slices to display for each anatomical plane.')
+    contours.add_argument('--labelimage', type=Path, help='Label image from which to draw contours')
     return parser
 
 
@@ -59,3 +74,7 @@ def run_qcpages(args):
 
 def run_combine(args):
     group.make_tsv(args.input_files, args.output_file)
+
+
+def run_image(args):
+    args.output_file.write_text(reportlets._imshow(args.image, args.nslices, labelfile=args.labelimage))
