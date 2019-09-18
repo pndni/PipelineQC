@@ -21,5 +21,8 @@ setup(
         'console_scripts': [
             'PipelineQC = PipelineQC.main:run',
         ]
-    }
+    },
+    package_data={
+        '': ['templates/*tpl', 'schema/config.json']
+    },
 )
