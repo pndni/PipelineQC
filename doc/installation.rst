@@ -1,7 +1,15 @@
 Installation
 ============
 
-The package may be installed with
+Singularity
+-----------
+
+.. code-block:: bash
+
+   singularity build PipelineQC-latest.simg docker://pndni/pipelineqc:latest
+
+Python package
+--------------
 
 .. code-block:: bash
 
