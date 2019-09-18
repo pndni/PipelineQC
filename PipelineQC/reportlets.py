@@ -206,7 +206,7 @@ def single(name, image, out_file, nslices=7, form=True, relative_dir=None):
     :type relative_dir: path-like object
     """
     if image is None:
-        out = {'name': name, 'form': form, 'name_no_spaces': name.replace(' ', '_')}
+        out = {'name': name, 'form': form, 'formfile': 'form_simple.tpl', 'name_no_spaces': name.replace(' ', '_')}
         out['errormessage'] = 'No image file for this reportlet'
         _render(out_file, 'single.tpl', out)
     else:
