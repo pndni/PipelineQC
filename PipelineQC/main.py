@@ -7,7 +7,7 @@ from pathlib import Path
 import argparse
 
 
-def qc_all(dirs, output_dir, configfile, plugin='MultiProc', plugin_args=None,
+def qc_all(dirs, output_dir, configfile, plugin='Linear', plugin_args=None,
            working_directory=None):
     conf = load_config(configfile)
     filedict = get_files(dirs, conf)
@@ -35,7 +35,7 @@ def get_parser():
                          help='Output root for QC pages and index file')
     qcpages.add_argument('search_dirs', type=Path, nargs='+',
                          help='Search these directories for files')
-    qcpages.add_argument('--nipype_plugin', type=str, default='MultiProc',
+    qcpages.add_argument('--nipype_plugin', type=str, default='Linear',
                          help='Passed directly to the nipype workflow run method')
     qcpages.add_argument('--working_directory', type=Path,
                          help='Working directory for nipype workflow (i.e., "base_dir")')
