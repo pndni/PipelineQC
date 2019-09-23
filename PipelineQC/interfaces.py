@@ -224,6 +224,9 @@ class AssembleReportInputSpec(BaseInterfaceInputSpec):
                               desc='Reportlet files')
     title = traits.Str(mandatory=True, desc='Title of final report')
     out_file = File(desc='Output file')
+    next_ = File(desc='File name of next QC page')
+    prev_ = File(desc='File name of previous QC page')
+    relative_dir = Directory(exists=True, desc='Create links to filenames relative to this directory')
 
 
 class AssembleReportOutputSpec(TraitedSpec):
@@ -235,7 +238,11 @@ class AssembleReport(BaseInterface):
     output_spec = AssembleReportOutputSpec
 
     def _run_interface(self, runtime):
-        reportlets.assemble(self._gen_outfilename(), self.inputs.in_files, self.inputs.title)
+        next_ = self.inputs.next_ if isdefined(self.inputs.next_) else None
+        prev = self.inputs.prev if isdefined(self.inputs.prev) else None
+        reldir = self.inputs.relative_dir if isdefined(self.inputs.relative_dir) else None
+        reportlets.assemble(self._gen_outfilename(), self.inputs.in_files, self.inputs.title,
+                            next_=next_, prev=prev, relative_dir=reldir)
         return runtime
 
     def _gen_outfilename(self):

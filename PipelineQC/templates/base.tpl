@@ -7,6 +7,7 @@
 <!--https://stackoverflow.com/questions/9618504/how-to-get-the-selected-radio-button-s-value#9618826-->
 <!--https://stackoverflow.com/questions/833015/does-execcommand-saveas-work-in-firefox/13696029#13696029-->
 <!--https://stackoverflow.com/questions/3665115/how-to-create-a-file-in-memory-for-user-to-download-but-not-through-server/18197341#18197341-->
+<!-- https://stackoverflow.com/questions/1032914/how-to-make-a-div-fill-a-remaining-horizontal-space -->
 <html>
   <head>
     <title>{{ title }}</title>
@@ -57,11 +58,19 @@
   </head>
   <body>
   <h1>{{ title }}</h1>
+  {% if prev %}<span class="prev"><a href={{ prev }}>Previous</a></span>{% endif %}
+  {% if next %}<span class="next"><a href={{ next }}>Next</a></span>{% endif %}
+
   {{ body }}
+
   {% if form %}
   <form onsubmit="submitform()">
     <input type="submit" value="Download QC">
   </form>
   {% endif %}
+
+  {% if prev %}<span class="prev"><a href={{ prev }}>Previous</a></span>{% endif %}
+  {% if next %}<span class="next"><a href={{ next }}>Next</a></span>{% endif %}
+
   </body>
 </html>

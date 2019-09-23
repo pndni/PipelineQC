@@ -398,7 +398,7 @@ def crash(name, crashfiles, out_file, relative_dir=None):
     _render(out_file, 'crash.tpl', out)
 
 
-def assemble(out_file, in_files, title, form=True):
+def assemble(out_file, in_files, title, form=True, prev=None, next_=None, relative_dir=None):
     """combine multiple html files into one file
 
     :param out_file: output html file
@@ -413,7 +413,15 @@ def assemble(out_file, in_files, title, form=True):
     env = jinja2.Environment(loader=jinja2.PackageLoader('PipelineQC', 'templates'))
     template = env.get_template('base.tpl')
     body = '\n'.join((_load(in_f) for in_f in in_files))
-    out = template.render({'body': body, 'title': title, 'form': form})
+    params = {'body': body, 'title': title, 'form': form}
+    if prev is not None:
+        params['prev'] = prev
+    if next_ is not None:
+        params['next'] = next_
+    if relative_dir is not None:
+        params['prev'] = os.path.relpath(params['prev'], relative_dir)
+        params['next'] = os.path.relpath(params['next'], relative_dir)
+    out = template.render(params)
     _dump(out_file, out)
 
 

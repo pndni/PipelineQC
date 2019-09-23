@@ -16,8 +16,7 @@ class InvalidReportletTypeError(Exception):
     pass
 
 
-def report_workflow(page_dict, page_key, conf, global_dict, output_dir):
-    out_file = Path(output_dir).resolve() / format_output(conf, page_key)
+def report_workflow(page_dict, page_key, conf, global_dict, out_file, next_=None, prev=None):
     out_file.parent.mkdir(exist_ok=True, parents=True)
     title = '_'.join((f'{k}-{v}' for k, v in zip(conf['page_keys'], page_key) if v is not None))
     wf = pe.Workflow('page_' + title)
@@ -54,6 +53,11 @@ def report_workflow(page_dict, page_key, conf, global_dict, output_dir):
     assemble_node = pe.Node(AssembleReport(), 'assemble')
     assemble_node.inputs.title = title
     assemble_node.inputs.out_file = out_file
+    if next_ is not None:
+        assemble_node.inputs.next_ = next_
+    if prev is not None:
+        assemble_node.inputs.prev = prev
+    assemble_node.relative_dir = out_file.parent
     wf.connect(reportlets, 'out', assemble_node, 'in_files')
     return wf
 
@@ -61,10 +65,17 @@ def report_workflow(page_dict, page_key, conf, global_dict, output_dir):
 def all_workflow(file_dict, output_dir, conf):
     wf = pe.Workflow('report')
     merge_pages = pe.Node(Merge(len(file_dict)), 'merge_pages')
-    page_key_set = set(file_dict.keys()) - {'global'}
-    for i, page_key in enumerate(page_key_set, start=1):
-        page_wf = report_workflow(file_dict[page_key], page_key, conf, file_dict['global'], output_dir)
-        wf.connect(page_wf, 'assemble.out_file', merge_pages, f'in{i}')
+    page_key_list = list(file_dict.keys())
+    page_key_list.pop(page_key_list.index('global'))
+    page_key_list.sort()
+    out_files = {page_key: Path(output_dir).resolve() / format_output(conf, page_key)
+                 for page_key in page_key_list}
+    for i, page_key in enumerate(page_key_list, start=0):
+        next_ = out_files[page_key_list[i + 1]] if i + 1 < len(page_key_list) else None
+        prev = out_files[page_key_list[i - 1]] if i > 0 else None
+        page_wf = report_workflow(file_dict[page_key], page_key, conf, file_dict['global'],
+                                  out_files[page_key], next_=next_, prev=prev)
+        wf.connect(page_wf, 'assemble.out_file', merge_pages, f'in{i + 1}')
     index_pages = pe.Node(IndexReport(), 'index_pages')
     out_file = Path(output_dir).resolve() / conf['index_filename']
     out_file.parent.mkdir(exist_ok=True, parents=True)
