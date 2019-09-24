@@ -130,7 +130,7 @@
 	}
     },
     "type": "object",
-    "required": ["page_keys", "page_filename_template", "index_filename", "patterns", "files", "reportlets"],
+    "required": ["page_keys", "page_filename_template", "patterns", "index_filename", "files", "reportlets"],
     "properties": {
         "page_keys": {
             "type": "array",
@@ -142,7 +142,7 @@
         },
         "page_filename_template": {
             "type": "string",
-        "pattern": "^([^][]*(\\[[^][}{]*\\{[a-zA-Z0-9]*\\}[^][}{]*\\]*)*)*$"
+            "pattern": "^([^][]*(\\[[^][}{]*\\{[a-zA-Z0-9]*\\}[^][}{]*\\]*)*)*$"
         },
         "index_filename": {
             "type": "string"
@@ -151,7 +151,7 @@
             "type": "object",
             "patternProperties": {
                 ".*": {
-                    "type": "string"
+                    "type": ["string", "array"]
                 }
             }
         },

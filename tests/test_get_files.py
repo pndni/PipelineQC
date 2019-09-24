@@ -85,19 +85,21 @@ def compare(x, y):
                 assert x[k][k2] == y[k][k2]
 
 
-def test_conf1(tmp_path, input_files_conf1):
+@pytest.mark.parametrize('conffilename', ['testconf1.json', 'testconf1bids.json'])
+def test_conf1(tmp_path, input_files_conf1, conffilename):
     infull = _make_files(tmp_path, input_files_conf1)
-    conffile = Path(__file__).parent / 'testconf1.json'
-    out = get_files.get_files([tmp_path], conf.load_config(conffile))
+    conffile = Path(__file__).parent / conffilename
+    out = get_files.get_files([tmp_path], conf.load_config(conffile), conffile.parent)
     compare(out, infull)
 
 
-def test_conf1_multfiles(tmp_path, input_files_conf1):
+@pytest.mark.parametrize('conffilename', ['testconf1.json', 'testconf1bids.json'])
+def test_conf1_multfiles(tmp_path, input_files_conf1, conffilename):
     input_files_conf1[('1', None, None, None, None)]['nu_bet2'] = Path(f'sub-1/anat/sub-1_skullstripped-false_desc-nucor_T1w.nii')
     _make_files(tmp_path, input_files_conf1)
-    conffile = Path(__file__).parent / 'testconf1.json'
+    conffile = Path(__file__).parent / conffilename
     with pytest.raises(get_files.MultipleFilesFoundError):
-        get_files.get_files([tmp_path], conf.load_config(conffile))
+        get_files.get_files([tmp_path], conf.load_config(conffile), conffile.parent)
 
 
 def test_conf1_multfilt(tmp_path, input_files_conf1):
@@ -105,11 +107,34 @@ def test_conf1_multfilt(tmp_path, input_files_conf1):
     _make_files(tmp_path, input_files_conf1)
     conffile = Path(__file__).parent / 'testconf1.json'
     with pytest.raises(get_files.MultipleFilterResultsError):
-        get_files.get_files([tmp_path], conf.load_config(conffile))
+        get_files.get_files([tmp_path], conf.load_config(conffile), conffile.parent)
+
+
+def test_conf1_multfiles2(tmp_path, input_files_conf1):
+    input_files_conf1[('1', None, None, None, None)]['anotherfile'] = Path(f'sub-1/anat/sub-1_skullstripped-true_desc-nucor_features.nii')
+    _make_files(tmp_path, input_files_conf1)
+    conffile = Path(__file__).parent / 'testconf1bids.json'
+    with pytest.raises(get_files.MultipleFilesFoundError):
+        get_files.get_files([tmp_path], conf.load_config(conffile), conffile.parent)
 
 
 def test_conf2(tmp_path, input_files_conf2):
     infull = _make_files(tmp_path, input_files_conf2)
     conffile = Path(__file__).parent / 'testconf2.json'
-    out = get_files.get_files([tmp_path], conf.load_config(conffile))
+    out = get_files.get_files([tmp_path], conf.load_config(conffile), conffile.parent)
     compare(out, infull)
+
+
+@pytest.mark.parametrize('conffile,bids_p,re_p', [('testconf1.json', False, True),
+                                                  ('testconf2.json', False, True),
+                                                  ('testconf1bids.json', True, True),
+                                                  ('testconf1bidsonly.json', True, False)])
+def test_search_types(conffile, bids_p, re_p):
+    c = conf.load_config(Path(__file__).parent / conffile)
+    assert get_files._search_types(c) == (bids_p, re_p)
+
+
+def test_search_types(tmp_path, input_files_conf1):
+    _make_files(tmp_path, input_files_conf1)
+    c = conf.load_config(Path(__file__).parent / 'testconf1bids.json')
+    layouts = get_files._get_bids_layouts([tmp_path], c, Path(__file__).parent)

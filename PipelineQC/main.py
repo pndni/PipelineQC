@@ -7,10 +7,18 @@ from pathlib import Path
 import argparse
 
 
+def _callback(proc, status):
+    with open('/home/stilley2/scratch/icv/callback.txt', 'a') as f:
+        f.write(f'{proc} {status}\n')
+
+        
 def qc_all(dirs, output_dir, configfile, plugin='Linear', plugin_args=None,
            working_directory=None):
+    from nipype import config
+    config.update_config({'logging': {'workflow_level': 'DEBUG'}})
     conf = load_config(configfile)
-    filedict = get_files(dirs, conf)
+    confdir = configfile.parent
+    filedict = get_files(dirs, conf, confdir)
     if len(filedict) == 1 and len(filedict['global']) == 0:
         raise RuntimeError('No files found!')
     wf = all_workflow(filedict, output_dir, conf)
@@ -20,6 +28,7 @@ def qc_all(dirs, output_dir, configfile, plugin='Linear', plugin_args=None,
         wf.base_dir = str(working_directory.resolve())
     if plugin_args is None:
         plugin_args = {}
+    plugin_args['status_callback'] = _callback
     wf.run(plugin=plugin, plugin_args=plugin_args)
 
 

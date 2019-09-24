@@ -1,6 +1,6 @@
 {
    "patterns": {
-       "derivatives": "sub-(?P<subject>[a-zA-Z0-9]+)/(?P<dir>[^/]*)/sub-(?P=subject)(_acq-(?P<acquisition>[a-zA-Z0-9]+))?_(?P<suffix>[a-zA-Z0-9]+)\\.nii",
+       "derivatives": ["bids"],
        "models": "(?P<base>[a-zA-Z0-9]+)\\.nii",
        "crash": "sub-(?P<subject>[a-zA-Z0-9]+)/logs/sub-(?P=subject)(_acq-(?P<acquisition>[a-zA-Z0-9]+))?/crash.*\\.pklz"
    },

@@ -1,0 +1,122 @@
+{
+    "page_keys": ["sub", "acq", "rec", "run", "ses"],
+    "page_filename_template": "sub-{sub}[/ses-{ses}]/sub-{sub}[_ses-{ses}][_acq-{acq}][_rec-{rec}][_run-{run}]_QC.html",
+    "index_filename": "QC_index.html",
+    "patterns": {
+	"bids": ["bids", "derivatives", "./pndni_bids.json"]
+    },
+    "files": {
+        "T1w": {
+            "pattern": "bids",
+            "filter": {"suffix": "T1w", "space": null, "desc": null}
+        },
+        "nu_bet": {
+            "pattern": "bids",
+            "filter": {"desc": "nucor"}
+        },
+        "normalized": {
+            "pattern": "bids",
+            "filter": {"desc": "normalized"}
+        },
+        "warped_model": {
+            "pattern": "bids",
+            "filter": {"space": "T1w", "suffix": "T1w"}
+        },
+        "features": {
+            "pattern": "bids",
+            "filter": {"suffix": "features", "labels": null}
+        },
+        "features_label": {
+            "pattern": "bids",
+            "filter": {"suffix": "features", "labels": "labels"}
+        },
+        "classified": {
+            "pattern": "bids",
+            "filter": {"suffix": "dseg", "desc": "tissue"}
+        },
+        "transformed_atlas": {
+            "pattern": "bids",
+            "filter": {"suffix": "dseg", "desc": "lobes"}
+        }
+    },
+    "reportlets": [
+        {
+            "type": "compare",
+            "name1": "Non-uniformity corrected",
+            "image1": "nu_bet",
+            "name2": "Inormalized",
+            "image2": "normalized"
+        },
+        {
+            "type": "compare",
+            "name1": "Non-uniformity corrected",
+            "image1": "nu_bet",
+            "name2": "Inormalized",
+            "image2": "normalized",
+            "nslices": 3
+        },
+        {
+            "type": "compare",
+            "name1": "Non-uniformity corrected",
+            "image1": "nu_bet",
+            "name2": "Inormalized",
+            "image2": "normalized",
+            "qcform": false
+        },
+        {
+            "type": "single",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet"
+        },
+        {
+            "type": "single",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet",
+            "nslices": 3
+        },
+        {
+            "type": "single",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet",
+            "qcform": false
+        },
+        {
+            "type": "contour",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet",
+            "labelimage": "transformed_atlas"
+        },
+        {
+            "type": "contour",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet",
+            "labelimage": "transformed_atlas",
+            "nslices": 3
+        },
+        {
+            "type": "contour",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet",
+            "labelimage": "transformed_atlas",
+            "qcform": false
+        },
+        {
+            "type": "distributions",
+            "name": "features",
+            "distsfile": "features",
+            "labelfile": "features_label"
+        },
+        {
+            "type": "distributions",
+            "name": "features",
+            "distsfile": "features",
+            "labelfile": "features_label",
+            "qcform": false
+        },
+	{
+	    "type": "crash",
+	    "name": "error",
+	    "crashfiles": "crashfiles"
+	}
+    ]
+}

@@ -10,6 +10,7 @@ setup(
         'Jinja2>=2.10.1',
         'nibabel>=2.4.0',
         'jsonschema',
+        'pybids==0.9.4'
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],

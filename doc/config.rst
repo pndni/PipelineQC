@@ -13,6 +13,8 @@ patterns
 
 Specifies the regex patterns used to find files. The patterns must be in `python style regex`_.
 Group names should be specified corresponding to the :ref:`page_keys` and :ref:`files`/filter parameters.
+If an array is given for a pattern instead of a string, then `pybids`_ is used instead of regex. See :ref:`bids_section`
+below.
 
 For example, suppose we have an input and an output folder::
 
@@ -54,7 +56,24 @@ will match crash files (in this case only 1).
 (We can pass both "in"
 and "out" to the program on the command line, so both directories will
 be searched.)
-    
+
+.. _bids_section:
+
+bids
+""""
+
+The "derivatives" pattern above closely follows the `BIDS`_ specification.
+As such we can instead use `pybids`_ to search for files. To signal that
+we wish to use `pybids`_, we pass an array instead of a string:
+
+.. literalinclude:: ../tests/testconfdocsbids.json
+   :lines: 2-6
+
+The contents of the array are passed to :py:class:`BIDSLayout` as the "config" parameter.
+If an element of the array is the name of a default configuration (at the time of this writing, either "bids" or "derivatives"),
+it is passed directly. Otherwise, it is assumed to be a path relative to the :py:mod:`PipelineQC` configuration file.
+The path is converted and then passed to the config parameter. In the above example, the basic "bids" configuration
+is all that is required.
 
 .. _page_keys:
 
@@ -76,8 +95,8 @@ page_filename_template
 ^^^^^^^^^^^^^^^^^^^^^^
 
 Template output string for each qc page. :ref:`page_keys` may be used as
-arguments (e.g., if "sub" is a page key, then one could have
-"{sub}_QC.html"). If a bracket pair ("[...]") is used, and inside
+arguments (e.g., if "subject" is a page key, then one could have
+"{subject}_QC.html"). If a bracket pair ("[...]") is used, and inside
 that bracket is only one keyword argument, the section inside
 the brackets will be used only if that argument is not :py:obj:`None`.
 This syntax was inspired by `pybids`_.
@@ -172,3 +191,4 @@ The configuration file has the following schema
 
 .. _python style regex: https://docs.python.org/3.5/library/re.html#regular-expression-syntax
 .. _pybids: https://bids-standard.github.io/pybids/
+.. _bids: https://bids-specification.readthedocs.io/en/stable/

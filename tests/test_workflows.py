@@ -38,7 +38,7 @@ def test_all_wf(tmp_path, input_files_conf1):
     infull = _make_files(tmp_path, input_files_conf1)
     conffile = Path(__file__).parent / 'testconf1.json'
     conf = load_config(conffile)
-    out = get_files.get_files([tmp_path], conf)
+    out = get_files.get_files([tmp_path], conf, Path(__file__).parent)
     wf = workflows.all_workflow(out, tmp_path, conf)
 
     defaultnslices = 7

@@ -62,12 +62,16 @@ def report_workflow(page_dict, page_key, conf, global_dict, out_file, next_=None
     return wf
 
 
+def _sort_key(intuple):
+    return tuple((str(x) for x in intuple))
+
+
 def all_workflow(file_dict, output_dir, conf):
     wf = pe.Workflow('report')
     merge_pages = pe.Node(Merge(len(file_dict)), 'merge_pages')
     page_key_list = list(file_dict.keys())
     page_key_list.pop(page_key_list.index('global'))
-    page_key_list.sort()
+    page_key_list.sort(key=_sort_key)
     out_files = {page_key: Path(output_dir).resolve() / format_output(conf, page_key)
                  for page_key in page_key_list}
     for i, page_key in enumerate(page_key_list, start=0):

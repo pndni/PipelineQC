@@ -6,7 +6,8 @@ from nipype.interfaces.base import isdefined
 import pytest
 
 
-def test_confdoc(tmp_path):
+@pytest.mark.parametrize('conffilename', ['testconfdocs.json', 'testconfdocsbids.json'])
+def test_confdoc(tmp_path, conffilename):
     indir = tmp_path / 'in'
     anat1 = indir / 'sub-1' / 'anat'
     anat1.mkdir(parents=True)
@@ -33,8 +34,8 @@ def test_confdoc(tmp_path):
     crashdir.mkdir(parents=True)
     (crashdir / 'crash.pklz').write_text('crash')
 
-    conf = load_config(Path(__file__).parent / 'testconfdocs.json')
-    outfiles = get_files([indir, outdir], conf)
+    conf = load_config(Path(__file__).parent / conffilename)
+    outfiles = get_files([indir, outdir], conf, Path(__file__).parent)
 
     assert outfiles[('1', None)]['T1'] == tmp_path / 'in' / 'sub-1' / 'anat' / 'sub-1_T1w.nii'
     assert outfiles[('1', 'fast')]['T1'] == tmp_path / 'in' / 'sub-1' / 'anat' / 'sub-1_acq-fast_T1w.nii'
@@ -144,4 +145,4 @@ def test_confdoc(tmp_path):
 
     del conf["files"]["MNI"]["global"]
     with pytest.raises(IndexError):
-        outfiles = get_files([indir, outdir], conf)
+        outfiles = get_files([indir, outdir], conf, Path(__file__).parent)
