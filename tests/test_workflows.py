@@ -123,6 +123,16 @@ def test_all_wf(tmp_path, input_files_conf1):
              {'name': 'error',
               'crashfiles': [str(infull[('1', '10', '11', '12', None)]['crashfiles'])],
               'relative_dir': str(tmp_path.resolve() / 'sub-1')},
+             'report.page_sub-1_acq-10_rec-11_run-12.rating13':
+             {'name': 'Rating',
+              'radio': {'name': 'Overall', 'options': [
+	          {"name": "Reject", "value": 1},
+		  {"name": "Poor", "value": 2},
+		  {"name": "Acceptable", "value": 3},
+		  {"name": "Good", "value": 4},
+		  {"name": "Great", "value": 5}]},
+              'checkbox': {'name': 'Notes', 'fields': ["Non-uniformity failed", "Registration failed"]},
+              'text': {'name': 'Other'}},
              'report.page_sub-2_acq-10_rec-11_run-12.compare1':
              {'name1': 'Non-uniformity corrected',
               'image1': str(infull[('2', '10', '11', '12', None)]['nu_bet']),
@@ -202,6 +212,16 @@ def test_all_wf(tmp_path, input_files_conf1):
              {'name': 'error',
               'crashfiles': [str(infull[('2', '10', '11', '12', None)]['crashfiles'])],
               'relative_dir': str(tmp_path.resolve() / 'sub-2')},
+             'report.page_sub-2_acq-10_rec-11_run-12.rating13':
+             {'name': 'Rating',
+              'radio': {'name': 'Overall', 'options': [
+	          {"name": "Reject", "value": 1},
+		  {"name": "Poor", "value": 2},
+		  {"name": "Acceptable", "value": 3},
+		  {"name": "Good", "value": 4},
+		  {"name": "Great", "value": 5}]},
+              'checkbox': {'name': 'Notes', 'fields': ["Non-uniformity failed", "Registration failed"]},
+              'text': {'name': 'Other'}},
              }
 
     def callable(node, graph):

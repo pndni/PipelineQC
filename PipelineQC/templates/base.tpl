@@ -27,6 +27,11 @@
 		   animation-iteration-count: infinite;
 		   animation-timing-function: linear; }
       .output { max-height: 15em; overflow: auto }
+      .fixedpos { position: fixed;
+		  top: 10px;
+		  right: 10px;
+		  border-style: solid;
+		  border-width: medium; }
     </style>
     <script language="Javascript">
       function submitform(){
@@ -42,6 +47,10 @@
 		  }
 	      } else if (e.className == "textform"){
 		  outobj[e.name] = e[0].value
+	      } else if (e.className == "checkboxform"){
+		  for (r of e){
+		      outobj[r.value] = r.checked;
+		  }
 	      }
 	  }
 	  outobj["crash"] = document.getElementsByClassName("crash").length > 0

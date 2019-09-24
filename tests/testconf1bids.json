@@ -129,6 +129,30 @@
 	    "type": "crash",
 	    "name": "error",
 	    "crashfiles": "crashfiles"
+	},
+	{
+	    "type": "rating",
+	    "name": "Rating",
+	    "radio": {
+		"name": "Overall",
+		"options": [
+		    {"name": "Reject", "value": 1},
+		    {"name": "Poor", "value": 2},
+		    {"name": "Acceptable", "value": 3},
+		    {"name": "Good", "value": 4},
+		    {"name": "Great", "value": 5}
+		]
+	    },
+	    "checkbox": {
+		"name": "Notes",
+		"fields": [
+		    "Non-uniformity failed",
+		    "Registration failed"
+		]
+	    },
+	    "text": {
+		"name": "Other"
+	    }
 	}
     ]
 }

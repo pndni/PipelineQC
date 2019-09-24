@@ -5,6 +5,7 @@ from .interfaces import (Single,
                          Compare,
                          Distributions,
                          Crash,
+                         Rating,
                          AssembleReport,
                          IndexReport)
 from pathlib import Path
@@ -32,6 +33,8 @@ def report_workflow(page_dict, page_key, conf, global_dict, out_file, next_=None
             node = pe.Node(Distributions(), f'distributions{reportletnum}')
         elif rpspec['type'] == 'crash':
             node = pe.Node(Crash(), f'crash{reportletnum}')
+        elif rpspec['type'] == 'rating':
+            node = pe.Node(Rating(), f'rating{reportletnum}')
         else:
             raise InvalidReportletTypeError(f'{rpspec["type"]} is not a recognized reportlet')
         for rpkey, rpval in rpspec.items():
@@ -48,7 +51,8 @@ def report_workflow(page_dict, page_key, conf, global_dict, out_file, next_=None
                     setattr(node.inputs, rpkey, page_dict.get(rpval, no_entry_val))
             else:
                 setattr(node.inputs, rpkey, rpval)
-        node.inputs.relative_dir = out_file.parent
+        if rpspec['type'] != 'rating':
+            node.inputs.relative_dir = out_file.parent
         wf.connect(node, 'out_file', reportlets, f'in{reportletnum}')
     assemble_node = pe.Node(AssembleReport(), 'assemble')
     assemble_node.inputs.title = title

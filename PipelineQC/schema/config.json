@@ -127,6 +127,72 @@
 		    "type": "string"
 		}
 	    }
+	},
+	"ratingreportlet": {
+	    "type": "object",
+	    "additionalProperties": false,
+	    "required": ["name", "type"],
+	    "properties": {
+		"type": {
+		    "type": "string",
+		    "const": "rating"
+		},
+		"name": {
+		    "type": "string"
+		},
+		"radio": {
+		    "type": "object",
+		    "additionalProperties": false,
+		    "required": ["name", "options"],
+		    "properties": {
+			"name": {
+			    "type": "string"
+			},
+			"options": {
+			    "type": "array",
+			    "items": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": ["name", "value"],
+				"properties": {
+				    "name": {
+					"type": "string"
+				    },
+				    "value": {
+					"type": ["string", "number"]
+				    }
+				}
+			    }
+			}
+		    }
+		},
+		"checkbox": {
+		    "type": "object",
+		    "additionalProperties": false,
+		    "requried": ["name", "fields"],
+		    "properties": {
+			"name": {
+			    "type": "string"
+			},
+			"fields": {
+			    "type": "array",
+			    "items": {
+				"type": "string"
+			    }
+			}
+		    }
+		},
+		"text": {
+		    "type": "object",
+		    "additionalProperties": false,
+		    "required": ["name"],
+		    "properties": {
+			"name": {
+			    "type": "string"
+			}
+		    }
+		}
+	    }
 	}
     },
     "type": "object",
@@ -186,7 +252,8 @@
 		    { "$ref": "#/definitions/comparereportlet" },
 		    { "$ref": "#/definitions/contourreportlet" },
 		    { "$ref": "#/definitions/distributionsreportlet" },
-		    { "$ref": "#/definitions/crashreportlet" }
+		    { "$ref": "#/definitions/crashreportlet" },
+		    { "$ref": "#/definitions/ratingreportlet" }
                 ]
             }
         }

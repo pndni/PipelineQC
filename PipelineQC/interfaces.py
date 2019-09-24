@@ -219,6 +219,49 @@ class Crash(BaseInterface):
         return outputs
 
 
+class RatingInputSpec(BaseInterfaceInputSpec):
+    name = traits.Str(mandatory=True, desc='Name of first image')
+    radio = traits.Either(traits.Dict(),
+                          None,
+                          desc='Description of the radio buttons for the reportlet. '
+                               'The dictionary must have "name" and "options" keys, '
+                               'where the value of name is a string and the value of '
+                               'options is a list of dictionaries, each with "name" '
+                               'and "value"')
+    checkbox = traits.Either(traits.Dict(), None,
+                             desc='Description of the checkboxes for the reportlet. '
+                                  'Must have "name" and "fields" keys, where "fields" '
+                                  'is a list of names for different checkboxes.')
+    text = traits.Either(traits.Dict(), None, desc='Description of the text field. '
+                                                   'Only requires "name"')
+
+
+class RatingOutputSpec(TraitedSpec):
+    out_file = File(exists=True)
+
+
+class Rating(BaseInterface):
+    input_spec = RatingInputSpec
+    output_spec = RatingOutputSpec
+
+    def _run_interface(self, runtime):
+        reportlets.rating(self.inputs.name,
+                          self.inputs.radio,
+                          self.inputs.checkbox,
+                          self.inputs.text,
+                          self._gen_outfilename())
+        return runtime
+
+    def _gen_outfilename(self):
+        p = Path('rating_{}.txt'.format(self.inputs.name)).resolve()
+        return str(p)
+
+    def _list_outputs(self):
+        outputs = self.output_spec().get()
+        outputs['out_file'] = self._gen_outfilename()
+        return outputs
+
+
 class AssembleReportInputSpec(BaseInterfaceInputSpec):
     in_files = InputMultiPath(File(exists=True), mandatory=True,
                               desc='Reportlet files')
