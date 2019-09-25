@@ -7,11 +7,6 @@ from pathlib import Path
 import argparse
 
 
-def _callback(proc, status):
-    with open('/home/stilley2/scratch/icv/callback.txt', 'a') as f:
-        f.write(f'{proc} {status}\n')
-
-        
 def qc_all(dirs, output_dir, configfile, plugin='Linear', plugin_args=None,
            working_directory=None):
     from nipype import config
@@ -28,7 +23,6 @@ def qc_all(dirs, output_dir, configfile, plugin='Linear', plugin_args=None,
         wf.base_dir = str(working_directory.resolve())
     if plugin_args is None:
         plugin_args = {}
-    plugin_args['status_callback'] = _callback
     wf.run(plugin=plugin, plugin_args=plugin_args)
 
 
