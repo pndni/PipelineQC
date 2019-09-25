@@ -14,6 +14,7 @@ Welcome to PipelineQC's documentation!
    usage
    config
    interfaces
+   api
 
 
 
