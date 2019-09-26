@@ -58,23 +58,37 @@
             "name1": "Non-uniformity corrected",
             "image1": "nu_bet",
             "name2": "Inormalized",
+            "image2": "normalized",
+	    "qcform": true
+        },
+        {
+            "type": "compare",
+            "name1": "Non-uniformity corrected",
+            "image1": "nu_bet",
+            "name2": "Inormalized",
+            "image2": "normalized",
+            "nslices": 3,
+	    "qcform": true
+        },
+        {
+            "type": "compare",
+            "name1": "Non-uniformity corrected",
+            "image1": "nu_bet",
+            "name2": "Inormalized",
             "image2": "normalized"
         },
         {
-            "type": "compare",
-            "name1": "Non-uniformity corrected",
-            "image1": "nu_bet",
-            "name2": "Inormalized",
-            "image2": "normalized",
-            "nslices": 3
+            "type": "single",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet",
+	    "qcform": true
         },
         {
-            "type": "compare",
-            "name1": "Non-uniformity corrected",
-            "image1": "nu_bet",
-            "name2": "Inormalized",
-            "image2": "normalized",
-            "qcform": false
+            "type": "single",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet",
+            "nslices": 3,
+	    "qcform": true
         },
         {
             "type": "single",
@@ -82,16 +96,19 @@
             "image": "nu_bet"
         },
         {
-            "type": "single",
+            "type": "contour",
             "name": "Non-uniformity corrected",
             "image": "nu_bet",
-            "nslices": 3
+            "labelimage": "transformed_atlas",
+	    "qcform": true
         },
         {
-            "type": "single",
+            "type": "contour",
             "name": "Non-uniformity corrected",
             "image": "nu_bet",
-            "qcform": false
+            "labelimage": "transformed_atlas",
+            "nslices": 3,
+	    "qcform": true
         },
         {
             "type": "contour",
@@ -100,31 +117,17 @@
             "labelimage": "transformed_atlas"
         },
         {
-            "type": "contour",
-            "name": "Non-uniformity corrected",
-            "image": "nu_bet",
-            "labelimage": "transformed_atlas",
-            "nslices": 3
-        },
-        {
-            "type": "contour",
-            "name": "Non-uniformity corrected",
-            "image": "nu_bet",
-            "labelimage": "transformed_atlas",
-            "qcform": false
+            "type": "distributions",
+            "name": "features",
+            "distsfile": "features",
+            "labelfile": "features_label",
+	    "qcform": true
         },
         {
             "type": "distributions",
             "name": "features",
             "distsfile": "features",
             "labelfile": "features_label"
-        },
-        {
-            "type": "distributions",
-            "name": "features",
-            "distsfile": "features",
-            "labelfile": "features_label",
-            "qcform": false
         },
 	{
 	    "type": "crash",

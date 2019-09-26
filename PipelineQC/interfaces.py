@@ -17,7 +17,7 @@ class CompareInputSpec(BaseInterfaceInputSpec):
     image1 = traits.Either(File(exists=True, mandatory=True, desc='First image file'), None)
     image2 = traits.Either(File(exists=True, mandatory=True, desc='Second image file'), None)
     nslices = traits.Int(7, usedefault=True, desc='Number of slices to plot')
-    qcform = traits.Bool(True, usedefault=True, desc='Include qc form in output')
+    qcform = traits.Bool(False, usedefault=True, desc='Include qc form in output')
     relative_dir = Directory(exists=True, desc='Create links to filenames relative to this directory')
 
 
@@ -59,7 +59,7 @@ class ContourInputSpec(BaseInterfaceInputSpec):
     image = traits.Either(File(exists=True, mandatory=True, desc='Image file'), None)
     labelimage = traits.Either(File(exists=True, mandatory=True, desc='Label image to calculate contours'), None)
     nslices = traits.Int(7, usedefault=True, desc='Number of slices to plot')
-    qcform = traits.Bool(True, usedefault=True, desc='Include qc form in output')
+    qcform = traits.Bool(False, usedefault=True, desc='Include qc form in output')
     relative_dir = Directory(exists=True, desc='Create links to filenames relative to this directory')
 
 
@@ -99,7 +99,7 @@ class SingleInputSpec(BaseInterfaceInputSpec):
     name = traits.Str(mandatory=True, desc='Name of image')
     image = traits.Either(File(exists=True, mandatory=True, desc='Image file'), None)
     nslices = traits.Int(7, usedefault=True, desc='Number of slices to plot')
-    qcform = traits.Bool(True, usedefault=True, desc='Include qc form in output')
+    qcform = traits.Bool(False, usedefault=True, desc='Include qc form in output')
     relative_dir = Directory(exists=True, desc='Create links to filenames relative to this directory')
 
 
@@ -148,7 +148,7 @@ class DistributionsInputSpec(BaseInterfaceInputSpec):
                          desc='TSV file with "index" and "name" columns. Used to label distributions '
                               '("index" corresponds to the second column in distsfile)'),
                     None)
-    qcform = traits.Bool(True, usedefault=True, desc='Include qc form in output')
+    qcform = traits.Bool(False, usedefault=True, desc='Include qc form in output')
     relative_dir = Directory(exists=True, desc='Create links to filenames relative to this directory')
 
 
@@ -267,6 +267,7 @@ class AssembleReportInputSpec(BaseInterfaceInputSpec):
                               desc='Reportlet files')
     title = traits.Str(mandatory=True, desc='Title of final report')
     out_file = File(desc='Output file')
+    qcform = traits.Bool(False, usedefault=True, desc='Include qc form submit button in output')
     next_ = File(desc='File name of next QC page')
     prev_ = File(desc='File name of previous QC page')
     relative_dir = Directory(exists=True, desc='Create links to filenames relative to this directory')
@@ -285,7 +286,7 @@ class AssembleReport(BaseInterface):
         prev = self.inputs.prev if isdefined(self.inputs.prev) else None
         reldir = self.inputs.relative_dir if isdefined(self.inputs.relative_dir) else None
         reportlets.assemble(self._gen_outfilename(), self.inputs.in_files, self.inputs.title,
-                            next_=next_, prev=prev, relative_dir=reldir)
+                            form=self.inputs.qcform, next_=next_, prev=prev, relative_dir=reldir)
         return runtime
 
     def _gen_outfilename(self):
