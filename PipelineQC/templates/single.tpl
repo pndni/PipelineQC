@@ -13,7 +13,15 @@
     {% endif %}
     {% endblock %}
     {% block images %}
-    <div class="imagebase">
-    	 {{ svg }}
+    <div class="imagearray">
+    	 {% for svgrow in svg %}
+	     <div class="imagerow">
+	      {% for svgsingle in svgrow %}
+	         <div class="imagebase">
+		 {{ svgsingle }}
+	         </div>
+	      {% endfor %}
+	      </div>
+	 {% endfor %}
     </div>
     {% endblock %}

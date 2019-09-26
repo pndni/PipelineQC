@@ -1,10 +1,10 @@
-    <div class=fixedpos>
+    <div class=leftcolumn>
     <h2>{{ name }}</h2>
     {% if radio %}
     <h3>{{ radio.name_ }}</h3>
     <form name="{{ radio.name_no_spaces }}" class=radioform>
     {% for option in radio.options %}
-       <input type="radio" value="{{ option.value }}">{{ option.name_ }} 
+       <input type="radio" value="{{ option.value }}">{{ option.name_ }}<br>
     {% endfor %}
     </form>
     {% endif %}
@@ -12,7 +12,7 @@
     <h3>{{ checkbox.name_ }}</h3>
     <form name="{{ checkbox.name_no_spaces }}" class=checkboxform>
     {% for field in checkbox.fields %}
-       <input type="checkbox" value="{{ field }}">{{ field }}
+       <input type="checkbox" value="{{ field }}">{{ field }}<br>
     {% endfor %}
     </form>
     {% endif %}
@@ -22,4 +22,7 @@
     <input type="text">
     </form>
     {% endif %}
+      <form onsubmit="submitform()">
+	<input type="submit" value="Download QC">
+      </form>
     </div>

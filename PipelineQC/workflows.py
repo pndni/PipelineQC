@@ -22,7 +22,11 @@ def report_workflow(page_dict, page_key, conf, global_dict, out_file, next_=None
     title = '_'.join((f'{k}-{v}' for k, v in zip(conf['page_keys'], page_key) if v is not None))
     wf = pe.Workflow('page_' + title)
     reportlets = pe.Node(Merge(len(conf['reportlets'])), 'reportlets')
+    inlineform = False
+    rating = False
     for reportletnum, rpspec in enumerate(conf['reportlets'], start=1):
+        if rpspec.get('qcform', False):
+            inlineform = True
         if rpspec['type'] == 'single':
             node = pe.Node(Single(), f'single{reportletnum}')
         elif rpspec['type'] == 'contour':
@@ -35,6 +39,7 @@ def report_workflow(page_dict, page_key, conf, global_dict, out_file, next_=None
             node = pe.Node(Crash(), f'crash{reportletnum}')
         elif rpspec['type'] == 'rating':
             node = pe.Node(Rating(), f'rating{reportletnum}')
+            rating = True
         else:
             raise InvalidReportletTypeError(f'{rpspec["type"]} is not a recognized reportlet')
         for rpkey, rpval in rpspec.items():
@@ -62,6 +67,7 @@ def report_workflow(page_dict, page_key, conf, global_dict, out_file, next_=None
     if prev is not None:
         assemble_node.inputs.prev = prev
     assemble_node.relative_dir = out_file.parent
+    assemble_node.qcform = inlineform and not rating
     wf.connect(reportlets, 'out', assemble_node, 'in_files')
     return wf
 

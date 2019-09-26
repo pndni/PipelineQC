@@ -26,14 +26,14 @@ def test_get_row_cal():
 
 def test_read_dists(tmp_path):
     distfile = tmp_path / 'dists.txt'
-    distfile.write_text('1.5,1\n2.0,1\n1.5,2')
+    distfile.write_text('value\tindex\n1.5\t1\n2.0\t1\n1.5\t2')
     dist = reportlets._read_dists(distfile)
     assert dist == {1: [1.5, 2.0], 2: [1.5]}
 
 
 def test_distributions(tmp_path):
     distfile = tmp_path / 'dists.txt'
-    distfile.write_text('1.5,1\n2.0,1')
+    distfile.write_text('value\tindex\n1.5\t1\n2.0\t1')
     outfile = tmp_path / 'out.txt'
     labelfile = tmp_path / 'labels.tsv'
     labelfile.write_text('index\tname\n1\tGM\n')
@@ -93,3 +93,14 @@ def test_crash(tmp_path):
     outstr = outfile.read_text()
     assert 'class="crash"' not in outstr
     assert 'class="success"' in outstr
+
+
+def test_doublemap():
+    mylist = [[1, 2, 3], [4, 5]]
+    assert reportlets.doublemap(lambda x: 2 * x, mylist) == [[2, 4, 6], [8, 10]]
+
+
+def test_doublezip():
+    mylist = [[1, 2, 3], [4, 5]]
+    mylist2 = [[6, 7, 8], [9, 10]]
+    assert reportlets.doublezip(mylist, mylist2) == [[(1, 6), (2, 7), (3, 8)], [(4, 9), (5, 10)]]

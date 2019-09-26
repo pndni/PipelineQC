@@ -97,7 +97,7 @@ def _get_row_col(viewnum, slicenum, nslices):
     return row, col
 
 
-def _imshowfig(imgfile, nslices, labelfile=None):
+def _imshowfig(imgfile, nslices, labelfile=None, separate_figs=False):
     img = _load_and_orient(imgfile)
     if labelfile is not None:
         label = _load_and_orient(labelfile)
@@ -113,12 +113,17 @@ def _imshowfig(imgfile, nslices, labelfile=None):
                         'axes.facecolor': 'black',
                         'figure.facecolor': 'black',
                         'figure.dpi': int(np.ceil(np.max(img.shape) / INDIVIDUAL_IMAGE_HEIGHT))}):
-        nrows, ncols = _calc_nrows_ncols(nslices)
-        fig = figure.Figure(figsize=(ncols * INDIVIDUAL_IMAGE_HEIGHT, nrows * INDIVIDUAL_IMAGE_HEIGHT))
-        gs = gridspec.GridSpec(nrows, ncols, figure=fig, hspace=0.05, wspace=0.05, left=0, right=1, top=1, bottom=0)
+        if separate_figs:
+            fig_list = []
+        else:
+            nrows, ncols = _calc_nrows_ncols(nslices)
+            fig = figure.Figure(figsize=(ncols * INDIVIDUAL_IMAGE_HEIGHT, nrows * INDIVIDUAL_IMAGE_HEIGHT))
+            gs = gridspec.GridSpec(nrows, ncols, figure=fig, hspace=0.05, wspace=0.05, left=0, right=1, top=1, bottom=0)
         vmin, vmax = _get_vlims(img.get_fdata())
         pitch = np.sqrt(np.sum(img.affine[:3, :3] ** 2.0, axis=0))
         for rowind, ind in enumerate([2, 0, 1]):
+            if separate_figs:
+                fig_list_row = []
             slice_locations = _calcslices(img.shape[ind], nslices)
             pitchtmp = list(pitch.copy())
             pitchtmp.pop(ind)
@@ -126,8 +131,13 @@ def _imshowfig(imgfile, nslices, labelfile=None):
             for colind, sl in enumerate(slice_locations):
                 slicespec = tuple(slice(sl, sl + 1) if i == ind else slice(None) for i in range(3))
                 imgslice = np.squeeze(np.asarray(img.slicer[slicespec].dataobj), axis=(ind,))
-                rowind_adj, colind_adj = _get_row_col(rowind, colind, nslices)
-                ax = fig.add_subplot(gs[rowind_adj, colind_adj])
+                if separate_figs:
+                    fig = figure.Figure(figsize=(INDIVIDUAL_IMAGE_HEIGHT, INDIVIDUAL_IMAGE_HEIGHT),
+                                        subplotpars=figure.SubplotParams(left=0, right=1, bottom=0, top=1))
+                    ax = fig.add_subplot(1, 1, 1)
+                else:
+                    rowind_adj, colind_adj = _get_row_col(rowind, colind, nslices)
+                    ax = fig.add_subplot(gs[rowind_adj, colind_adj])
                 ax.imshow(imgslice, vmin=vmin, vmax=vmax, aspect=aspect)
                 ax.set_xticks([])
                 ax.set_yticks([])
@@ -135,19 +145,51 @@ def _imshowfig(imgfile, nslices, labelfile=None):
                     labeldata = np.squeeze(np.asarray(label.slicer[slicespec].dataobj), axis=(ind,))
                     for lvind, lv in enumerate(labelvals):
                         ax.contour(labeldata == lv, levels=[0.5], colors=[COLORLIST[lvind]], linewidths=[0.5])
-    return fig
+                if separate_figs:
+                    fig_list_row.append(fig)
+            if separate_figs:
+                fig_list.append(fig_list_row)
+    if separate_figs:
+        return fig_list
+    else:
+        return fig
 
 
-def _imshow(imgfile, nslices, labelfile=None, outtype='svg'):
-    fig = _imshowfig(imgfile, nslices, labelfile=labelfile)
-    if outtype == 'svg':
-        out = StringIO()
-        FigureCanvasSVG(fig).print_svg(out)
-    elif outtype == 'png':
-        out = BytesIO()
-        FigureCanvasAgg(fig).print_png(out)
+def _to_svg(fig):
+    out = StringIO()
+    FigureCanvasSVG(fig).print_svg(out)
     out.seek(0)
     return out.read()
+
+
+def _to_png(fig):
+    out = BytesIO()
+    FigureCanvasAgg(fig).print_png(out)
+    out.seek(0)
+    return out.read()
+
+
+def doublemap(func, iterable):
+    return list(map(lambda row: list(map(func, row)), iterable))
+
+
+def doublezip(iterable1, iterable2):
+    return [list(zip(rowleft, rowright)) for rowleft, rowright in zip(iterable1, iterable2)]
+
+
+def _imshow(imgfile, nslices, labelfile=None, outtype='svg', separate_figs=False):
+    fig = _imshowfig(imgfile, nslices, labelfile=labelfile, separate_figs=separate_figs)
+    if outtype == 'svg':
+        func = _to_svg
+    elif outtype == 'png':
+        func = _to_png
+    else:
+        raise ValueError('unsupported outtype')
+    if separate_figs:
+        out = doublemap(func, fig)
+    else:
+        out = func(fig)
+    return out
 
 
 def _set_svg_class(svgstr, classname):
@@ -177,7 +219,7 @@ def _render(out_file, template, data):
 
 def _single_opt_contours(name, image, out_file, nslices=7, label=None, form=True, relative_dir=None):
     out = {'name': name, 'form': form, 'name_no_spaces': name.replace(' ', '_')}
-    out['svg'] = _imshow(image, nslices, labelfile=label)
+    out['svg'] = _imshow(image, nslices, labelfile=label, separate_figs=True)
     out['filename'] = str(image)
     out['formfile'] = 'form_simple.tpl'
     if label is not None:
@@ -257,11 +299,12 @@ def compare(name1, image1, name2, image2, out_file, nslices=7, form=True, relati
             out['filename1'] = str(image1)
             out['filename2'] = str(image2)
 
-        svg1str = _imshow(image1, nslices)
-        svg2str = _imshow(image2, nslices)
+        svg1list = _imshow(image1, nslices, separate_figs=True)
+        svg2list = _imshow(image2, nslices, separate_figs=True)
 
-        out['svg1'] = _set_svg_class(svg1str, 'first')
-        out['svg2'] = _set_svg_class(svg2str, 'second')
+        svg1 = doublemap(lambda svgsingle: _set_svg_class(svgsingle, 'first'), svg1list)
+        svg2 = doublemap(lambda svgsingle: _set_svg_class(svgsingle, 'second'), svg2list)
+        out['svg'] = doublezip(svg1, svg2)
     _render(out_file, 'compare.tpl', out)
 
 
@@ -298,12 +341,23 @@ def contours(name, image, label, out_file, nslices=7, form=True, relative_dir=No
         _single_opt_contours(name, image, out_file, nslices=nslices, label=label, form=form, relative_dir=None)
 
 
+def _str2int(s):
+    f = float(s)
+    i = int(f)
+    if f != i:
+        raise ValueError(f'{s} is not an integer')
+    return i
+
+
 def _read_dists(distfile):
     dists = defaultdict(list)
-    with open(distfile, 'r') as f:
-        reader = csv.reader(f)
+    with open(distfile, 'r', newline='') as f:
+        reader = csv.reader(f, delimiter='\t')
+        header = next(reader)
+        valind = header.index('value')
+        indexind = header.index('index')
         for row in reader:
-            dists[int(row[1].strip(' .'))].append(float(row[0]))
+            dists[_str2int(row[indexind])].append(float(row[valind]))
     return dists
 
 
@@ -314,9 +368,8 @@ def distributions(name, distfile, out_file, labelfile, form=True, relative_dir=N
     :param name: Name describing :py:obj:`distfile`
     :type name: str
     :param distfile: Distribution file name.
-                     Must be a comma-separated file with two columns and no heading.
-                     The first column is a point in distribution, and the second
-                     is an integer indicating which distribution it belongs to.
+                     Must be a TSV file with two columns "value", and "index".
+                     "value" is a point in distribution indexed by "index".
     :type distfile: path-like object or :py:obj:`None`
     :param out_file: File name
     :type out_file: path-like object

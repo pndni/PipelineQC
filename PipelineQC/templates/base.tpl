@@ -8,6 +8,7 @@
 <!--https://stackoverflow.com/questions/833015/does-execcommand-saveas-work-in-firefox/13696029#13696029-->
 <!--https://stackoverflow.com/questions/3665115/how-to-create-a-file-in-memory-for-user-to-download-but-not-through-server/18197341#18197341-->
 <!-- https://stackoverflow.com/questions/1032914/how-to-make-a-div-fill-a-remaining-horizontal-space -->
+<!-- https://stackoverflow.com/questions/2491068/does-height-and-width-not-apply-to-span -->
 <html>
   <head>
     <title>{{ title }}</title>
@@ -19,19 +20,21 @@
         75% {opacity: 0;}
         100% {opacity: 0;}
       }
-      .imagebase { position: relative; }
-      .first { position: relative; left: 0; }
-      .second { position: absolute; left: 0;
+      .imagebase { position: relative; display: inline-block }
+      .first { position: relative; left: 0; top: 0;}
+      .second { position: absolute; left: 0; top: 0;
 		   animation-name: fade;
 		   animation-duration: 4s;
 		   animation-iteration-count: infinite;
 		   animation-timing-function: linear; }
       .output { max-height: 15em; overflow: auto }
-      .fixedpos { position: fixed;
-		  top: 10px;
-		  right: 10px;
-		  border-style: solid;
-		  border-width: medium; }
+      .leftcolumn { position: fixed;
+		    top: 5px;
+		    right: 5px;
+		    border-style: solid;
+		    border-width: medium;
+		    width: 16% }
+      .maincolumn { width: 84% }
     </style>
     <script language="Javascript">
       function submitform(){
@@ -70,6 +73,7 @@
   {% if prev %}<span class="prev"><a href={{ prev }}>Previous</a></span>{% endif %}
   {% if next %}<span class="next"><a href={{ next }}>Next</a></span>{% endif %}
 
+  <div class="maincolumn">
   {{ body }}
 
   {% if form %}
@@ -77,6 +81,7 @@
     <input type="submit" value="Download QC">
   </form>
   {% endif %}
+  </div>
 
   {% if prev %}<span class="prev"><a href={{ prev }}>Previous</a></span>{% endif %}
   {% if next %}<span class="next"><a href={{ next }}>Next</a></span>{% endif %}
