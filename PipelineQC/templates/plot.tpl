@@ -1,13 +1,13 @@
     {% extends "reportlet.tpl" %}
-    {% block header %}<h2>{{ name }}{% endblock %}
+    {% block header %}<h2>{{ name|e }}{% endblock %}
     {% block description %}
     Showing file
     <ul>
-        <li><a href="{{ filename }}">{{ filename }}</a></li>
+        <li><a href="{{ filename }}">{{ filename|e }}</a></li>
     </ul>
     with labels from
     <ul>
-        <li><a href="{{ labelfilename }}">{{ labelfilename }}</a></li>
+        <li><a href="{{ labelfilename }}">{{ labelfilename|e }}</a></li>
     </ul>
     {% endblock %}
     {% block images %}

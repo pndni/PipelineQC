@@ -14,6 +14,7 @@ import os
 from nipype import utils as nputils
 from pndniworkflows import utils
 from copy import deepcopy
+from pathlib import Path
 
 
 ORIENTATION = [[2, 1],
@@ -338,7 +339,7 @@ def contours(name, image, label, out_file, nslices=7, form=True, relative_dir=No
         out['errormessage'] = ' and '.join(errormessages) + ' not specified for this reportlet'
         _render(out_file, 'single.tpl', out)
     else:
-        _single_opt_contours(name, image, out_file, nslices=nslices, label=label, form=form, relative_dir=None)
+        _single_opt_contours(name, image, out_file, nslices=nslices, label=label, form=form, relative_dir=relative_dir)
 
 
 def _str2int(s):
@@ -424,7 +425,8 @@ def crash(name, crashfiles, out_file, relative_dir=None):
 
     :param name: Name describing the reportlet
     :type name: str
-    :param crashfiles: Files of a type readable by :py:obj:`nipype.utils.filemanip.loadcrash`.
+    :param crashfiles: Files of a type readable by :py:obj:`nipype.utils.filemanip.loadcrash`
+                       or a txt file.
                        An empty list indicates no crash files, and therefore success.
     :type crashfiles: list
     :param out_file: File name
@@ -437,13 +439,17 @@ def crash(name, crashfiles, out_file, relative_dir=None):
            'crashes': []}
 
     for cf in sorted(crashfiles):
-        c = nputils.filemanip.loadcrash(cf)
         tmp = {}
-        tmp['nodename'] = c['node'].name
-        tmp['nodefullname'] = c['node'].fullname
-        # https://stackoverflow.com/questions/510972/getting-the-class-name-of-an-instance#511059
-        tmp['interface'] = type(c['node'].interface).__name__
-        tmp['traceback'] = ''.join(c['traceback'])
+        cfp = Path(cf)
+        if cfp.suffix == '.txt':
+            tmp['text'] = cfp.read_text()
+        else:
+            c = nputils.filemanip.loadcrash(cf)
+            tmp['nodename'] = c['node'].name
+            tmp['nodefullname'] = c['node'].fullname
+            # https://stackoverflow.com/questions/510972/getting-the-class-name-of-an-instance#511059
+            tmp['interface'] = type(c['node'].interface).__name__
+            tmp['traceback'] = ''.join(c['traceback'])
         if relative_dir is not None:
             tmp['crashfile'] = str(os.path.relpath(cf, relative_dir))
         else:

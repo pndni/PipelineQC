@@ -1,14 +1,14 @@
     {% extends "reportlet.tpl" %}
-    {% block header %}{{ name }}{% endblock %}
+    {% block header %}{{ name|e }}{% endblock %}
     {% block description %}
     Showing file
     <ul>
-        <li><a href="{{ filename }}">{{ filename }}</a></li>
+        <li><a href="{{ filename }}">{{ filename|e }}</a></li>
     </ul>
     {% if labelfilename %}
     with contours from
     <ul>
-        <li><a href="{{ labelfilename }}">{{ labelfilename }}</a></li>
+        <li><a href="{{ labelfilename }}">{{ labelfilename|e }}</a></li>
     </ul>
     {% endif %}
     {% endblock %}

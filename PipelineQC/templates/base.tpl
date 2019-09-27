@@ -11,7 +11,7 @@
 <!-- https://stackoverflow.com/questions/2491068/does-height-and-width-not-apply-to-span -->
 <html>
   <head>
-    <title>{{ title }}</title>
+    <title>{{ title|e }}</title>
     <style>
       @keyframes fade {
         0% {opacity: 0;}
@@ -69,7 +69,7 @@
     </script>
   </head>
   <body>
-  <h1>{{ title }}</h1>
+  <h1>{{ title|e }}</h1>
   {% if prev %}<span class="prev"><a href={{ prev }}>Previous</a></span>{% endif %}
   {% if next %}<span class="next"><a href={{ next }}>Next</a></span>{% endif %}
 

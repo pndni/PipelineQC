@@ -1,7 +1,7 @@
     <h2>{% block header %}{% endblock %}</h2>
     {% if errormessage %}
     <div class="errormessage">
-    {{ errormessage }}
+    {{ errormessage|e }}
     </div>
     {% else %}
     <div class="description">

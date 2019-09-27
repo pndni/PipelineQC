@@ -115,12 +115,10 @@ def get_files(dirs, conf, bids_validate=False):
                         page_key = tuple((_str_or_none(match.entities.get(pk)) for pk in conf['page_keys']))
                     if file_params.get('allow_multiple', False):
                         if file_key not in out[page_key]:
-                            out[page_key][file_key] = [fnamefull]
-                        out[page_key][file_key].append()
+                            out[page_key][file_key] = []
+                        out[page_key][file_key].append(fnamefull)
                     else:
                         if file_key in out[page_key]:
-                            import pdb
-                            pdb.set_trace()
                             raise MultipleFilesFoundError('Multiple files found for {} with key {}'.format(file_key, page_key))
                         out[page_key][file_key] = fnamefull
     out = dict(out)
