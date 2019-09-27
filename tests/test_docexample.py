@@ -35,7 +35,7 @@ def test_confdoc(tmp_path, conffilename):
     (crashdir / 'crash.pklz').write_text('crash')
 
     conf = load_config(Path(__file__).parent / conffilename)
-    outfiles = get_files([indir, outdir], conf, Path(__file__).parent)
+    outfiles = get_files([indir, outdir], conf)
 
     assert outfiles[('1', None)]['T1'] == tmp_path / 'in' / 'sub-1' / 'anat' / 'sub-1_T1w.nii'
     assert outfiles[('1', 'fast')]['T1'] == tmp_path / 'in' / 'sub-1' / 'anat' / 'sub-1_acq-fast_T1w.nii'
@@ -145,4 +145,4 @@ def test_confdoc(tmp_path, conffilename):
 
     del conf["files"]["MNI"]["global"]
     with pytest.raises(IndexError):
-        outfiles = get_files([indir, outdir], conf, Path(__file__).parent)
+        outfiles = get_files([indir, outdir], conf)

@@ -3,7 +3,7 @@
     "page_filename_template": "sub-{sub}[/ses-{ses}]/sub-{sub}[_ses-{ses}][_acq-{acq}][_rec-{rec}][_run-{run}]_QC.html",
     "index_filename": "QC_index.html",
     "patterns": {
-	"bids": ["bids", "derivatives", "./pndni_bids.json"]
+	"bids": ["bids", "derivatives", "tests/pndni_bids.json"]
     },
     "files": {
         "T1w": {

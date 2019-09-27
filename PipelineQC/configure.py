@@ -1,3 +1,4 @@
+import io
 import json
 from pathlib import Path
 import re
@@ -10,7 +11,11 @@ class InvalidFormatError(Exception):
 
 
 def load_config(conffile):
-    conf = json.loads(Path(conffile).read_text())
+    if not isinstance(conffile, io.TextIOBase):
+        with open(conffile, 'r') as fconf:
+            conf = json.load(fconf)
+    else:
+        conf = json.load(conffile)
     schema = json.loads(Path(resource_filename('PipelineQC', 'schema/config.json')).read_text())
     jsonschema.validate(conf, schema)
     return conf

@@ -32,20 +32,18 @@ def baseconf():
     return conf
 
 
-def _write(tmp, conf):
-    fname = tmp / 'conf.json'
-    fname.write_text(json.dumps(conf))
-    return fname
-
-
 def test_conf_succ(baseconf, tmp_path):
-    conf.load_config(_write(tmp_path, baseconf))
+    with open(tmp_path / 'conf.json', 'w+') as f:
+        json.dump(baseconf, f)
+        f.seek(0)
+        conf.load_config(f)
 
 
 @pytest.mark.parametrize('key', ['page_keys', 'page_filename_template', 'index_filename', 'patterns', 'files', 'reportlets'])
 def test_conf_fail1(baseconf, tmp_path, key):
     del baseconf[key]
-    fname = _write(tmp_path, baseconf)
-    with pytest.raises(jsonschema.ValidationError):
-        conf.load_config(fname)
-            
+    with open(tmp_path / 'conf.json', 'w+') as f:
+        json.dump(baseconf, f)
+        f.seek(0)
+        with pytest.raises(jsonschema.ValidationError):
+            conf.load_config(f)

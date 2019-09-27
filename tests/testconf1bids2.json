@@ -5,7 +5,27 @@
     "patterns": {
         "simple": "(?P<base>.*)\\.(?P<extension>.*)",
         "crash": "sub-(?P<subject>[a-zA-Z0-9]+)(/ses-(?P<session>[a-zA-Z0-9]+))?/logs/sub-(?P=subject)(_ses-(?P=session))?(_acq-(?P<acquisition>[a-zA-Z0-9]+))?(_rec-(?P<reconstruction>[a-zA-Z0-9]+))?(_run-(?P<run>[0-9]+))?/crash.*\\.pklz",
-	"bids": ["bids", "derivatives", "tests/pndni_bids.json"]
+	"bids": [
+	    "bids",
+	    "derivatives", 
+	    {
+		"name": "pndni_bids",
+		"entities": [
+		    {
+			"name": "skullstripped",
+			"pattern": "[_/\\\\]+skullstripped-([a-zA-Z0-9]+)"
+		    },
+		    {
+			"name": "map",
+			"pattern": "[_/\\\\]+map-([a-zA-Z0-9]+)"
+		    },
+		    {
+			"name": "presuffix",
+			"pattern": "_([a-zA-Z0-9]*?)_[a-zA-Z0-9]*?\\.[^/\\\\]+$"
+		    }
+		]
+	    }
+	]
     },
     "files": {
         "model": {

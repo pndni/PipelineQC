@@ -70,9 +70,8 @@ we wish to use `pybids`_, we pass an array instead of a string:
    :lines: 2-6
 
 The contents of the array are passed to :py:class:`BIDSLayout` as the "config" parameter.
-If an element of the array is the name of a default configuration (at the time of this writing, either "bids" or "derivatives"),
-it is passed directly. Otherwise, it is assumed to be a path relative to the :py:mod:`PipelineQC` configuration file.
-The path is converted and then passed to the config parameter. In the above example, the basic "bids" configuration
+It may either be the name of a default configuration (at the time of this writing, either "bids" or "derivatives"),
+a filename, or a JSON object. In the above example, the basic "bids" configuration
 is all that is required.
 
 .. _page_keys:

@@ -9,11 +9,8 @@ import argparse
 
 def qc_all(dirs, output_dir, configfile, plugin='Linear', plugin_args=None,
            working_directory=None):
-    from nipype import config
-    config.update_config({'logging': {'workflow_level': 'DEBUG'}})
     conf = load_config(configfile)
-    confdir = configfile.parent
-    filedict = get_files(dirs, conf, confdir)
+    filedict = get_files(dirs, conf)
     if len(filedict) == 1 and len(filedict['global']) == 0:
         raise RuntimeError('No files found!')
     wf = all_workflow(filedict, output_dir, conf)
@@ -31,7 +28,7 @@ def get_parser():
     subparsers = parser.add_subparsers()
     qcpages = subparsers.add_parser('qcpages', help='Create QC pages.')
     qcpages.set_defaults(func=run_qcpages)
-    qcpages.add_argument('config_file', type=Path,
+    qcpages.add_argument('config_file', type=argparse.FileType('r'),
                          help='JSON configuration file. See the documentation for details',
                          metavar='config_file')
     qcpages.add_argument('output_dir', type=Path,
