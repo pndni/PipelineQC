@@ -16,46 +16,59 @@ from pndniworkflows import utils
 from copy import deepcopy
 from pathlib import Path
 
-
-ORIENTATION = [[2, 1],
-               [1, 1],
-               [0, 1]]
+ORIENTATION = [[2, 1], [1, 1], [0, 1]]
 INDIVIDUAL_IMAGE_HEIGHT = 1.5
 MAXCOLS = 8
 PLOTSIZE = 5, 4
 
-
 # https://github.com/matplotlib/matplotlib/blob/master/lib/matplotlib/_cm.py
-COLORLIST = (
-    (0.89411764705882357, 0.10196078431372549, 0.10980392156862745),
-    (0.21568627450980393, 0.49411764705882355, 0.72156862745098038),
-    (0.30196078431372547, 0.68627450980392157, 0.29019607843137257),
-    (0.59607843137254901, 0.30588235294117649, 0.63921568627450975),
-    (1.0,                 0.49803921568627452, 0.0),
-    (1.0,                 1.0,                 0.2),
-    (0.65098039215686276, 0.33725490196078434, 0.15686274509803921),
-    (0.96862745098039216, 0.50588235294117645, 0.74901960784313726),
-    (0.6,                 0.6,                 0.6),
-    (0.4,                 0.76078431372549016, 0.6470588235294118),
-    (0.9882352941176471,  0.55294117647058827, 0.3843137254901961),
-    (0.55294117647058827, 0.62745098039215685, 0.79607843137254897),
-    (0.90588235294117647, 0.54117647058823526, 0.76470588235294112),
-    (0.65098039215686276, 0.84705882352941175, 0.32941176470588235),
-    (1.0,                 0.85098039215686272, 0.18431372549019609),
-    (0.89803921568627454, 0.7686274509803922,  0.58039215686274515),
-    (0.70196078431372544, 0.70196078431372544, 0.70196078431372544),
-    (0.55294117647058827, 0.82745098039215681, 0.7803921568627451),
-    (1.0,                 1.0,                 0.70196078431372544),
-    (0.74509803921568629, 0.72941176470588232, 0.85490196078431369),
-    (0.98431372549019602, 0.50196078431372548, 0.44705882352941179),
-    (0.50196078431372548, 0.69411764705882351, 0.82745098039215681),
-    (0.99215686274509807, 0.70588235294117652, 0.3843137254901961),
-    (0.70196078431372544, 0.87058823529411766, 0.41176470588235292),
-    (0.9882352941176471,  0.80392156862745101, 0.89803921568627454),
-    (0.85098039215686272, 0.85098039215686272, 0.85098039215686272),
-    (0.73725490196078436, 0.50196078431372548, 0.74117647058823533),
-    (0.8,                 0.92156862745098034, 0.77254901960784317),
-    (1.0,                 0.92941176470588238, 0.43529411764705883))
+COLORLIST = ((0.89411764705882357, 0.10196078431372549, 0.10980392156862745),
+             (0.21568627450980393, 0.49411764705882355, 0.72156862745098038),
+             (0.30196078431372547, 0.68627450980392157, 0.29019607843137257),
+             (0.59607843137254901, 0.30588235294117649,
+              0.63921568627450975), (1.0, 0.49803921568627452,
+                                     0.0), (1.0, 1.0, 0.2),
+             (0.65098039215686276, 0.33725490196078434,
+              0.15686274509803921), (0.96862745098039216,
+                                     0.50588235294117645,
+                                     0.74901960784313726), (0.6, 0.6, 0.6),
+             (0.4, 0.76078431372549016,
+              0.6470588235294118), (0.9882352941176471,
+                                    0.55294117647058827,
+                                    0.3843137254901961), (0.55294117647058827,
+                                                          0.62745098039215685,
+                                                          0.79607843137254897),
+             (0.90588235294117647, 0.54117647058823526, 0.76470588235294112),
+             (0.65098039215686276, 0.84705882352941175,
+              0.32941176470588235), (1.0,
+                                     0.85098039215686272,
+                                     0.18431372549019609),
+             (0.89803921568627454, 0.7686274509803922,
+              0.58039215686274515), (0.70196078431372544,
+                                     0.70196078431372544,
+                                     0.70196078431372544),
+             (0.55294117647058827, 0.82745098039215681,
+              0.7803921568627451), (1.0, 1.0, 0.70196078431372544),
+             (0.74509803921568629, 0.72941176470588232,
+              0.85490196078431369), (0.98431372549019602,
+                                     0.50196078431372548,
+                                     0.44705882352941179),
+             (0.50196078431372548, 0.69411764705882351,
+              0.82745098039215681), (0.99215686274509807,
+                                     0.70588235294117652,
+                                     0.3843137254901961),
+             (0.70196078431372544, 0.87058823529411766,
+              0.41176470588235292), (0.9882352941176471,
+                                     0.80392156862745101,
+                                     0.89803921568627454),
+             (0.85098039215686272, 0.85098039215686272,
+              0.85098039215686272), (0.73725490196078436,
+                                     0.50196078431372548,
+                                     0.74117647058823533),
+             (0.8, 0.92156862745098034,
+              0.77254901960784317), (1.0,
+                                     0.92941176470588238,
+                                     0.43529411764705883))
 
 
 def _load_and_orient(fname):
@@ -109,19 +122,35 @@ def _imshowfig(imgfile, nslices, labelfile=None, separate_figs=False):
             labelvals.pop(labelvals.index(0))
         if len(labelvals) > len(COLORLIST):
             raise RuntimeError('Not enough defined colors for label image')
-    with style.context({'image.origin': 'lower',
-                        'image.cmap': 'Greys_r',
-                        'axes.facecolor': 'black',
-                        'figure.facecolor': 'black',
-                        'figure.dpi': int(np.ceil(np.max(img.shape) / INDIVIDUAL_IMAGE_HEIGHT))}):
+    with style.context({
+            'image.origin':
+            'lower',
+            'image.cmap':
+            'Greys_r',
+            'axes.facecolor':
+            'black',
+            'figure.facecolor':
+            'black',
+            'figure.dpi':
+            int(np.ceil(np.max(img.shape) / INDIVIDUAL_IMAGE_HEIGHT))
+    }):
         if separate_figs:
             fig_list = []
         else:
             nrows, ncols = _calc_nrows_ncols(nslices)
-            fig = figure.Figure(figsize=(ncols * INDIVIDUAL_IMAGE_HEIGHT, nrows * INDIVIDUAL_IMAGE_HEIGHT))
-            gs = gridspec.GridSpec(nrows, ncols, figure=fig, hspace=0.05, wspace=0.05, left=0, right=1, top=1, bottom=0)
+            fig = figure.Figure(figsize=(ncols * INDIVIDUAL_IMAGE_HEIGHT,
+                                         nrows * INDIVIDUAL_IMAGE_HEIGHT))
+            gs = gridspec.GridSpec(nrows,
+                                   ncols,
+                                   figure=fig,
+                                   hspace=0.05,
+                                   wspace=0.05,
+                                   left=0,
+                                   right=1,
+                                   top=1,
+                                   bottom=0)
         vmin, vmax = _get_vlims(img.get_fdata())
-        pitch = np.sqrt(np.sum(img.affine[:3, :3] ** 2.0, axis=0))
+        pitch = np.sqrt(np.sum(img.affine[:3, :3]**2.0, axis=0))
         for rowind, ind in enumerate([2, 0, 1]):
             if separate_figs:
                 fig_list_row = []
@@ -130,11 +159,17 @@ def _imshowfig(imgfile, nslices, labelfile=None, separate_figs=False):
             pitchtmp.pop(ind)
             aspect = pitchtmp[0] / pitchtmp[1]
             for colind, sl in enumerate(slice_locations):
-                slicespec = tuple(slice(sl, sl + 1) if i == ind else slice(None) for i in range(3))
-                imgslice = np.squeeze(np.asarray(img.slicer[slicespec].dataobj), axis=(ind,))
+                slicespec = tuple(
+                    slice(sl, sl + 1) if i == ind else slice(None)
+                    for i in range(3))
+                imgslice = np.squeeze(np.asarray(
+                    img.slicer[slicespec].dataobj),
+                                      axis=(ind, ))
                 if separate_figs:
-                    fig = figure.Figure(figsize=(INDIVIDUAL_IMAGE_HEIGHT, INDIVIDUAL_IMAGE_HEIGHT),
-                                        subplotpars=figure.SubplotParams(left=0, right=1, bottom=0, top=1))
+                    fig = figure.Figure(figsize=(INDIVIDUAL_IMAGE_HEIGHT,
+                                                 INDIVIDUAL_IMAGE_HEIGHT),
+                                        subplotpars=figure.SubplotParams(
+                                            left=0, right=1, bottom=0, top=1))
                     ax = fig.add_subplot(1, 1, 1)
                 else:
                     rowind_adj, colind_adj = _get_row_col(rowind, colind, nslices)
@@ -143,9 +178,14 @@ def _imshowfig(imgfile, nslices, labelfile=None, separate_figs=False):
                 ax.set_xticks([])
                 ax.set_yticks([])
                 if labelfile is not None:
-                    labeldata = np.squeeze(np.asarray(label.slicer[slicespec].dataobj), axis=(ind,))
+                    labeldata = np.squeeze(np.asarray(
+                        label.slicer[slicespec].dataobj),
+                                           axis=(ind, ))
                     for lvind, lv in enumerate(labelvals):
-                        ax.contour(labeldata == lv, levels=[0.5], colors=[COLORLIST[lvind]], linewidths=[0.5])
+                        ax.contour(labeldata == lv,
+                                   levels=[0.5],
+                                   colors=[COLORLIST[lvind]],
+                                   linewidths=[0.5])
                 if separate_figs:
                     fig_list_row.append(fig)
             if separate_figs:
@@ -175,11 +215,21 @@ def doublemap(func, iterable):
 
 
 def doublezip(iterable1, iterable2):
-    return [list(zip(rowleft, rowright)) for rowleft, rowright in zip(iterable1, iterable2)]
+    return [
+        list(zip(rowleft, rowright)) for rowleft,
+        rowright in zip(iterable1, iterable2)
+    ]
 
 
-def _imshow(imgfile, nslices, labelfile=None, outtype='svg', separate_figs=False):
-    fig = _imshowfig(imgfile, nslices, labelfile=labelfile, separate_figs=separate_figs)
+def _imshow(imgfile,
+            nslices,
+            labelfile=None,
+            outtype='svg',
+            separate_figs=False):
+    fig = _imshowfig(imgfile,
+                     nslices,
+                     labelfile=labelfile,
+                     separate_figs=separate_figs)
     if outtype == 'svg':
         func = _to_svg
     elif outtype == 'png':
@@ -194,7 +244,10 @@ def _imshow(imgfile, nslices, labelfile=None, outtype='svg', separate_figs=False
 
 
 def _set_svg_class(svgstr, classname):
-    return re.sub('<svg([^>]*)>', lambda m: '<svg{} class="{}">'.format(m.group(1), classname), svgstr, count=1)
+    return re.sub('<svg([^>]*)>',
+                  lambda m: '<svg{} class="{}">'.format(m.group(1), classname),
+                  svgstr,
+                  count=1)
 
 
 def _dump(filename, str_):
@@ -208,7 +261,8 @@ def _load(filename):
 
 
 def _load_template(template):
-    env = jinja2.Environment(loader=jinja2.PackageLoader('PipelineQC', 'templates'))
+    env = jinja2.Environment(
+        loader=jinja2.PackageLoader('PipelineQC', 'templates'))
     return env.get_template(template)
 
 
@@ -218,8 +272,16 @@ def _render(out_file, template, data):
     _dump(out_file, rend)
 
 
-def _single_opt_contours(name, image, out_file, nslices=7, label=None, form=True, relative_dir=None):
-    out = {'name': name, 'form': form, 'name_no_spaces': name.replace(' ', '_')}
+def _single_opt_contours(name,
+                         image,
+                         out_file,
+                         nslices=7,
+                         label=None,
+                         form=True,
+                         relative_dir=None):
+    out = {
+        'name': name, 'form': form, 'name_no_spaces': name.replace(' ', '_')
+    }
     out['svg'] = _imshow(image, nslices, labelfile=label, separate_figs=True)
     out['filename'] = str(image)
     out['formfile'] = 'form_simple.tpl'
@@ -228,7 +290,8 @@ def _single_opt_contours(name, image, out_file, nslices=7, label=None, form=True
     if relative_dir is not None:
         out['filename'] = os.path.relpath(out['filename'], relative_dir)
         if label is not None:
-            out['labelfilename'] = os.path.relpath(out['labelfilename'], relative_dir)
+            out['labelfilename'] = os.path.relpath(out['labelfilename'],
+                                                   relative_dir)
     _render(out_file, 'single.tpl', out)
 
 
@@ -250,14 +313,31 @@ def single(name, image, out_file, nslices=7, form=True, relative_dir=None):
     :type relative_dir: path-like object
     """
     if image is None:
-        out = {'name': name, 'form': form, 'formfile': 'form_simple.tpl', 'name_no_spaces': name.replace(' ', '_')}
+        out = {
+            'name': name,
+            'form': form,
+            'formfile': 'form_simple.tpl',
+            'name_no_spaces': name.replace(' ', '_')
+        }
         out['errormessage'] = 'No image file for this reportlet'
         _render(out_file, 'single.tpl', out)
     else:
-        _single_opt_contours(name, image, out_file, nslices=nslices, form=form, relative_dir=relative_dir)
+        _single_opt_contours(name,
+                             image,
+                             out_file,
+                             nslices=nslices,
+                             form=form,
+                             relative_dir=relative_dir)
 
 
-def compare(name1, image1, name2, image2, out_file, nslices=7, form=True, relative_dir=None):
+def compare(name1,
+            image1,
+            name2,
+            image2,
+            out_file,
+            nslices=7,
+            form=True,
+            relative_dir=None):
     """Write an html file to :py:obj:`out_file` comparing :py:obj:`image1`
     with :py:obj:`image2` with :py:obj:`nslices` slices in all three axial planes
 
@@ -279,10 +359,18 @@ def compare(name1, image1, name2, image2, out_file, nslices=7, form=True, relati
     :type relative_dir: path-like object
     """
 
-    out = {'name1': name1, 'name2': name2,
-           'form': form,
-           'formfile': 'form_simple.tpl',
-           'name_no_spaces': '_'.join([nametmp.replace(' ', '_') for nametmp in [name1, name2]])}
+    out = {
+        'name1':
+        name1,
+        'name2':
+        name2,
+        'form':
+        form,
+        'formfile':
+        'form_simple.tpl',
+        'name_no_spaces':
+        '_'.join([nametmp.replace(' ', '_') for nametmp in [name1, name2]])
+    }
 
     if image1 is None or image2 is None:
         errormessages = []
@@ -290,7 +378,8 @@ def compare(name1, image1, name2, image2, out_file, nslices=7, form=True, relati
             errormessages.append('image1')
         if image2 is None:
             errormessages.append('image2')
-        out['errormessage'] = ' and '.join(errormessages) + ' not specified for this reportlet.'
+        out['errormessage'] = ' and '.join(
+            errormessages) + ' not specified for this reportlet.'
     else:
         # https://stackoverflow.com/questions/38083555/using-pathlibs-relative-to-for-directories-on-the-same-level
         if relative_dir is not None:
@@ -303,13 +392,21 @@ def compare(name1, image1, name2, image2, out_file, nslices=7, form=True, relati
         svg1list = _imshow(image1, nslices, separate_figs=True)
         svg2list = _imshow(image2, nslices, separate_figs=True)
 
-        svg1 = doublemap(lambda svgsingle: _set_svg_class(svgsingle, 'first'), svg1list)
-        svg2 = doublemap(lambda svgsingle: _set_svg_class(svgsingle, 'second'), svg2list)
+        svg1 = doublemap(lambda svgsingle: _set_svg_class(svgsingle, 'first'),
+                         svg1list)
+        svg2 = doublemap(lambda svgsingle: _set_svg_class(svgsingle, 'second'),
+                         svg2list)
         out['svg'] = doublezip(svg1, svg2)
     _render(out_file, 'compare.tpl', out)
 
 
-def contours(name, image, label, out_file, nslices=7, form=True, relative_dir=None):
+def contours(name,
+             image,
+             label,
+             out_file,
+             nslices=7,
+             form=True,
+             relative_dir=None):
     """Write an html file to :py:obj:`out_file` showing the :py:obj:`image`
     with :py:obj:`nslices` slices in all three axial planes. Include contour
     lines outlining the areas defined by :py:obj:`labels`.
@@ -330,16 +427,28 @@ def contours(name, image, label, out_file, nslices=7, form=True, relative_dir=No
     :type relative_dir: path-like object
     """
     if image is None or label is None:
-        out = {'name': name, 'form': form, 'formfile': 'form_simple.tpl', 'name_no_spaces': name.replace(' ', '_')}
+        out = {
+            'name': name,
+            'form': form,
+            'formfile': 'form_simple.tpl',
+            'name_no_spaces': name.replace(' ', '_')
+        }
         errormessages = []
         if image is None:
             errormessages.append('image')
         if label is None:
             errormessages.append('label')
-        out['errormessage'] = ' and '.join(errormessages) + ' not specified for this reportlet'
+        out['errormessage'] = ' and '.join(
+            errormessages) + ' not specified for this reportlet'
         _render(out_file, 'single.tpl', out)
     else:
-        _single_opt_contours(name, image, out_file, nslices=nslices, label=label, form=form, relative_dir=relative_dir)
+        _single_opt_contours(name,
+                             image,
+                             out_file,
+                             nslices=nslices,
+                             label=label,
+                             form=form,
+                             relative_dir=relative_dir)
 
 
 def _str2int(s):
@@ -362,7 +471,12 @@ def _read_dists(distfile):
     return dists
 
 
-def distributions(name, distfile, out_file, labelfile, form=True, relative_dir=None):
+def distributions(name,
+                  distfile,
+                  out_file,
+                  labelfile,
+                  form=True,
+                  relative_dir=None):
     """Write an html file to :py:obj:`out_file` showing the distributions
     defined in :py:obj:`distfile`.
 
@@ -383,17 +497,20 @@ def distributions(name, distfile, out_file, labelfile, form=True, relative_dir=N
     :param relative_dir: Create links to filenames relative to this directory
     :type relative_dir: path-like object
     """
-    out = {'name': name,
-           'name_no_spaces': name.replace(' ', '_'),
-           'form': form,
-           'formfile': 'form_simple.tpl'}
+    out = {
+        'name': name,
+        'name_no_spaces': name.replace(' ', '_'),
+        'form': form,
+        'formfile': 'form_simple.tpl'
+    }
     if distfile is None or labelfile is None:
         errormessages = []
         if distfile is None:
             errormessages.append('distfile')
         if labelfile is None:
             errormessages.append('labelfile')
-        out['errormessage'] = ' and '.join(errormessages) + ' not specified for this reportlet.'
+        out['errormessage'] = ' and '.join(
+            errormessages) + ' not specified for this reportlet.'
     else:
         labelmap = utils.labels2dict(utils.read_labels(labelfile), 'name')
         dists = _read_dists(distfile)
@@ -401,8 +518,10 @@ def distributions(name, distfile, out_file, labelfile, form=True, relative_dir=N
         out['filename'] = str(distfile)
         out['labelfilename'] = str(labelfile)
         if relative_dir is not None:
-            out['filename'] = str(os.path.relpath(out['filename'], relative_dir))
-            out['labelfilename'] = str(os.path.relpath(out['labelfilename'], relative_dir))
+            out['filename'] = str(
+                os.path.relpath(out['filename'], relative_dir))
+            out['labelfilename'] = str(
+                os.path.relpath(out['labelfilename'], relative_dir))
     _render(out_file, 'plot.tpl', out)
 
 
@@ -434,9 +553,9 @@ def crash(name, crashfiles, out_file, relative_dir=None):
     :param relative_dir: Create links to filenames relative to this directory
     :type relative_dir: path-like object
     """
-    out = {'name': name,
-           'name_no_spaces': name.replace(' ', '_'),
-           'crashes': []}
+    out = {
+        'name': name, 'name_no_spaces': name.replace(' ', '_'), 'crashes': []
+    }
 
     for cf in sorted(crashfiles):
         tmp = {}
@@ -492,10 +611,12 @@ def rating(name, radio, checkbox, text, out_file):
        rating('Rating', radio, checkbox, text, 'out.html')
 
     """
-    out = {'name': deepcopy(name),
-           'radio': deepcopy(radio),
-           'checkbox': deepcopy(checkbox),
-           'text': deepcopy(text)}
+    out = {
+        'name': deepcopy(name),
+        'radio': deepcopy(radio),
+        'checkbox': deepcopy(checkbox),
+        'text': deepcopy(text)
+    }
     for k in ['radio', 'checkbox', 'text']:
         out[k]['name_no_spaces'] = out[k]['name'].replace(' ', '_')
         out[k]['name_'] = out[k]['name']
@@ -506,7 +627,13 @@ def rating(name, radio, checkbox, text, out_file):
     _render(out_file, 'rating.tpl', out)
 
 
-def assemble(out_file, in_files, title, form=True, prev=None, next_=None, relative_dir=None):
+def assemble(out_file,
+             in_files,
+             title,
+             form=True,
+             prev=None,
+             next_=None,
+             relative_dir=None):
     """combine multiple html files into one file
 
     :param out_file: output html file
@@ -518,7 +645,8 @@ def assemble(out_file, in_files, title, form=True, prev=None, next_=None, relati
     :param form: inputs contain QC forms
     :type form: bool
     """
-    env = jinja2.Environment(loader=jinja2.PackageLoader('PipelineQC', 'templates'))
+    env = jinja2.Environment(
+        loader=jinja2.PackageLoader('PipelineQC', 'templates'))
     template = env.get_template('base.tpl')
     body = '\n'.join((_load(in_f) for in_f in in_files))
     params = {'body': body, 'title': title, 'form': form}
@@ -542,7 +670,8 @@ def index(out_file, in_files):
     :param in_file: list of html files to link to from out_file
     :type in_file: list of path-like object
     """
-    env = jinja2.Environment(loader=jinja2.PackageLoader('PipelineQC', 'templates'))
+    env = jinja2.Environment(
+        loader=jinja2.PackageLoader('PipelineQC', 'templates'))
     template = env.get_template('index.tpl')
     out = template.render({'urls': in_files})
     _dump(out_file, out)

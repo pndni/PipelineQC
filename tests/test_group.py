@@ -9,8 +9,15 @@ def test_make_tsv(tmp_path):
     d2 = {'title': '2', 'a': '4', 'c': '6'}
     (tmp_path / 'd1.json').write_text(json.dumps(d1))
     (tmp_path / 'd2.json').write_text(json.dumps(d2))
-    make_tsv([(tmp_path / 'd1.json'), (tmp_path / 'd2.json')], (tmp_path / 'out.tsv'))
-    subprocess.check_call(['PipelineQC', 'combine', str(tmp_path / 'out2.tsv'), str(tmp_path / 'd1.json'), str(tmp_path / 'd2.json')])
+    make_tsv([(tmp_path / 'd1.json'), (tmp_path / 'd2.json')],
+             (tmp_path / 'out.tsv'))
+    subprocess.check_call([
+        'PipelineQC',
+        'combine',
+        str(tmp_path / 'out2.tsv'),
+        str(tmp_path / 'd1.json'),
+        str(tmp_path / 'd2.json')
+    ])
     for outname in ['out.tsv', 'out2.tsv']:
         with open(tmp_path / outname, 'r') as f:
             reader = csv.DictReader(f, delimiter='\t')

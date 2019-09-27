@@ -18,7 +18,9 @@ def load_config(conffile):
     else:
         with open(conffile, 'r') as fconf:
             conf = json.load(fconf)
-    schema = json.loads(Path(resource_filename('PipelineQC', 'schema/config.json')).read_text())
+    schema = json.loads(
+        Path(resource_filename('PipelineQC',
+                               'schema/config.json')).read_text())
     jsonschema.validate(conf, schema)
     return conf
 
@@ -41,5 +43,7 @@ def format_output(conf, page_key):
         m = re.search(pattern, outfmt)
     outfmt = outfmt.format(**pars)
     if ']' in outfmt or '[' in outfmt:
-        raise InvalidFormatError('Formatted string still contained "]" or "[", indicating a bad template')
+        raise InvalidFormatError(
+            'Formatted string still contained "]" or "[", indicating a bad template'
+        )
     return outfmt

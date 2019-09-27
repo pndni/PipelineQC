@@ -17,9 +17,16 @@ class InvalidReportletTypeError(Exception):
     pass
 
 
-def report_workflow(page_dict, page_key, conf, global_dict, out_file, next_=None, prev=None):
+def report_workflow(page_dict,
+                    page_key,
+                    conf,
+                    global_dict,
+                    out_file,
+                    next_=None,
+                    prev=None):
     out_file.parent.mkdir(exist_ok=True, parents=True)
-    title = '_'.join((f'{k}-{v}' for k, v in zip(conf['page_keys'], page_key) if v is not None))
+    title = '_'.join((f'{k}-{v}' for k,
+                      v in zip(conf['page_keys'], page_key) if v is not None))
     wf = pe.Workflow('page_' + title)
     reportlets = pe.Node(Merge(len(conf['reportlets'])), 'reportlets')
     inlineform = False
@@ -41,19 +48,32 @@ def report_workflow(page_dict, page_key, conf, global_dict, out_file, next_=None
             node = pe.Node(Rating(), f'rating{reportletnum}')
             rating = True
         else:
-            raise InvalidReportletTypeError(f'{rpspec["type"]} is not a recognized reportlet')
+            raise InvalidReportletTypeError(
+                f'{rpspec["type"]} is not a recognized reportlet')
         for rpkey, rpval in rpspec.items():
             if rpkey == 'type':
                 continue
-            elif rpkey in ['image', 'image1', 'image2', 'labelimage', 'distsfile', 'labelfile', 'crashfiles']:
+            elif rpkey in [
+                    'image',
+                    'image1',
+                    'image2',
+                    'labelimage',
+                    'distsfile',
+                    'labelfile',
+                    'crashfiles'
+            ]:
                 if conf['files'][rpval].get('allow_multiple', False):
                     no_entry_val = []
                 else:
                     no_entry_val = None
                 if conf['files'][rpval].get('global', False):
-                    setattr(node.inputs, rpkey, global_dict.get(rpval, no_entry_val))
+                    setattr(node.inputs,
+                            rpkey,
+                            global_dict.get(rpval, no_entry_val))
                 else:
-                    setattr(node.inputs, rpkey, page_dict.get(rpval, no_entry_val))
+                    setattr(node.inputs,
+                            rpkey,
+                            page_dict.get(rpval, no_entry_val))
             else:
                 setattr(node.inputs, rpkey, rpval)
         if rpspec['type'] != 'rating':
@@ -82,13 +102,21 @@ def all_workflow(file_dict, output_dir, conf):
     page_key_list = list(file_dict.keys())
     page_key_list.pop(page_key_list.index('global'))
     page_key_list.sort(key=_sort_key)
-    out_files = {page_key: Path(output_dir).resolve() / format_output(conf, page_key)
-                 for page_key in page_key_list}
+    out_files = {
+        page_key: Path(output_dir).resolve() / format_output(conf, page_key)
+        for page_key in page_key_list
+    }
     for i, page_key in enumerate(page_key_list, start=0):
-        next_ = out_files[page_key_list[i + 1]] if i + 1 < len(page_key_list) else None
+        next_ = out_files[page_key_list[
+            i + 1]] if i + 1 < len(page_key_list) else None
         prev = out_files[page_key_list[i - 1]] if i > 0 else None
-        page_wf = report_workflow(file_dict[page_key], page_key, conf, file_dict['global'],
-                                  out_files[page_key], next_=next_, prev=prev)
+        page_wf = report_workflow(file_dict[page_key],
+                                  page_key,
+                                  conf,
+                                  file_dict['global'],
+                                  out_files[page_key],
+                                  next_=next_,
+                                  prev=prev)
         wf.connect(page_wf, 'assemble.out_file', merge_pages, f'in{i + 1}')
     index_pages = pe.Node(IndexReport(), 'index_pages')
     out_file = Path(output_dir).resolve() / conf['index_filename']

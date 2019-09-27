@@ -51,8 +51,11 @@ def test_distributions_dne(tmp_path):
 def images(tmp_path):
     image1 = str(tmp_path / 'image1.nii')
     image2 = str(tmp_path / 'image2.nii')
-    nibabel.Nifti1Image(np.array([[[1, 2, 3, 4]]]).reshape(1, 2, 2), np.eye(4)).to_filename(image1)
-    nibabel.Nifti1Image(np.arange(8).reshape(2, 2, 2), np.eye(4)).to_filename(image2)
+    nibabel.Nifti1Image(
+        np.array([[[1, 2, 3, 4]]]).reshape(1, 2, 2),
+        np.eye(4)).to_filename(image1)
+    nibabel.Nifti1Image(np.arange(8).reshape(2, 2, 2),
+                        np.eye(4)).to_filename(image2)
     image3 = None
     return tmp_path, image1, image2, image3
 
@@ -74,9 +77,24 @@ def test_contour(images):
 def test_compare(images):
     tmp_path, image1, image2, image3 = images
     outfile = tmp_path / 'out.txt'
-    reportlets.compare('testcompare', image1, 'testcompare2', image2, outfile, nslices=1)
-    reportlets.compare('testcompare', image3, 'testcompare2', image2, outfile, nslices=1)
-    reportlets.compare('testcompare', image2, 'testcompare2', image3, outfile, nslices=1)
+    reportlets.compare('testcompare',
+                       image1,
+                       'testcompare2',
+                       image2,
+                       outfile,
+                       nslices=1)
+    reportlets.compare('testcompare',
+                       image3,
+                       'testcompare2',
+                       image2,
+                       outfile,
+                       nslices=1)
+    reportlets.compare('testcompare',
+                       image2,
+                       'testcompare2',
+                       image3,
+                       outfile,
+                       nslices=1)
 
 
 def test_crash(tmp_path):
@@ -84,7 +102,10 @@ def test_crash(tmp_path):
     traceback = ['test\n', 'string\n']
     pklfile = tmp_path / 'test.pklz'
     outfile = tmp_path / 'out.txt'
-    nputils.filemanip.savepkl(str(pklfile), {'node': fakenode, 'traceback': traceback}, versioning=True)
+    nputils.filemanip.savepkl(str(pklfile), {
+        'node': fakenode, 'traceback': traceback
+    },
+                              versioning=True)
     reportlets.crash('testcrash', [str(pklfile)], str(outfile))
     outstr = outfile.read_text()
     assert 'class="crash"' in outstr
@@ -97,10 +118,12 @@ def test_crash(tmp_path):
 
 def test_doublemap():
     mylist = [[1, 2, 3], [4, 5]]
-    assert reportlets.doublemap(lambda x: 2 * x, mylist) == [[2, 4, 6], [8, 10]]
+    assert reportlets.doublemap(lambda x: 2 * x, mylist) == [[2, 4, 6],
+                                                             [8, 10]]
 
 
 def test_doublezip():
     mylist = [[1, 2, 3], [4, 5]]
     mylist2 = [[6, 7, 8], [9, 10]]
-    assert reportlets.doublezip(mylist, mylist2) == [[(1, 6), (2, 7), (3, 8)], [(4, 9), (5, 10)]]
+    assert reportlets.doublezip(mylist, mylist2) == [[(1, 6), (2, 7), (3, 8)],
+                                                     [(4, 9), (5, 10)]]
