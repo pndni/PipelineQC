@@ -11,11 +11,13 @@ class InvalidFormatError(Exception):
 
 
 def load_config(conffile):
-    if not isinstance(conffile, io.TextIOBase):
+    if isinstance(conffile, dict):
+        conf = conffile
+    elif isinstance(conffile, io.TextIOBase):
+        conf = json.load(conffile)
+    else:
         with open(conffile, 'r') as fconf:
             conf = json.load(fconf)
-    else:
-        conf = json.load(conffile)
     schema = json.loads(Path(resource_filename('PipelineQC', 'schema/config.json')).read_text())
     jsonschema.validate(conf, schema)
     return conf

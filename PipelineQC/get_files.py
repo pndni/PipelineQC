@@ -76,7 +76,7 @@ def _search_types(conf):
     return bids_p, re_p
 
 
-def get_files(dirs, conf):
+def get_files(dirs, conf, bids_validate=False):
     out = defaultdict(dict)
     bids_search, re_search = _search_types(conf)
     matched_files = set()
@@ -98,7 +98,7 @@ def get_files(dirs, conf):
                             raise MultipleFilesFoundError('Multiple files found for {} with key {}'.format(parse_result.name, parse_result.page_key))
                         out[parse_result.page_key][parse_result.name] = fname
     if bids_search:
-        bids_layouts = _get_bids_layouts(dirs, conf)
+        bids_layouts = _get_bids_layouts(dirs, conf, validate=bids_validate)
         for file_key, file_params in conf['files'].items():
             pattern = file_params['pattern']
             if not isinstance(conf['patterns'][pattern], list):
@@ -119,6 +119,8 @@ def get_files(dirs, conf):
                         out[page_key][file_key].append()
                     else:
                         if file_key in out[page_key]:
+                            import pdb
+                            pdb.set_trace()
                             raise MultipleFilesFoundError('Multiple files found for {} with key {}'.format(file_key, page_key))
                         out[page_key][file_key] = fnamefull
     out = dict(out)
@@ -133,10 +135,10 @@ def _str_or_none(x):
     return str(x)
 
 
-def _get_bids_layouts(dirs, conf):
+def _get_bids_layouts(dirs, conf, validate=False):
     bids_layouts = {}
     for pattern_key, pattern_val in conf['patterns'].items():
         if isinstance(pattern_val, str):
             continue
-        bids_layouts[pattern_key] = [layout.BIDSLayout(dir_, config=pattern_val, validate=False) for dir_ in dirs]
+        bids_layouts[pattern_key] = [layout.BIDSLayout(dir_, config=pattern_val, validate=validate) for dir_ in dirs]
     return bids_layouts

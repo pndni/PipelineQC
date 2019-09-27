@@ -8,9 +8,9 @@ import argparse
 
 
 def qc_all(dirs, output_dir, configfile, plugin='Linear', plugin_args=None,
-           working_directory=None):
+           working_directory=None, bids_validate=False):
     conf = load_config(configfile)
-    filedict = get_files(dirs, conf)
+    filedict = get_files(dirs, conf, bids_validate=bids_validate)
     if len(filedict) == 1 and len(filedict['global']) == 0:
         raise RuntimeError('No files found!')
     wf = all_workflow(filedict, output_dir, conf)
@@ -39,6 +39,8 @@ def get_parser():
                          help='Passed directly to the nipype workflow run method')
     qcpages.add_argument('--working_directory', type=Path,
                          help='Working directory for nipype workflow (i.e., "base_dir")')
+    qcpages.add_argument('--validate_bids', action='store_true',
+                         help='If using bids, whether to validate the bids directories')
     combine = subparsers.add_parser('combine', help='Combine json QC forms downloaded from QC pages into a TSV file.')
     combine.set_defaults(func=run_combine)
     combine.add_argument('output_file', type=Path,
@@ -64,7 +66,7 @@ def run():
 
 def run_qcpages(args):
     qc_all(args.search_dirs, args.output_dir, args.config_file, plugin=args.nipype_plugin,
-           working_directory=args.working_directory)
+           working_directory=args.working_directory, bids_validate=args.validate_bids)
 
 
 def run_combine(args):
