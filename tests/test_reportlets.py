@@ -1,10 +1,11 @@
-from PipelineQC import reportlets
+from PipelineQC import reportlets, interfaces
 import nibabel
 import numpy as np
 import pytest
 from nipype import utils as nputils
 from nipype.pipeline import engine as pe
 from nipype.interfaces import IdentityInterface
+from pathlib import Path
 
 
 def test_calc_nrow_ncol():
@@ -38,6 +39,10 @@ def test_distributions(tmp_path):
     labelfile = tmp_path / 'labels.tsv'
     labelfile.write_text('index\tname\n1\tGM\n')
     reportlets.distributions('testdist', distfile, outfile, labelfile)
+    i = interfaces.Distributions(name='testdist',
+                                 distsfile=distfile,
+                                 labelfile=labelfile)
+    i.run()
 
 
 def test_distributions_dne(tmp_path):
@@ -65,6 +70,8 @@ def test_single(images):
     outfile = tmp_path / 'out.txt'
     reportlets.single('testsingle', image1, outfile, nslices=1)
     reportlets.single('testsingle', image3, outfile, nslices=1)
+    i = interfaces.Single(name='testsingle', image=image1, nslices=1)
+    i.run()
 
 
 def test_contour(images):
@@ -72,6 +79,11 @@ def test_contour(images):
     outfile = tmp_path / 'out.txt'
     reportlets.contours('testcontours', image3, image2, outfile, nslices=1)
     reportlets.contours('testcontours', image2, image2, outfile, nslices=1)
+    i = interfaces.Contour(name='testcontours',
+                           image=image3,
+                           labelimage=image2,
+                           nslices=1)
+    i.run()
 
 
 def test_compare(images):
@@ -95,6 +107,12 @@ def test_compare(images):
                        image3,
                        outfile,
                        nslices=1)
+    i = interfaces.Compare(name1='testcompare',
+                           image1=image1,
+                           name2='testcompare2',
+                           image2=image2,
+                           nslices=1)
+    i.run()
 
 
 def test_crash(tmp_path):
@@ -114,6 +132,11 @@ def test_crash(tmp_path):
     outstr = outfile.read_text()
     assert 'class="crash"' not in outstr
     assert 'class="success"' in outstr
+    i = interfaces.Crash(name='testcrash', crashfiles=[str(pklfile)])
+    r = i.run()
+    outstr = Path(r.outputs.out_file).read_text()
+    assert 'class="crash"' in outstr
+    assert 'class="success"' not in outstr
 
 
 def test_doublemap():

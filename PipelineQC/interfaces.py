@@ -3,7 +3,7 @@ from nipype.interfaces.base import (File,
                                     TraitedSpec,
                                     traits,
                                     isdefined,
-                                    BaseInterface,
+                                    SimpleInterface,
                                     BaseInterfaceInputSpec,
                                     InputMultiPath)
 import os
@@ -31,11 +31,13 @@ class CompareOutputSpec(TraitedSpec):
     out_file = File(exists=True)
 
 
-class Compare(BaseInterface):
+class Compare(SimpleInterface):
     input_spec = CompareInputSpec
     output_spec = CompareOutputSpec
 
     def _run_interface(self, runtime):
+        out_file = str(Path('compare_{}_{}.txt'.format(self.inputs.name1,
+                                                       self.inputs.name2)).resolve())
         if isdefined(self.inputs.relative_dir):
             relative_dir = self.inputs.relative_dir
         else:
@@ -44,21 +46,12 @@ class Compare(BaseInterface):
                            self.inputs.image1,
                            self.inputs.name2,
                            self.inputs.image2,
-                           self._gen_outfilename(),
+                           out_file,
                            nslices=self.inputs.nslices,
                            form=self.inputs.qcform,
                            relative_dir=relative_dir)
+        self._results['out_file'] = out_file
         return runtime
-
-    def _gen_outfilename(self):
-        p = Path('compare_{}_{}.txt'.format(self.inputs.name1,
-                                            self.inputs.name2)).resolve()
-        return str(p)
-
-    def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = self._gen_outfilename()
-        return outputs
 
 
 class ContourInputSpec(BaseInterfaceInputSpec):
@@ -83,11 +76,12 @@ class ContourOutputSpec(TraitedSpec):
     out_file = File(exists=True)
 
 
-class Contour(BaseInterface):
+class Contour(SimpleInterface):
     input_spec = ContourInputSpec
     output_spec = ContourOutputSpec
 
     def _run_interface(self, runtime):
+        out_file = str(Path('contour_{}.txt'.format(self.inputs.name)).resolve())
         if isdefined(self.inputs.relative_dir):
             relative_dir = self.inputs.relative_dir
         else:
@@ -95,20 +89,12 @@ class Contour(BaseInterface):
         reportlets.contours(self.inputs.name,
                             self.inputs.image,
                             self.inputs.labelimage,
-                            self._gen_outfilename(),
+                            out_file,
                             nslices=self.inputs.nslices,
                             form=self.inputs.qcform,
                             relative_dir=relative_dir)
+        self._results['out_file'] = out_file
         return runtime
-
-    def _gen_outfilename(self):
-        p = Path('contour_{}.txt'.format(self.inputs.name)).resolve()
-        return str(p)
-
-    def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = self._gen_outfilename()
-        return outputs
 
 
 class SingleInputSpec(BaseInterfaceInputSpec):
@@ -128,31 +114,24 @@ class SingleOutputSpec(TraitedSpec):
     out_file = File(exists=True)
 
 
-class Single(BaseInterface):
+class Single(SimpleInterface):
     input_spec = SingleInputSpec
     output_spec = SingleOutputSpec
 
     def _run_interface(self, runtime):
+        out_file = str(Path('single_{}.txt'.format(self.inputs.name)).resolve())
         if isdefined(self.inputs.relative_dir):
             relative_dir = self.inputs.relative_dir
         else:
             relative_dir = None
         reportlets.single(self.inputs.name,
                           self.inputs.image,
-                          self._gen_outfilename(),
+                          out_file,
                           nslices=self.inputs.nslices,
                           form=self.inputs.qcform,
                           relative_dir=relative_dir)
+        self._results['out_file'] = out_file
         return runtime
-
-    def _gen_outfilename(self):
-        p = Path('single_{}.txt'.format(self.inputs.name)).resolve()
-        return str(p)
-
-    def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = self._gen_outfilename()
-        return outputs
 
 
 class DistributionsInputSpec(BaseInterfaceInputSpec):
@@ -184,31 +163,24 @@ class DistributionsOutputSpec(TraitedSpec):
     out_file = File(exists=True)
 
 
-class Distributions(BaseInterface):
+class Distributions(SimpleInterface):
     input_spec = DistributionsInputSpec
     output_spec = DistributionsOutputSpec
 
     def _run_interface(self, runtime):
+        out_file = str(Path('dists_{}.txt'.format(self.inputs.name)).resolve())
         if isdefined(self.inputs.relative_dir):
             relative_dir = self.inputs.relative_dir
         else:
             relative_dir = None
         reportlets.distributions(self.inputs.name,
                                  self.inputs.distsfile,
-                                 self._gen_outfilename(),
+                                 out_file,
                                  self.inputs.labelfile,
                                  form=self.inputs.qcform,
                                  relative_dir=relative_dir)
+        self._results['out_file'] = out_file
         return runtime
-
-    def _gen_outfilename(self):
-        p = Path('dists_{}.txt'.format(self.inputs.name)).resolve()
-        return str(p)
-
-    def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = self._gen_outfilename()
-        return outputs
 
 
 class CrashInputSpec(BaseInterfaceInputSpec):
@@ -224,29 +196,22 @@ class CrashOutputSpec(TraitedSpec):
     out_file = File(exists=True)
 
 
-class Crash(BaseInterface):
+class Crash(SimpleInterface):
     input_spec = CrashInputSpec
     output_spec = CrashOutputSpec
 
     def _run_interface(self, runtime):
+        out_file = str(Path('crash_{}.txt'.format(self.inputs.name)).resolve())
         if isdefined(self.inputs.relative_dir):
             relative_dir = self.inputs.relative_dir
         else:
             relative_dir = None
         reportlets.crash(self.inputs.name,
                          self.inputs.crashfiles,
-                         self._gen_outfilename(),
+                         out_file,
                          relative_dir=relative_dir)
+        self._results['out_file'] = out_file
         return runtime
-
-    def _gen_outfilename(self):
-        p = Path('crash_{}.txt'.format(self.inputs.name)).resolve()
-        return str(p)
-
-    def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = self._gen_outfilename()
-        return outputs
 
 
 class RatingInputSpec(BaseInterfaceInputSpec):
@@ -275,26 +240,19 @@ class RatingOutputSpec(TraitedSpec):
     out_file = File(exists=True)
 
 
-class Rating(BaseInterface):
+class Rating(SimpleInterface):
     input_spec = RatingInputSpec
     output_spec = RatingOutputSpec
 
     def _run_interface(self, runtime):
+        out_file = str(Path('rating_{}.txt'.format(self.inputs.name)).resolve())
         reportlets.rating(self.inputs.name,
                           self.inputs.radio,
                           self.inputs.checkbox,
                           self.inputs.text,
-                          self._gen_outfilename())
+                          out_file)
+        self._results['out_file'] = out_file
         return runtime
-
-    def _gen_outfilename(self):
-        p = Path('rating_{}.txt'.format(self.inputs.name)).resolve()
-        return str(p)
-
-    def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = self._gen_outfilename()
-        return outputs
 
 
 class AssembleReportInputSpec(BaseInterfaceInputSpec):
@@ -317,35 +275,28 @@ class AssembleReportOutputSpec(TraitedSpec):
     out_file = File(exists=True)
 
 
-class AssembleReport(BaseInterface):
+class AssembleReport(SimpleInterface):
     input_spec = AssembleReportInputSpec
     output_spec = AssembleReportOutputSpec
 
     def _run_interface(self, runtime):
+        if isdefined(self.inputs.out_file):
+            out_file = str(Path(self.inputs.out_file).resolve())
+        else:
+            out_file = str(Path('report.html').resolve())
         next_ = self.inputs.next_ if isdefined(self.inputs.next_) else None
         prev = self.inputs.prev if isdefined(self.inputs.prev) else None
         reldir = self.inputs.relative_dir if isdefined(
             self.inputs.relative_dir) else None
-        reportlets.assemble(self._gen_outfilename(),
+        reportlets.assemble(out_file,
                             self.inputs.in_files,
                             self.inputs.title,
                             form=self.inputs.qcform,
                             next_=next_,
                             prev=prev,
                             relative_dir=reldir)
+        self._results['out_file'] = out_file
         return runtime
-
-    def _gen_outfilename(self):
-        if isdefined(self.inputs.out_file):
-            p = Path(self.inputs.out_file).resolve()
-        else:
-            p = Path('report.html').resolve()
-        return str(p)
-
-    def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = self._gen_outfilename()
-        return outputs
 
 
 class IndexReportInputSpec(BaseInterfaceInputSpec):
@@ -359,7 +310,7 @@ class IndexReportOutputSpec(TraitedSpec):
     out_file = File(exists=True)
 
 
-class IndexReport(BaseInterface):
+class IndexReport(SimpleInterface):
     input_spec = IndexReportInputSpec
     output_spec = IndexReportOutputSpec
 
@@ -371,9 +322,5 @@ class IndexReport(BaseInterface):
             for in_file in self.inputs.in_files
         ]
         reportlets.index(self.inputs.out_file, in_files)
+        self._results['out_file'] = self.inputs.out_file
         return runtime
-
-    def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = self.inputs.out_file
-        return outputs
