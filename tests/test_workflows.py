@@ -105,84 +105,64 @@ def test_all_wf(tmp_path, input_files_conf1):
             'relative_dir': str(tmp_path.resolve() / 'sub-1')
         },
         'report.page_sub-1_acq-10_rec-11_run-12.contour7': {
-            'name':
-            'Non-uniformity corrected',
-            'image':
-            str(infull[('1', '10', '11', '12', None)]['nu_bet']),
-            'labelimage':
-            str(infull[('1', '10', '11', '12', None)]['transformed_atlas']),
-            'nslices':
-            defaultnslices,
-            'qcform':
-            defaultqcform,
-            'relative_dir':
-            str(tmp_path.resolve() / 'sub-1')
+            'name': 'Non-uniformity corrected',
+            'image': str(infull[('1', '10', '11', '12', None)]['nu_bet']),
+            'labelimage': str(infull[('1', '10', '11', '12',
+                                      None)]['transformed_atlas']),
+            'nslices': defaultnslices,
+            'qcform': defaultqcform,
+            'relative_dir': str(tmp_path.resolve() / 'sub-1'),
+            'contour_width': 5
         },
         'report.page_sub-1_acq-10_rec-11_run-12.contour8': {
-            'name':
-            'Non-uniformity corrected',
-            'image':
-            str(infull[('1', '10', '11', '12', None)]['nu_bet']),
-            'labelimage':
-            str(infull[('1', '10', '11', '12', None)]['transformed_atlas']),
-            'nslices':
-            3,
-            'qcform':
-            defaultqcform,
-            'relative_dir':
-            str(tmp_path.resolve() / 'sub-1')
+            'name': 'Non-uniformity corrected',
+            'image': str(infull[('1', '10', '11', '12', None)]['nu_bet']),
+            'labelimage': str(infull[('1', '10', '11', '12',
+                                      None)]['transformed_atlas']),
+            'nslices': 3,
+            'qcform': defaultqcform,
+            'relative_dir': str(tmp_path.resolve() / 'sub-1'),
+            'contour_width': 5
         },
         'report.page_sub-1_acq-10_rec-11_run-12.contour9': {
-            'name':
-            'Non-uniformity corrected',
-            'image':
-            str(infull[('1', '10', '11', '12', None)]['nu_bet']),
-            'labelimage':
-            str(infull[('1', '10', '11', '12', None)]['transformed_atlas']),
-            'nslices':
-            defaultnslices,
-            'qcform':
-            False,
-            'relative_dir':
-            str(tmp_path.resolve() / 'sub-1')
+            'name': 'Non-uniformity corrected',
+            'image': str(infull[('1', '10', '11', '12', None)]['nu_bet']),
+            'labelimage': str(infull[('1', '10', '11', '12',
+                                      None)]['transformed_atlas']),
+            'nslices': defaultnslices,
+            'qcform': False,
+            'relative_dir': str(tmp_path.resolve() / 'sub-1'),
+            'contour_width': 5
         },
         'report.page_sub-1_acq-10_rec-11_run-12.distributions10': {
-            'name':
-            'features',
-            'distsfile':
-            str(infull[('1', '10', '11', '12', None)]['features']),
-            'labelfile':
-            str(infull[('1', '10', '11', '12', None)]['features_label']),
-            'qcform':
-            defaultqcform,
-            'relative_dir':
-            str(tmp_path.resolve() / 'sub-1')
+            'name': 'features',
+            'distsfile': str(infull[('1', '10', '11', '12',
+                                     None)]['features']),
+            'labelfile': str(infull[('1', '10', '11', '12',
+                                     None)]['features_label']),
+            'qcform': defaultqcform,
+            'relative_dir': str(tmp_path.resolve() / 'sub-1')
         },
         'report.page_sub-1_acq-10_rec-11_run-12.distributions11': {
-            'name':
-            'features',
-            'distsfile':
-            str(infull[('1', '10', '11', '12', None)]['features']),
-            'labelfile':
-            str(infull[('1', '10', '11', '12', None)]['features_label']),
-            'qcform':
-            False,
-            'relative_dir':
-            str(tmp_path.resolve() / 'sub-1')
+            'name': 'features',
+            'distsfile': str(infull[('1', '10', '11', '12',
+                                     None)]['features']),
+            'labelfile': str(infull[('1', '10', '11', '12',
+                                     None)]['features_label']),
+            'qcform': False,
+            'relative_dir': str(tmp_path.resolve() / 'sub-1')
         },
         'report.page_sub-1_acq-10_rec-11_run-12.crash12': {
-            'name':
-            'error',
-            'crashfiles':
-            [str(infull[('1', '10', '11', '12', None)]['crashfiles'])],
-            'relative_dir':
-            str(tmp_path.resolve() / 'sub-1')
+            'name': 'error',
+            'crashfiles': [
+                str(infull[('1', '10', '11', '12', None)]['crashfiles'])
+            ],
+            'relative_dir': str(tmp_path.resolve() / 'sub-1')
         },
         'report.page_sub-1_acq-10_rec-11_run-12.rating13': {
             'name': 'Rating',
             'radio': {
-                'name':
-                'Overall',
+                'name': 'Overall',
                 'options': [{
                     "name": "Reject", "value": 1
                 }, {
@@ -252,84 +232,64 @@ def test_all_wf(tmp_path, input_files_conf1):
             'relative_dir': str(tmp_path.resolve() / 'sub-2')
         },
         'report.page_sub-2_acq-10_rec-11_run-12.contour7': {
-            'name':
-            'Non-uniformity corrected',
-            'image':
-            str(infull[('2', '10', '11', '12', None)]['nu_bet']),
-            'labelimage':
-            str(infull[('2', '10', '11', '12', None)]['transformed_atlas']),
-            'nslices':
-            defaultnslices,
-            'qcform':
-            defaultqcform,
-            'relative_dir':
-            str(tmp_path.resolve() / 'sub-2')
+            'name': 'Non-uniformity corrected',
+            'image': str(infull[('2', '10', '11', '12', None)]['nu_bet']),
+            'labelimage': str(infull[('2', '10', '11', '12',
+                                      None)]['transformed_atlas']),
+            'nslices': defaultnslices,
+            'qcform': defaultqcform,
+            'relative_dir': str(tmp_path.resolve() / 'sub-2'),
+            'contour_width': 5
         },
         'report.page_sub-2_acq-10_rec-11_run-12.contour8': {
-            'name':
-            'Non-uniformity corrected',
-            'image':
-            str(infull[('2', '10', '11', '12', None)]['nu_bet']),
-            'labelimage':
-            str(infull[('2', '10', '11', '12', None)]['transformed_atlas']),
-            'nslices':
-            3,
-            'qcform':
-            defaultqcform,
-            'relative_dir':
-            str(tmp_path.resolve() / 'sub-2')
+            'name': 'Non-uniformity corrected',
+            'image': str(infull[('2', '10', '11', '12', None)]['nu_bet']),
+            'labelimage': str(infull[('2', '10', '11', '12',
+                                      None)]['transformed_atlas']),
+            'nslices': 3,
+            'qcform': defaultqcform,
+            'relative_dir': str(tmp_path.resolve() / 'sub-2'),
+            'contour_width': 5
         },
         'report.page_sub-2_acq-10_rec-11_run-12.contour9': {
-            'name':
-            'Non-uniformity corrected',
-            'image':
-            str(infull[('2', '10', '11', '12', None)]['nu_bet']),
-            'labelimage':
-            str(infull[('2', '10', '11', '12', None)]['transformed_atlas']),
-            'nslices':
-            defaultnslices,
-            'qcform':
-            False,
-            'relative_dir':
-            str(tmp_path.resolve() / 'sub-2')
+            'name': 'Non-uniformity corrected',
+            'image': str(infull[('2', '10', '11', '12', None)]['nu_bet']),
+            'labelimage': str(infull[('2', '10', '11', '12',
+                                      None)]['transformed_atlas']),
+            'nslices': defaultnslices,
+            'qcform': False,
+            'relative_dir': str(tmp_path.resolve() / 'sub-2'),
+            'contour_width': 5
         },
         'report.page_sub-2_acq-10_rec-11_run-12.distributions10': {
-            'name':
-            'features',
-            'distsfile':
-            str(infull[('2', '10', '11', '12', None)]['features']),
-            'labelfile':
-            str(infull[('2', '10', '11', '12', None)]['features_label']),
-            'qcform':
-            defaultqcform,
-            'relative_dir':
-            str(tmp_path.resolve() / 'sub-2')
+            'name': 'features',
+            'distsfile': str(infull[('2', '10', '11', '12',
+                                     None)]['features']),
+            'labelfile': str(infull[('2', '10', '11', '12',
+                                     None)]['features_label']),
+            'qcform': defaultqcform,
+            'relative_dir': str(tmp_path.resolve() / 'sub-2')
         },
         'report.page_sub-2_acq-10_rec-11_run-12.distributions11': {
-            'name':
-            'features',
-            'distsfile':
-            str(infull[('2', '10', '11', '12', None)]['features']),
-            'labelfile':
-            str(infull[('2', '10', '11', '12', None)]['features_label']),
-            'qcform':
-            False,
-            'relative_dir':
-            str(tmp_path.resolve() / 'sub-2')
+            'name': 'features',
+            'distsfile': str(infull[('2', '10', '11', '12',
+                                     None)]['features']),
+            'labelfile': str(infull[('2', '10', '11', '12',
+                                     None)]['features_label']),
+            'qcform': False,
+            'relative_dir': str(tmp_path.resolve() / 'sub-2')
         },
         'report.page_sub-2_acq-10_rec-11_run-12.crash12': {
-            'name':
-            'error',
-            'crashfiles':
-            [str(infull[('2', '10', '11', '12', None)]['crashfiles'])],
-            'relative_dir':
-            str(tmp_path.resolve() / 'sub-2')
+            'name': 'error',
+            'crashfiles': [
+                str(infull[('2', '10', '11', '12', None)]['crashfiles'])
+            ],
+            'relative_dir': str(tmp_path.resolve() / 'sub-2')
         },
         'report.page_sub-2_acq-10_rec-11_run-12.rating13': {
             'name': 'Rating',
             'radio': {
-                'name':
-                'Overall',
+                'name': 'Overall',
                 'options': [{
                     "name": "Reject", "value": 1
                 }, {
@@ -352,13 +312,17 @@ def test_all_wf(tmp_path, input_files_conf1):
         },
     }
 
+    settings = {'image_width': 2, 'image_height': 1.75}
+
     def callable(node, graph):
         if node.fullname in truth.keys():
-            node_traits = set(
-                node.inputs.trait_names()) - {'trait_added', 'trait_modified'}
+            node_traits = set(node.inputs.visible_traits())
             for k in set(truth[node.fullname].keys()):
                 assert getattr(node.inputs, k) == truth[node.fullname][k]
             for k in node_traits - set(truth[node.fullname].keys()):
-                assert not isdefined(getattr(node.inputs, k))
+                if k in settings:
+                    assert getattr(node.inputs, k) == settings[k]
+                else:
+                    assert not isdefined(getattr(node.inputs, k))
 
     wf.run(plugin='Debug', plugin_args={'callable': callable})

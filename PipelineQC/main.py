@@ -109,8 +109,8 @@ def run_combine(args):
 
 
 def run_image(args):
-    out = reportlets._imshow(args.image,
-                             args.nslices,
+    out = reportlets._imshow(imgfile=args.image,
+                             nslices=args.nslices,
                              labelfile=args.labelimage,
                              outtype=args.output_type)
     if args.output_type == 'svg':

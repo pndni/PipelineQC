@@ -17,8 +17,6 @@ from copy import deepcopy
 from pathlib import Path
 
 ORIENTATION = [[2, 1], [1, 1], [0, 1]]
-INDIVIDUAL_IMAGE_HEIGHT = 1.5
-MAXCOLS = 8
 PLOTSIZE = 5, 4
 
 # https://github.com/matplotlib/matplotlib/blob/master/lib/matplotlib/_cm.py
@@ -99,19 +97,50 @@ def _get_vlims(x):
     return 0.0, vals[ind]
 
 
-def _calc_nrows_ncols(nslices):
-    nrows_per_view = int(np.ceil(nslices / MAXCOLS))
-    return nrows_per_view * 3, min(nslices, MAXCOLS)
+def _calc_nrows_ncols(nslices, maxcols):
+    nrows_per_view = int(np.ceil(nslices / maxcols))
+    return nrows_per_view * 3, min(nslices, maxcols)
 
 
-def _get_row_col(viewnum, slicenum, nslices):
-    nrows_per_view = int(np.ceil(nslices / MAXCOLS))
-    row = viewnum * nrows_per_view + slicenum // MAXCOLS
-    col = slicenum % MAXCOLS
+def _get_row_col(viewnum, slicenum, nslices, maxcols):
+    nrows_per_view = int(np.ceil(nslices / maxcols))
+    row = viewnum * nrows_per_view + slicenum // maxcols
+    col = slicenum % maxcols
     return row, col
 
 
-def _imshowfig(imgfile, nslices, labelfile=None, separate_figs=False):
+def imshowfig(*,
+              imgfile,
+              nslices=7,
+              image_width=1.5,
+              image_height=1.5,
+              maxcols=8,
+              contour_width=1.5,
+              labelfile=None,
+              separate_figs=False):
+    """Create a figure (or nested list of figures) from imgfile
+
+    :param imgfile: Image file readable by nibabel
+    :type imgfile: path-like object
+    :param nslices: The number of slices per view
+    :type nslices: int
+    :param image_width: The width of each axes/image (in.)
+    :type image_width: float
+    :param image_height: The width of each axes/image (in.)
+    :type image_height: float
+    :param maxcols: The maximum number of columns
+                         (only when spearate_figs is False)
+    :type maxcols: int
+    :param contour_width: The width of contour lines (pts.)
+    :type contour_width: float
+    :param labelfile: Image file of labels readable by nibabel
+    :type labelfile: path-like object
+    :param separate_figs: Whether to create separate figures for
+                          each image
+    :type separate_figs: bool
+    :return: :py:obj:`matplotlib.figure.Figure` or a list of lists of
+             :py:obj:`matplotlib.figure.Figure`
+    """
     img = _load_and_orient(imgfile)
     if labelfile is not None:
         label = _load_and_orient(labelfile)
@@ -123,23 +152,19 @@ def _imshowfig(imgfile, nslices, labelfile=None, separate_figs=False):
         if len(labelvals) > len(COLORLIST):
             raise RuntimeError('Not enough defined colors for label image')
     with style.context({
-            'image.origin':
-            'lower',
-            'image.cmap':
-            'Greys_r',
-            'axes.facecolor':
-            'black',
-            'figure.facecolor':
-            'black',
-            'figure.dpi':
-            int(np.ceil(np.max(img.shape) / INDIVIDUAL_IMAGE_HEIGHT))
+            'image.origin': 'lower',
+            'image.cmap': 'Greys_r',
+            'axes.facecolor': 'black',
+            'figure.facecolor': 'black',
+            'figure.dpi': int(
+                np.ceil(np.max(img.shape) / min(image_width, image_height)))
     }):
         if separate_figs:
             fig_list = []
         else:
-            nrows, ncols = _calc_nrows_ncols(nslices)
-            fig = figure.Figure(figsize=(ncols * INDIVIDUAL_IMAGE_HEIGHT,
-                                         nrows * INDIVIDUAL_IMAGE_HEIGHT))
+            nrows, ncols = _calc_nrows_ncols(nslices, maxcols)
+            fig = figure.Figure(figsize=(ncols * image_width,
+                                         nrows * image_height))
             gs = gridspec.GridSpec(nrows,
                                    ncols,
                                    figure=fig,
@@ -166,13 +191,12 @@ def _imshowfig(imgfile, nslices, labelfile=None, separate_figs=False):
                     img.slicer[slicespec].dataobj),
                                       axis=(ind, ))
                 if separate_figs:
-                    fig = figure.Figure(figsize=(INDIVIDUAL_IMAGE_HEIGHT,
-                                                 INDIVIDUAL_IMAGE_HEIGHT),
+                    fig = figure.Figure(figsize=(image_width, image_height),
                                         subplotpars=figure.SubplotParams(
                                             left=0, right=1, bottom=0, top=1))
                     ax = fig.add_subplot(1, 1, 1)
                 else:
-                    rowind_adj, colind_adj = _get_row_col(rowind, colind, nslices)
+                    rowind_adj, colind_adj = _get_row_col(rowind, colind, nslices, maxcols)
                     ax = fig.add_subplot(gs[rowind_adj, colind_adj])
                 ax.imshow(imgslice, vmin=vmin, vmax=vmax, aspect=aspect)
                 ax.set_xticks([])
@@ -185,7 +209,7 @@ def _imshowfig(imgfile, nslices, labelfile=None, separate_figs=False):
                         ax.contour(labeldata == lv,
                                    levels=[0.5],
                                    colors=[COLORLIST[lvind]],
-                                   linewidths=[0.5])
+                                   linewidths=[contour_width])
                 if separate_figs:
                     fig_list_row.append(fig)
             if separate_figs:
@@ -221,15 +245,8 @@ def doublezip(iterable1, iterable2):
     ]
 
 
-def _imshow(imgfile,
-            nslices,
-            labelfile=None,
-            outtype='svg',
-            separate_figs=False):
-    fig = _imshowfig(imgfile,
-                     nslices,
-                     labelfile=labelfile,
-                     separate_figs=separate_figs)
+def _imshow(*, outtype='svg', separate_figs=False, **kwargs):
+    fig = imshowfig(separate_figs=separate_figs, **kwargs)
     if outtype == 'svg':
         func = _to_svg
     elif outtype == 'png':
@@ -275,14 +292,17 @@ def _render(out_file, template, data):
 def _single_opt_contours(name,
                          image,
                          out_file,
-                         nslices=7,
                          label=None,
-                         form=True,
-                         relative_dir=None):
+                         qcform=True,
+                         relative_dir=None,
+                         **kwargs):
     out = {
-        'name': name, 'form': form, 'name_no_spaces': name.replace(' ', '_')
+        'name': name, 'form': qcform, 'name_no_spaces': name.replace(' ', '_')
     }
-    out['svg'] = _imshow(image, nslices, labelfile=label, separate_figs=True)
+    out['svg'] = _imshow(imgfile=image,
+                         labelfile=label,
+                         separate_figs=True,
+                         **kwargs)
     out['filename'] = str(image)
     out['formfile'] = 'form_simple.tpl'
     if label is not None:
@@ -295,7 +315,7 @@ def _single_opt_contours(name,
     _render(out_file, 'single.tpl', out)
 
 
-def single(name, image, out_file, nslices=7, form=True, relative_dir=None):
+def single(*, name, image, out_file, qcform=True, relative_dir=None, **kwargs):
     """Write an html file to :py:obj:`out_file` showing the :py:obj:`image`
     with :py:obj:`nslices` slices in all three axial planes
 
@@ -305,17 +325,15 @@ def single(name, image, out_file, nslices=7, form=True, relative_dir=None):
     :type image: path-like object or :py:obj:`None`
     :param out_file: File name
     :type out_file: path-like object
-    :param nslices: Number of slices to show in each plane
-    :type nslices: int
-    :param form: Include a QC form in the output
-    :type form: bool
+    :param qcform: Include a QC form in the output
+    :type qcform: bool
     :param relative_dir: Create links to filenames relative to this directory
     :type relative_dir: path-like object
     """
     if image is None:
         out = {
             'name': name,
-            'form': form,
+            'form': qcform,
             'formfile': 'form_simple.tpl',
             'name_no_spaces': name.replace(' ', '_')
         }
@@ -325,19 +343,20 @@ def single(name, image, out_file, nslices=7, form=True, relative_dir=None):
         _single_opt_contours(name,
                              image,
                              out_file,
-                             nslices=nslices,
-                             form=form,
-                             relative_dir=relative_dir)
+                             qcform=qcform,
+                             relative_dir=relative_dir,
+                             **kwargs)
 
 
-def compare(name1,
+def compare(*,
+            name1,
             image1,
             name2,
             image2,
             out_file,
-            nslices=7,
-            form=True,
-            relative_dir=None):
+            qcform=True,
+            relative_dir=None,
+            **kwargs):
     """Write an html file to :py:obj:`out_file` comparing :py:obj:`image1`
     with :py:obj:`image2` with :py:obj:`nslices` slices in all three axial planes
 
@@ -353,23 +372,19 @@ def compare(name1,
     :type out_file: path-like object
     :param nslices: Number of slices to show in each plane
     :type nslices: int
-    :param form: Include a QC form in the output
-    :type form: bool
+    :param qcform: Include a QC form in the output
+    :type qcform: bool
     :param relative_dir: Create links to filenames relative to this directory
     :type relative_dir: path-like object
     """
 
     out = {
-        'name1':
-        name1,
-        'name2':
-        name2,
-        'form':
-        form,
-        'formfile':
-        'form_simple.tpl',
-        'name_no_spaces':
-        '_'.join([nametmp.replace(' ', '_') for nametmp in [name1, name2]])
+        'name1': name1,
+        'name2': name2,
+        'form': qcform,
+        'formfile': 'form_simple.tpl',
+        'name_no_spaces': '_'.join(
+            [nametmp.replace(' ', '_') for nametmp in [name1, name2]])
     }
 
     if image1 is None or image2 is None:
@@ -389,8 +404,8 @@ def compare(name1,
             out['filename1'] = str(image1)
             out['filename2'] = str(image2)
 
-        svg1list = _imshow(image1, nslices, separate_figs=True)
-        svg2list = _imshow(image2, nslices, separate_figs=True)
+        svg1list = _imshow(imgfile=image1, separate_figs=True, **kwargs)
+        svg2list = _imshow(imgfile=image2, separate_figs=True, **kwargs)
 
         svg1 = doublemap(lambda svgsingle: _set_svg_class(svgsingle, 'first'),
                          svg1list)
@@ -400,13 +415,14 @@ def compare(name1,
     _render(out_file, 'compare.tpl', out)
 
 
-def contours(name,
+def contours(*,
+             name,
              image,
-             label,
+             labelimage,
              out_file,
-             nslices=7,
-             form=True,
-             relative_dir=None):
+             qcform=True,
+             relative_dir=None,
+             **kwargs):
     """Write an html file to :py:obj:`out_file` showing the :py:obj:`image`
     with :py:obj:`nslices` slices in all three axial planes. Include contour
     lines outlining the areas defined by :py:obj:`labels`.
@@ -415,29 +431,29 @@ def contours(name,
     :type name: str
     :param image: Image file name to show (readable by :py:mod:`nibabel`)
     :type image: path-like object or :py:obj:`None`
-    :param label: Label file name to draw contours from (readable by :py:mod:`nibabel`)
-    :type label: path-like object or :py:obj:`None`
+    :param labelimage: Label file name to draw contours from (readable by :py:mod:`nibabel`)
+    :type labelimage: path-like object or :py:obj:`None`
     :param out_file: File name
     :type out_file: path-like object
     :param nslices: Number of slices to show in each plane
     :type nslices: int
-    :param form: Include a QC form in the output
-    :type form: bool
+    :param qcform: Include a QC form in the output
+    :type qcform: bool
     :param relative_dir: Create links to filenames relative to this directory
     :type relative_dir: path-like object
     """
-    if image is None or label is None:
+    if image is None or labelimage is None:
         out = {
             'name': name,
-            'form': form,
+            'form': qcform,
             'formfile': 'form_simple.tpl',
             'name_no_spaces': name.replace(' ', '_')
         }
         errormessages = []
         if image is None:
             errormessages.append('image')
-        if label is None:
-            errormessages.append('label')
+        if labelimage is None:
+            errormessages.append('labelimage')
         out['errormessage'] = ' and '.join(
             errormessages) + ' not specified for this reportlet'
         _render(out_file, 'single.tpl', out)
@@ -445,10 +461,10 @@ def contours(name,
         _single_opt_contours(name,
                              image,
                              out_file,
-                             nslices=nslices,
-                             label=label,
-                             form=form,
-                             relative_dir=relative_dir)
+                             label=labelimage,
+                             qcform=qcform,
+                             relative_dir=relative_dir,
+                             **kwargs)
 
 
 def _str2int(s):
@@ -471,51 +487,52 @@ def _read_dists(distfile):
     return dists
 
 
-def distributions(name,
-                  distfile,
+def distributions(*,
+                  name,
+                  distsfile,
                   out_file,
                   labelfile,
-                  form=True,
+                  qcform=True,
                   relative_dir=None):
     """Write an html file to :py:obj:`out_file` showing the distributions
-    defined in :py:obj:`distfile`.
+    defined in :py:obj:`distsfile`.
 
-    :param name: Name describing :py:obj:`distfile`
+    :param name: Name describing :py:obj:`distsfile`
     :type name: str
-    :param distfile: Distribution file name.
+    :param distsfile: Distribution file name.
                      Must be a TSV file with two columns "value", and "index".
                      "value" is a point in distribution indexed by "index".
-    :type distfile: path-like object or :py:obj:`None`
+    :type distsfile: path-like object or :py:obj:`None`
     :param out_file: File name
     :type out_file: path-like object
     :param labelfile: TSV file containing "index" and "name" columns. Used to label
                       distributions. ("index" corresponds to the second column in
-                      distfile)
+                      distsfile)
     :type labelfile: path-like object or :py:obj:`None`
-    :param form: Include a QC form in the output
-    :type form: bool
+    :param qcform: Include a QC form in the output
+    :type qcform: bool
     :param relative_dir: Create links to filenames relative to this directory
     :type relative_dir: path-like object
     """
     out = {
         'name': name,
         'name_no_spaces': name.replace(' ', '_'),
-        'form': form,
+        'form': qcform,
         'formfile': 'form_simple.tpl'
     }
-    if distfile is None or labelfile is None:
+    if distsfile is None or labelfile is None:
         errormessages = []
-        if distfile is None:
-            errormessages.append('distfile')
+        if distsfile is None:
+            errormessages.append('distsfile')
         if labelfile is None:
             errormessages.append('labelfile')
         out['errormessage'] = ' and '.join(
             errormessages) + ' not specified for this reportlet.'
     else:
         labelmap = utils.labels2dict(utils.read_labels(labelfile), 'name')
-        dists = _read_dists(distfile)
+        dists = _read_dists(distsfile)
         out['svg'] = plotdists(dists, labelmap=labelmap)
-        out['filename'] = str(distfile)
+        out['filename'] = str(distsfile)
         out['labelfilename'] = str(labelfile)
         if relative_dir is not None:
             out['filename'] = str(
@@ -539,7 +556,7 @@ def plotdists(dists, labelmap=None, bins=20, alpha=0.5):
     return svg.read()
 
 
-def crash(name, crashfiles, out_file, relative_dir=None):
+def crash(*, name, crashfiles, out_file, relative_dir=None):
     """Write an html file to :py:obj:`out_file` with crashfile information.
 
     :param name: Name describing the reportlet
@@ -577,7 +594,7 @@ def crash(name, crashfiles, out_file, relative_dir=None):
     _render(out_file, 'crash.tpl', out)
 
 
-def rating(name, radio, checkbox, text, out_file):
+def rating(*, name, radio, checkbox, text, out_file):
     """Write an html file to :py:obj:`out_file` descripting a rating tool
 
     :param name: Name descripting the reportlet
@@ -627,10 +644,11 @@ def rating(name, radio, checkbox, text, out_file):
     _render(out_file, 'rating.tpl', out)
 
 
-def assemble(out_file,
+def assemble(*,
+             out_file,
              in_files,
              title,
-             form=True,
+             qcform=True,
              prev=None,
              next_=None,
              relative_dir=None):
@@ -642,14 +660,14 @@ def assemble(out_file,
     :type in_files: list of path-like objects
     :param title: title of html page
     :type title: str
-    :param form: inputs contain QC forms
-    :type form: bool
+    :param qcform: inputs contain QC forms
+    :type qcform: bool
     """
     env = jinja2.Environment(
         loader=jinja2.PackageLoader('PipelineQC', 'templates'))
     template = env.get_template('base.tpl')
     body = '\n'.join((_load(in_f) for in_f in in_files))
-    params = {'body': body, 'title': title, 'form': form}
+    params = {'body': body, 'title': title, 'form': qcform}
     if prev is not None:
         params['prev'] = prev
     if next_ is not None:
@@ -661,7 +679,7 @@ def assemble(out_file,
     _dump(out_file, out)
 
 
-def index(out_file, in_files):
+def index(*, out_file, in_files):
     """
     Construct an html file linking all to other files
 

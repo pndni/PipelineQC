@@ -86,28 +86,23 @@ def test_confdoc(tmp_path, conffilename):
     truth = {
         'report.page_sub-1.compare1': {
             'name1': 'T1w input file',
-            'image1':
-            str(tmp_path / 'in' / 'sub-1' / 'anat' / 'sub-1_T1w.nii'),
+            'image1': str(tmp_path / 'in' / 'sub-1' / 'anat' /
+                          'sub-1_T1w.nii'),
             'name2': 'Brain extracted files',
-            'image2':
-            str(tmp_path / 'out' / 'sub-1' / 'BET' / 'sub-1_bet.nii'),
+            'image2': str(tmp_path / 'out' / 'sub-1' / 'BET' /
+                          'sub-1_bet.nii'),
             'nslices': 7,
             'qcform': True,
             'relative_dir': str(out.resolve())
         },
         'report.page_sub-1.contour2': {
-            'name':
-            'Tissue classification',
-            'image':
-            str(tmp_path / 'out' / 'sub-1' / 'BET' / 'sub-1_bet.nii'),
-            'labelimage':
-            str(tmp_path / 'out' / 'sub-1' / 'classify' / 'sub-1_dseg.nii'),
-            'nslices':
-            7,
-            'qcform':
-            True,
-            'relative_dir':
-            str(out.resolve())
+            'name': 'Tissue classification',
+            'image': str(tmp_path / 'out' / 'sub-1' / 'BET' / 'sub-1_bet.nii'),
+            'labelimage': str(tmp_path / 'out' / 'sub-1' / 'classify' /
+                              'sub-1_dseg.nii'),
+            'nslices': 7,
+            'qcform': True,
+            'relative_dir': str(out.resolve())
         },
         'report.page_sub-1.crash3': {
             'name': 'Errors',
@@ -115,70 +110,53 @@ def test_confdoc(tmp_path, conffilename):
             'relative_dir': str(out.resolve())
         },
         'report.page_sub-1_acq-fast.compare1': {
-            'name1':
-            'T1w input file',
-            'image1':
-            str(tmp_path / 'in' / 'sub-1' / 'anat' / 'sub-1_acq-fast_T1w.nii'),
-            'name2':
-            'Brain extracted files',
-            'image2':
-            str(tmp_path / 'out' / 'sub-1' / 'BET' / 'sub-1_acq-fast_bet.nii'),
-            'nslices':
-            7,
-            'qcform':
-            True,
-            'relative_dir':
-            str(out.resolve())
+            'name1': 'T1w input file',
+            'image1': str(tmp_path / 'in' / 'sub-1' / 'anat' /
+                          'sub-1_acq-fast_T1w.nii'),
+            'name2': 'Brain extracted files',
+            'image2': str(tmp_path / 'out' / 'sub-1' / 'BET' /
+                          'sub-1_acq-fast_bet.nii'),
+            'nslices': 7,
+            'qcform': True,
+            'relative_dir': str(out.resolve())
         },
         'report.page_sub-1_acq-fast.contour2': {
-            'name':
-            'Tissue classification',
-            'image':
-            str(tmp_path / 'out' / 'sub-1' / 'BET' / 'sub-1_acq-fast_bet.nii'),
-            'labelimage':
-            str(tmp_path / 'out' / 'sub-1' / 'classify' /
-                'sub-1_acq-fast_dseg.nii'),
-            'nslices':
-            7,
-            'qcform':
-            True,
-            'relative_dir':
-            str(out.resolve())
+            'name': 'Tissue classification',
+            'image': str(tmp_path / 'out' / 'sub-1' / 'BET' /
+                         'sub-1_acq-fast_bet.nii'),
+            'labelimage': str(tmp_path / 'out' / 'sub-1' / 'classify' /
+                              'sub-1_acq-fast_dseg.nii'),
+            'nslices': 7,
+            'qcform': True,
+            'relative_dir': str(out.resolve())
         },
         'report.page_sub-1_acq-fast.crash3': {
-            'name':
-            'Errors',
+            'name': 'Errors',
             'crashfiles': [
                 str(tmp_path / 'out' / 'sub-1' / 'logs' / 'sub-1_acq-fast' /
                     'crash.pklz')
             ],
-            'relative_dir':
-            str(out.resolve())
+            'relative_dir': str(out.resolve())
         },
         'report.page_sub-2.compare1': {
             'name1': 'T1w input file',
-            'image1':
-            str(tmp_path / 'in' / 'sub-2' / 'anat' / 'sub-2_T1w.nii'),
+            'image1': str(tmp_path / 'in' / 'sub-2' / 'anat' /
+                          'sub-2_T1w.nii'),
             'name2': 'Brain extracted files',
-            'image2':
-            str(tmp_path / 'out' / 'sub-2' / 'BET' / 'sub-2_bet.nii'),
+            'image2': str(tmp_path / 'out' / 'sub-2' / 'BET' /
+                          'sub-2_bet.nii'),
             'nslices': 7,
             'qcform': True,
             'relative_dir': str(out.resolve())
         },
         'report.page_sub-2.contour2': {
-            'name':
-            'Tissue classification',
-            'image':
-            str(tmp_path / 'out' / 'sub-2' / 'BET' / 'sub-2_bet.nii'),
-            'labelimage':
-            str(tmp_path / 'out' / 'sub-2' / 'classify' / 'sub-2_dseg.nii'),
-            'nslices':
-            7,
-            'qcform':
-            True,
-            'relative_dir':
-            str(out.resolve())
+            'name': 'Tissue classification',
+            'image': str(tmp_path / 'out' / 'sub-2' / 'BET' / 'sub-2_bet.nii'),
+            'labelimage': str(tmp_path / 'out' / 'sub-2' / 'classify' /
+                              'sub-2_dseg.nii'),
+            'nslices': 7,
+            'qcform': True,
+            'relative_dir': str(out.resolve())
         },
         'report.page_sub-2.crash3': {
             'name': 'Errors',

@@ -256,7 +256,21 @@
 		    { "$ref": "#/definitions/ratingreportlet" }
                 ]
             }
-        }
+        },
+	"settings": {
+	    "type": "object",
+	    "properties": {
+		"image_width": {
+		    "type": "number"
+		},
+		"image_height": {
+		    "type": "number"
+		},
+		"contour_width": {
+		    "type": "number"
+		}
+	    }
+	}
     }
 }
 

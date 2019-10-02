@@ -2,4 +2,4 @@ API
 ^^^
 
 .. automodule:: PipelineQC.reportlets
-   :members: assemble, compare, contour, crash, distributions, index, rating, single
+   :members: assemble, compare, contour, crash, distributions, imshowfig, index, rating, single

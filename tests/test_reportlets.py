@@ -9,20 +9,20 @@ from pathlib import Path
 
 
 def test_calc_nrow_ncol():
-    assert reportlets._calc_nrows_ncols(7) == (3, 7)
-    assert reportlets._calc_nrows_ncols(8) == (3, 8)
-    assert reportlets._calc_nrows_ncols(9) == (6, 8)
+    assert reportlets._calc_nrows_ncols(7, 8) == (3, 7)
+    assert reportlets._calc_nrows_ncols(8, 8) == (3, 8)
+    assert reportlets._calc_nrows_ncols(9, 8) == (6, 8)
 
 
 def test_get_row_cal():
     for i in range(3):
         for j in range(7):
-            assert reportlets._get_row_col(i, j, 7) == (i, j)
+            assert reportlets._get_row_col(i, j, 7, 8) == (i, j)
     for i in range(3):
         for j in range(8):
-            assert reportlets._get_row_col(i, j, 12) == (i * 2, j)
+            assert reportlets._get_row_col(i, j, 12, 8) == (i * 2, j)
         for j in range(8, 12):
-            assert reportlets._get_row_col(i, j, 12) == (i * 2 + 1, j - 8)
+            assert reportlets._get_row_col(i, j, 12, 8) == (i * 2 + 1, j - 8)
 
 
 def test_read_dists(tmp_path):
@@ -38,7 +38,10 @@ def test_distributions(tmp_path):
     outfile = tmp_path / 'out.txt'
     labelfile = tmp_path / 'labels.tsv'
     labelfile.write_text('index\tname\n1\tGM\n')
-    reportlets.distributions('testdist', distfile, outfile, labelfile)
+    reportlets.distributions(name='testdist',
+                             distsfile=distfile,
+                             out_file=outfile,
+                             labelfile=labelfile)
     i = interfaces.Distributions(name='testdist',
                                  distsfile=distfile,
                                  labelfile=labelfile)
@@ -49,7 +52,10 @@ def test_distributions_dne(tmp_path):
     outfile = tmp_path / 'out.txt'
     labelfile = tmp_path / 'labels.tsv'
     labelfile.write_text('index\tname\n1\tGM\n')
-    reportlets.distributions('testdist', None, outfile, labelfile)
+    reportlets.distributions(name='testdist',
+                             distsfile=None,
+                             out_file=outfile,
+                             labelfile=labelfile)
 
 
 @pytest.fixture()
@@ -68,8 +74,14 @@ def images(tmp_path):
 def test_single(images):
     tmp_path, image1, image2, image3 = images
     outfile = tmp_path / 'out.txt'
-    reportlets.single('testsingle', image1, outfile, nslices=1)
-    reportlets.single('testsingle', image3, outfile, nslices=1)
+    reportlets.single(name='testsingle',
+                      image=image1,
+                      out_file=outfile,
+                      nslices=1)
+    reportlets.single(name='testsingle',
+                      image=image3,
+                      out_file=outfile,
+                      nslices=1)
     i = interfaces.Single(name='testsingle', image=image1, nslices=1)
     i.run()
 
@@ -77,8 +89,16 @@ def test_single(images):
 def test_contour(images):
     tmp_path, image1, image2, image3 = images
     outfile = tmp_path / 'out.txt'
-    reportlets.contours('testcontours', image3, image2, outfile, nslices=1)
-    reportlets.contours('testcontours', image2, image2, outfile, nslices=1)
+    reportlets.contours(name='testcontours',
+                        image=image3,
+                        labelimage=image2,
+                        out_file=outfile,
+                        nslices=1)
+    reportlets.contours(name='testcontours',
+                        image=image2,
+                        labelimage=image2,
+                        out_file=outfile,
+                        nslices=1)
     i = interfaces.Contour(name='testcontours',
                            image=image3,
                            labelimage=image2,
@@ -89,23 +109,23 @@ def test_contour(images):
 def test_compare(images):
     tmp_path, image1, image2, image3 = images
     outfile = tmp_path / 'out.txt'
-    reportlets.compare('testcompare',
-                       image1,
-                       'testcompare2',
-                       image2,
-                       outfile,
+    reportlets.compare(name1='testcompare',
+                       image1=image1,
+                       name2='testcompare2',
+                       image2=image2,
+                       out_file=outfile,
                        nslices=1)
-    reportlets.compare('testcompare',
-                       image3,
-                       'testcompare2',
-                       image2,
-                       outfile,
+    reportlets.compare(name1='testcompare',
+                       image1=image3,
+                       name2='testcompare2',
+                       image2=image2,
+                       out_file=outfile,
                        nslices=1)
-    reportlets.compare('testcompare',
-                       image2,
-                       'testcompare2',
-                       image3,
-                       outfile,
+    reportlets.compare(name1='testcompare',
+                       image1=image2,
+                       name2='testcompare2',
+                       image2=image3,
+                       out_file=outfile,
                        nslices=1)
     i = interfaces.Compare(name1='testcompare',
                            image1=image1,
@@ -124,11 +144,13 @@ def test_crash(tmp_path):
         'node': fakenode, 'traceback': traceback
     },
                               versioning=True)
-    reportlets.crash('testcrash', [str(pklfile)], str(outfile))
+    reportlets.crash(name='testcrash',
+                     crashfiles=[str(pklfile)],
+                     out_file=str(outfile))
     outstr = outfile.read_text()
     assert 'class="crash"' in outstr
     assert 'class="success"' not in outstr
-    reportlets.crash('testcrash', [], str(outfile))
+    reportlets.crash(name='testcrash', crashfiles=[], out_file=str(outfile))
     outstr = outfile.read_text()
     assert 'class="crash"' not in outstr
     assert 'class="success"' in outstr

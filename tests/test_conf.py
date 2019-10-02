@@ -7,8 +7,7 @@ import jsonschema
 def test_format_output():
     c = {
         "page_keys": ["sub", "acq", "rec", "run", "ses"],
-        "page_filename_template":
-        "sub-{sub}[/ses-{ses}]/sub-{sub}[_ses-{ses}][_acq-{acq}][_rec-{rec}][_run-{run}]_QC.html"
+        "page_filename_template": "sub-{sub}[/ses-{ses}]/sub-{sub}[_ses-{ses}][_acq-{acq}][_rec-{rec}][_run-{run}]_QC.html"
     }
     assert conf.format_output(
         c, (1, None, None, None, None)) == 'sub-1/sub-1_QC.html'
@@ -28,8 +27,7 @@ def test_format_output():
 def test_format_output_invalid():
     c = {
         "page_keys": ["sub", "acq", "rec", "run", "ses"],
-        "page_filename_template":
-        "sub-{sub}[/ses-{ses}{sub}]/sub-{sub}[_ses-{ses}][_acq-{acq}][_rec-{rec}][_run-{run}]_QC.html"
+        "page_filename_template": "sub-{sub}[/ses-{ses}{sub}]/sub-{sub}[_ses-{ses}][_acq-{acq}][_rec-{rec}][_run-{run}]_QC.html"
     }
     with pytest.raises(conf.InvalidFormatError):
         conf.format_output(c, (1, None, None, None, None))

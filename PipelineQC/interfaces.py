@@ -11,50 +11,62 @@ from pathlib import Path
 from . import reportlets
 
 
-class CompareInputSpec(BaseInterfaceInputSpec):
+class ReportletInputSpec(BaseInterfaceInputSpec):
+    qcform = traits.Bool(False,
+                         usedefault=True,
+                         desc='Include qc form beneath each reportlet.')
+    relative_dir = traits.Either(Directory(
+        exists=True,
+        desc='Create links to filenames relative to this directory'),
+                                 None,
+                                 default=None,
+                                 usedefault=True)
+
+
+class ReportletOutputSpec(TraitedSpec):
+    out_file = File(exists=True)
+
+
+class ImageGridReportletInputSpec(ReportletInputSpec):
+    image_width = traits.Float(1.5,
+                               usedefault=True,
+                               desc='Image width (in inches)')
+    image_height = traits.Float(1.5,
+                                usedefault=True,
+                                desc='Image height (in inches)')
+    nslices = traits.Int(7, usedefault=True, desc='Number of slices to plot')
+
+
+class Reportlet(SimpleInterface):
+    output_spec = ReportletOutputSpec
+
+    def _run_interface(self, runtime):
+        out_file = str(Path('out_reportlet.txt').resolve())
+        kwargs = {
+            t: getattr(self.inputs, t)
+            for t in self.inputs.visible_traits()
+        }
+        kwargs['out_file'] = out_file
+        self._func(**kwargs)
+        self._results['out_file'] = out_file
+        return runtime
+
+
+class CompareInputSpec(ImageGridReportletInputSpec):
     name1 = traits.Str(mandatory=True, desc='Name of first image')
     name2 = traits.Str(mandatory=True, desc='Name of second image')
     image1 = traits.Either(
         File(exists=True, mandatory=True, desc='First image file'), None)
     image2 = traits.Either(
         File(exists=True, mandatory=True, desc='Second image file'), None)
-    nslices = traits.Int(7, usedefault=True, desc='Number of slices to plot')
-    qcform = traits.Bool(False,
-                         usedefault=True,
-                         desc='Include qc form in output')
-    relative_dir = Directory(
-        exists=True,
-        desc='Create links to filenames relative to this directory')
 
 
-class CompareOutputSpec(TraitedSpec):
-    out_file = File(exists=True)
-
-
-class Compare(SimpleInterface):
+class Compare(Reportlet):
     input_spec = CompareInputSpec
-    output_spec = CompareOutputSpec
-
-    def _run_interface(self, runtime):
-        out_file = str(Path('compare_{}_{}.txt'.format(self.inputs.name1,
-                                                       self.inputs.name2)).resolve())
-        if isdefined(self.inputs.relative_dir):
-            relative_dir = self.inputs.relative_dir
-        else:
-            relative_dir = None
-        reportlets.compare(self.inputs.name1,
-                           self.inputs.image1,
-                           self.inputs.name2,
-                           self.inputs.image2,
-                           out_file,
-                           nslices=self.inputs.nslices,
-                           form=self.inputs.qcform,
-                           relative_dir=relative_dir)
-        self._results['out_file'] = out_file
-        return runtime
+    _func = staticmethod(reportlets.compare)
 
 
-class ContourInputSpec(BaseInterfaceInputSpec):
+class ContourInputSpec(ImageGridReportletInputSpec):
     name = traits.Str(mandatory=True, desc='Name of image')
     image = traits.Either(File(exists=True, mandatory=True, desc='Image file'),
                           None)
@@ -63,78 +75,28 @@ class ContourInputSpec(BaseInterfaceInputSpec):
              mandatory=True,
              desc='Label image to calculate contours'),
         None)
-    nslices = traits.Int(7, usedefault=True, desc='Number of slices to plot')
-    qcform = traits.Bool(False,
-                         usedefault=True,
-                         desc='Include qc form in output')
-    relative_dir = Directory(
-        exists=True,
-        desc='Create links to filenames relative to this directory')
+    contour_width = traits.Float(1,
+                                 usedefault=True,
+                                 desc='Contour line width (in pts)')
 
 
-class ContourOutputSpec(TraitedSpec):
-    out_file = File(exists=True)
-
-
-class Contour(SimpleInterface):
+class Contour(Reportlet):
     input_spec = ContourInputSpec
-    output_spec = ContourOutputSpec
-
-    def _run_interface(self, runtime):
-        out_file = str(Path('contour_{}.txt'.format(self.inputs.name)).resolve())
-        if isdefined(self.inputs.relative_dir):
-            relative_dir = self.inputs.relative_dir
-        else:
-            relative_dir = None
-        reportlets.contours(self.inputs.name,
-                            self.inputs.image,
-                            self.inputs.labelimage,
-                            out_file,
-                            nslices=self.inputs.nslices,
-                            form=self.inputs.qcform,
-                            relative_dir=relative_dir)
-        self._results['out_file'] = out_file
-        return runtime
+    _func = staticmethod(reportlets.contours)
 
 
-class SingleInputSpec(BaseInterfaceInputSpec):
+class SingleInputSpec(ImageGridReportletInputSpec):
     name = traits.Str(mandatory=True, desc='Name of image')
     image = traits.Either(File(exists=True, mandatory=True, desc='Image file'),
                           None)
-    nslices = traits.Int(7, usedefault=True, desc='Number of slices to plot')
-    qcform = traits.Bool(False,
-                         usedefault=True,
-                         desc='Include qc form in output')
-    relative_dir = Directory(
-        exists=True,
-        desc='Create links to filenames relative to this directory')
 
 
-class SingleOutputSpec(TraitedSpec):
-    out_file = File(exists=True)
-
-
-class Single(SimpleInterface):
+class Single(Reportlet):
     input_spec = SingleInputSpec
-    output_spec = SingleOutputSpec
-
-    def _run_interface(self, runtime):
-        out_file = str(Path('single_{}.txt'.format(self.inputs.name)).resolve())
-        if isdefined(self.inputs.relative_dir):
-            relative_dir = self.inputs.relative_dir
-        else:
-            relative_dir = None
-        reportlets.single(self.inputs.name,
-                          self.inputs.image,
-                          out_file,
-                          nslices=self.inputs.nslices,
-                          form=self.inputs.qcform,
-                          relative_dir=relative_dir)
-        self._results['out_file'] = out_file
-        return runtime
+    _func = staticmethod(reportlets.single)
 
 
-class DistributionsInputSpec(BaseInterfaceInputSpec):
+class DistributionsInputSpec(ReportletInputSpec):
     name = traits.Str(mandatory=True, desc='Name of distributions')
     distsfile = traits.Either(
         File(exists=True,
@@ -145,73 +107,33 @@ class DistributionsInputSpec(BaseInterfaceInputSpec):
              'is an integer indicating which distribution it belongs to.'),
         None)
     labelfile = traits.Either(
-        File(
-            exists=True,
-            desc=
-            'TSV file with "index" and "name" columns. Used to label distributions '
-            '("index" corresponds to the second column in distsfile)'),
+        File(exists=True,
+             desc='TSV file with "index" and "name" columns. '
+             'Used to label distributions '
+             '("index" corresponds to the second column in distsfile)'),
         None)
-    qcform = traits.Bool(False,
-                         usedefault=True,
-                         desc='Include qc form in output')
-    relative_dir = Directory(
-        exists=True,
-        desc='Create links to filenames relative to this directory')
 
 
-class DistributionsOutputSpec(TraitedSpec):
-    out_file = File(exists=True)
-
-
-class Distributions(SimpleInterface):
+class Distributions(Reportlet):
     input_spec = DistributionsInputSpec
-    output_spec = DistributionsOutputSpec
-
-    def _run_interface(self, runtime):
-        out_file = str(Path('dists_{}.txt'.format(self.inputs.name)).resolve())
-        if isdefined(self.inputs.relative_dir):
-            relative_dir = self.inputs.relative_dir
-        else:
-            relative_dir = None
-        reportlets.distributions(self.inputs.name,
-                                 self.inputs.distsfile,
-                                 out_file,
-                                 self.inputs.labelfile,
-                                 form=self.inputs.qcform,
-                                 relative_dir=relative_dir)
-        self._results['out_file'] = out_file
-        return runtime
+    _func = staticmethod(reportlets.distributions)
 
 
 class CrashInputSpec(BaseInterfaceInputSpec):
     name = traits.Str(mandatory=True, desc='Name of reportlet')
     crashfiles = traits.List(File(exists=True, mandatory=True),
                              desc='List of nipype crash files (can be empty)')
-    relative_dir = Directory(
+    relative_dir = traits.Either(Directory(
         exists=True,
-        desc='Create links to filenames relative to this directory')
+        desc='Create links to filenames relative to this directory'),
+                                 None,
+                                 default=None,
+                                 usedefault=True)
 
 
-class CrashOutputSpec(TraitedSpec):
-    out_file = File(exists=True)
-
-
-class Crash(SimpleInterface):
+class Crash(Reportlet):
     input_spec = CrashInputSpec
-    output_spec = CrashOutputSpec
-
-    def _run_interface(self, runtime):
-        out_file = str(Path('crash_{}.txt'.format(self.inputs.name)).resolve())
-        if isdefined(self.inputs.relative_dir):
-            relative_dir = self.inputs.relative_dir
-        else:
-            relative_dir = None
-        reportlets.crash(self.inputs.name,
-                         self.inputs.crashfiles,
-                         out_file,
-                         relative_dir=relative_dir)
-        self._results['out_file'] = out_file
-        return runtime
+    _func = staticmethod(reportlets.crash)
 
 
 class RatingInputSpec(BaseInterfaceInputSpec):
@@ -236,39 +158,19 @@ class RatingInputSpec(BaseInterfaceInputSpec):
                          'Only requires "name"')
 
 
-class RatingOutputSpec(TraitedSpec):
-    out_file = File(exists=True)
-
-
-class Rating(SimpleInterface):
+class Rating(Reportlet):
     input_spec = RatingInputSpec
-    output_spec = RatingOutputSpec
-
-    def _run_interface(self, runtime):
-        out_file = str(Path('rating_{}.txt'.format(self.inputs.name)).resolve())
-        reportlets.rating(self.inputs.name,
-                          self.inputs.radio,
-                          self.inputs.checkbox,
-                          self.inputs.text,
-                          out_file)
-        self._results['out_file'] = out_file
-        return runtime
+    _func = staticmethod(reportlets.rating)
 
 
-class AssembleReportInputSpec(BaseInterfaceInputSpec):
+class AssembleReportInputSpec(ReportletInputSpec):
     in_files = InputMultiPath(File(exists=True),
                               mandatory=True,
                               desc='Reportlet files')
     title = traits.Str(mandatory=True, desc='Title of final report')
     out_file = File(desc='Output file')
-    qcform = traits.Bool(False,
-                         usedefault=True,
-                         desc='Include qc form submit button in output')
     next_ = File(desc='File name of next QC page')
     prev_ = File(desc='File name of previous QC page')
-    relative_dir = Directory(
-        exists=True,
-        desc='Create links to filenames relative to this directory')
 
 
 class AssembleReportOutputSpec(TraitedSpec):
@@ -288,10 +190,10 @@ class AssembleReport(SimpleInterface):
         prev = self.inputs.prev if isdefined(self.inputs.prev) else None
         reldir = self.inputs.relative_dir if isdefined(
             self.inputs.relative_dir) else None
-        reportlets.assemble(out_file,
-                            self.inputs.in_files,
-                            self.inputs.title,
-                            form=self.inputs.qcform,
+        reportlets.assemble(out_file=out_file,
+                            in_files=self.inputs.in_files,
+                            title=self.inputs.title,
+                            qcform=self.inputs.qcform,
                             next_=next_,
                             prev=prev,
                             relative_dir=reldir)
@@ -321,6 +223,6 @@ class IndexReport(SimpleInterface):
             str(os.path.relpath(in_file, out_dir))
             for in_file in self.inputs.in_files
         ]
-        reportlets.index(self.inputs.out_file, in_files)
+        reportlets.index(out_file=self.inputs.out_file, in_files=in_files)
         self._results['out_file'] = self.inputs.out_file
         return runtime

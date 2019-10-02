@@ -158,5 +158,10 @@
 		"name": "Other"
 	    }
 	}
-    ]
+    ],
+    "settings": {
+	"image_width": 2,
+	"image_height": 1.75,
+	"contour_width": 5
+    }
 }
