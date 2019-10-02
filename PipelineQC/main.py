@@ -10,7 +10,7 @@ import argparse
 def qc_all(dirs,
            output_dir,
            configfile,
-           plugin='Linear',
+           plugin='MultiProc',
            plugin_args=None,
            working_directory=None,
            bids_validate=False):
@@ -48,7 +48,7 @@ def get_parser():
     qcpages.add_argument(
         '--nipype_plugin',
         type=str,
-        default='Linear',
+        default='MultiProc',
         help='Passed directly to the nipype workflow run method')
     qcpages.add_argument(
         '--working_directory',

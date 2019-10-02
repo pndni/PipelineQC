@@ -3,9 +3,9 @@ from setuptools import setup, find_packages
 
 setup(
     name='PipelineQC',
-    version='0.1.0',
+    version='dev',
     install_requires=[
-        'nipype==1.2.2',
+        'nipype @ https://github.com/stilley2/nipype/archive/1.2.3-mod.zip',
         'matplotlib>=3',
         'Jinja2>=2.10.1',
         'nibabel>=2.4.0',
