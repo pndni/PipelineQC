@@ -146,6 +146,13 @@ def test_conf1(tmp_path, input_files_conf1, conffilename):
     conffile = Path(__file__).parent / conffilename
     out = get_files.get_files([tmp_path], conf.load_config(conffile))
     compare(out, infull)
+    out = get_files.get_files([tmp_path],
+                              conf.load_config(conffile),
+                              exclude_patterns=['/sub-1/'])
+    for k in list(infull.keys()):
+        if k[0] == '1':
+            del infull[k]
+    compare(out, infull)
 
 
 @pytest.mark.parametrize('conffilename',

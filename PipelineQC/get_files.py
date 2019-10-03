@@ -82,7 +82,16 @@ def _search_types(conf):
     return bids_p, re_p
 
 
-def get_files(dirs, conf, bids_validate=False):
+def _matches_exclude_pattern(fname, exclude_patterns):
+    for excl in exclude_patterns:
+        if re.search(excl, fname):
+            return True
+    return False
+
+
+def get_files(dirs, conf, bids_validate=False, exclude_patterns=None):
+    if exclude_patterns is None:
+        exclude_patterns = []
     out = defaultdict(dict)
     bids_search, re_search = _search_types(conf)
     matched_files = set()
@@ -91,6 +100,8 @@ def get_files(dirs, conf, bids_validate=False):
             dfull = d.resolve()
             for fname in Path(dfull).glob('**/*'):
                 if not fname.is_file():
+                    continue
+                if _matches_exclude_pattern(str(fname), exclude_patterns):
                     continue
                 parse_result = parse_file(strip_common(fname, dfull), conf)
                 if parse_result is not None:
@@ -117,6 +128,9 @@ def get_files(dirs, conf, bids_validate=False):
             for bl in bids_layouts[pattern]:
                 for match in bl.get(**file_params['filter']):
                     fnamefull = Path(match.path)
+                    if _matches_exclude_pattern(str(fnamefull),
+                                                exclude_patterns):
+                        continue
                     if fnamefull in matched_files:
                         raise MultipleFilterResultsError(
                             f'{fnamefull} matched multiple filters')

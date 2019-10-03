@@ -13,11 +13,11 @@ def qc_all(dirs,
            plugin='MultiProc',
            plugin_args=None,
            working_directory=None,
-           bids_validate=False):
+           **kwargs):
     conf = load_config(configfile)
-    filedict = get_files(dirs, conf, bids_validate=bids_validate)
-    if len(filedict) == 1 and len(filedict['global']) == 0:
-        raise RuntimeError('No files found!')
+    filedict = get_files(dirs, conf, **kwargs)
+    if len(filedict) == 1:
+        raise RuntimeError('No non-global files found!')
     wf = all_workflow(filedict, output_dir, conf)
     if working_directory is not None:
         if not Path(working_directory).exists():
@@ -58,6 +58,11 @@ def get_parser():
         '--validate_bids',
         action='store_true',
         help='If using bids, whether to validate the bids directories')
+    qcpages.add_argument(
+        '--exclude',
+        action='append',
+        help='If a filename matches this pattern (using re.search), '
+        'ignore it. May be specified multiple times')
     combine = subparsers.add_parser(
         'combine',
         help='Combine json QC forms downloaded from QC pages into a TSV file.')
@@ -101,7 +106,8 @@ def run_qcpages(args):
            args.config_file,
            plugin=args.nipype_plugin,
            working_directory=args.working_directory,
-           bids_validate=args.validate_bids)
+           bids_validate=args.validate_bids,
+           exclude_patterns=args.exclude)
 
 
 def run_combine(args):
