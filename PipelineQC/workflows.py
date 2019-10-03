@@ -78,8 +78,9 @@ def report_workflow(page_dict,
                 setattr(node.inputs, rpkey, rpval)
         if 'relative_dir' in node.inputs.visible_traits():
             node.inputs.relative_dir = out_file.parent
-        for settings_key, settings_value in conf['settings'].items():
-            if settings_key in node.inputs.visible_traits():
+        for settings_key, settings_value in conf['global_reportlet_settings'].items():
+            if (settings_key in node.inputs.visible_traits()
+                    and settings_key not in rpspec):
                 setattr(node.inputs, settings_key, settings_value)
         wf.connect(node, 'out_file', reportlets, f'in{reportletnum}')
     assemble_node = pe.Node(AssembleReport(), 'assemble')

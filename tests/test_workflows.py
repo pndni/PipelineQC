@@ -132,7 +132,7 @@ def test_all_wf(tmp_path, input_files_conf1):
             'nslices': defaultnslices,
             'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
-            'contour_width': 5
+            'contour_width': 2.2
         },
         'report.page_sub-1_acq-10_rec-11_run-12.distributions10': {
             'name': 'features',
@@ -259,7 +259,7 @@ def test_all_wf(tmp_path, input_files_conf1):
             'nslices': defaultnslices,
             'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
-            'contour_width': 5
+            'contour_width': 2.2
         },
         'report.page_sub-2_acq-10_rec-11_run-12.distributions10': {
             'name': 'features',

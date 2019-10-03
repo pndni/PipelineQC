@@ -114,7 +114,8 @@
             "type": "contour",
             "name": "Non-uniformity corrected",
             "image": "nu_bet",
-            "labelimage": "transformed_atlas"
+            "labelimage": "transformed_atlas",
+	    "contour_width": 2.2
         },
         {
             "type": "distributions",
@@ -159,7 +160,7 @@
 	    }
 	}
     ],
-    "settings": {
+    "global_reportlet_settings": {
 	"image_width": 2,
 	"image_height": 1.75,
 	"contour_width": 5

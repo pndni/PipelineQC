@@ -2,10 +2,10 @@
     "$schema": "http://json-schema.org/draft-07/schema$",
     "definitions": {
 	"singlereportlet": {
-	    "type": "object",
-	    "additionalProperties": false,
-	    "required": ["type", "name", "image"],
-	    "properties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "name", "image"],
+            "properties": {
 		"type": {
 		    "type": "string",
 		    "const": "single"
@@ -21,14 +21,20 @@
 		},
 		"image": {
 		    "type": "string"
+		},
+		"image_width": {
+		    "type": "number"
+		},
+		"image_height": {
+		    "type": "number"
 		}
-	    }
+            }
 	},
 	"comparereportlet": {
-	    "type": "object",
-	    "additionalProperties": false,
-	    "required": ["type", "name1", "image1", "name2", "image2"],
-	    "properties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "name1", "image1", "name2", "image2"],
+            "properties": {
 		"type": {
 		    "type": "string",
 		    "const": "compare"
@@ -50,14 +56,20 @@
 		},
 		"image2": {
 		    "type": "string"
+		},
+		"image_width": {
+		    "type": "number"
+		},
+		"image_height": {
+		    "type": "number"
 		}
-	    }
+            }
 	},
 	"contourreportlet": {
-	    "type": "object",
-	    "additionalProperties": false,
-	    "required": ["type", "name", "image", "labelimage"],
-	    "properties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "name", "image", "labelimage"],
+            "properties": {
 		"type": {
 		    "type": "string",
 		    "const": "contour"
@@ -76,14 +88,23 @@
 		},
 		"labelimage": {
 		    "type": "string"
+		},
+		"image_width": {
+		    "type": "number"
+		},
+		"image_height": {
+		    "type": "number"
+		},
+		"contour_width": {
+		    "type": "number"
 		}
-	    }
+            }
 	},
 	"distributionsreportlet": {
-	    "type": "object",
-	    "additionalProperties": false,
-	    "required": ["type", "name", "distsfile", "labelfile"],
-	    "properties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "name", "distsfile", "labelfile"],
+            "properties": {
 		"type": {
 		    "type": "string",
 		    "const": "distributions"
@@ -103,13 +124,13 @@
 		"labelfile": {
 		    "type": "string"
 		}
-	    }
+            }
 	},
 	"crashreportlet": {
-	    "type": "object",
-	    "additionalProperties": false,
-	    "required": ["type", "name", "crashfiles"],
-	    "properties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "name", "crashfiles"],
+            "properties": {
 		"type": {
 		    "type": "string",
 		    "const": "crash"
@@ -126,13 +147,13 @@
 		"crashfiles": {
 		    "type": "string"
 		}
-	    }
+            }
 	},
 	"ratingreportlet": {
-	    "type": "object",
-	    "additionalProperties": false,
-	    "required": ["name", "type"],
-	    "properties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "type"],
+            "properties": {
 		"type": {
 		    "type": "string",
 		    "const": "rating"
@@ -192,7 +213,7 @@
 			}
 		    }
 		}
-	    }
+            }
 	}
     },
     "type": "object",
@@ -204,7 +225,7 @@
                 "type": "string",
 		"pattern": "^[a-zA-Z0-9]*$"
             },
-	    "minItems": 1
+            "minItems": 1
         },
         "page_filename_template": {
             "type": "string",
@@ -254,10 +275,10 @@
 		    { "$ref": "#/definitions/distributionsreportlet" },
 		    { "$ref": "#/definitions/crashreportlet" },
 		    { "$ref": "#/definitions/ratingreportlet" }
-                ]
-            }
+		]
+	    }
         },
-	"settings": {
+	"global_reportlet_settings": {
 	    "type": "object",
 	    "properties": {
 		"image_width": {

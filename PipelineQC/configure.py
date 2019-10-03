@@ -22,7 +22,7 @@ def load_config(conffile):
         Path(resource_filename('PipelineQC',
                                'schema/config.json')).read_text())
     jsonschema.validate(conf, schema)
-    conf.setdefault('settings', {})
+    conf.setdefault('global_reportlet_settings', {})
     return conf
 
 
