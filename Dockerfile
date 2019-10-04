@@ -26,9 +26,8 @@ WORKDIR /
 
 ENV LC_ALL=en_US.utf-8
 
-LABEL org.label-schema.name=PipelineQC \
-      org.label-schema.usage=/usr/share/man/man1/pipelineqc.1 \
-      org.label-schema.vcs-ref=https://github.com/pndni/PipelineQC \
-      org.label-schema.schema-version=1.0
+LABEL org.opencontainers.image.title=PipelineQC \
+      org.opencontainers.image.documentation=file:///usr/share/man/man1/pipelineqc.1 \
+      org.opencontainers.image.vcs-url=https://github.com/pndni/PipelineQC
 
 ENTRYPOINT ["PipelineQC"]
