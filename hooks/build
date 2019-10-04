@@ -2,4 +2,5 @@
 
 set -u
 
-docker build -f $DOCKERFILE_PATH --label org.label-schema.vcs-ref=$SOURCE_COMMIT --label org.label-schema.build-date=$(date --rfc-3339=seconds) --label org.label-schema.version=$DOCKER_TAG -t $IMAGE_NAME .
+docker build -f $DOCKERFILE_PATH -t $IMAGE_NAME .
+#  --label org.label-schema.vcs-ref=$SOURCE_COMMIT --label org.label-schema.build-date=$(date --rfc-3339=seconds) --label org.label-schema.version=$DOCKER_TAG
