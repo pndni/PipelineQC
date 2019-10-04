@@ -181,6 +181,14 @@ The final config file is then:
 .. literalinclude:: ../tests/testconfdocs.json
 
 
+Global
+------
+
+The optional config section "global_reportlet_settings" may contain settings
+that are applied to all reportlets (but do not override individually set values).
+Currently, these may be "image_width", "image_height", and "contour_width".
+
+
 Schema
 ------
 
