@@ -1,5 +1,6 @@
 import numpy as np
 import nibabel
+from nilearn.image import resample_to_img
 from matplotlib import figure
 from matplotlib import gridspec
 from matplotlib import style
@@ -109,6 +110,12 @@ def _get_row_col(viewnum, slicenum, nslices, maxcols):
     return row, col
 
 
+def _resample(img, reference):
+    if img.shape == reference.shape and np.allclose(img.affine, reference.affine):
+        return img
+    return resample_to_img(img, reference)
+
+
 def imshowfig(*,
               imgfile,
               nslices=7,
@@ -117,7 +124,8 @@ def imshowfig(*,
               maxcols=8,
               contour_width=1.5,
               labelfile=None,
-              separate_figs=False):
+              separate_figs=False,
+              reference=None):
     """Create a figure (or nested list of figures) from imgfile
 
     :param imgfile: Image file readable by nibabel
@@ -143,14 +151,20 @@ def imshowfig(*,
     """
     img = _load_and_orient(imgfile)
     if labelfile is not None:
+        if reference is not None:
+            raise ValueError('Only one of labelfile and reference may be specified')
         label = _load_and_orient(labelfile)
         if label.shape != img.shape:
             raise RuntimeError('label shape does not match image shape')
+        if not np.allclose(label.affine, img.affine):
+            raise RuntimeError('label affine does not match image affine')
         labelvals = list(np.unique(np.asarray(label.dataobj)))
         if 0 in labelvals:
             labelvals.pop(labelvals.index(0))
         if len(labelvals) > len(COLORLIST):
             raise RuntimeError('Not enough defined colors for label image')
+    if reference is not None:
+        img = _resample(img, _load_and_orient(reference))
     with style.context({
             'image.origin': 'lower',
             'image.cmap': 'Greys_r',
@@ -209,7 +223,8 @@ def imshowfig(*,
                         ax.contour(labeldata == lv,
                                    levels=[0.5],
                                    colors=[COLORLIST[lvind]],
-                                   linewidths=[contour_width])
+                                   linewidths=[contour_width],
+                                   aspect=aspect)
                 if separate_figs:
                     fig_list_row.append(fig)
             if separate_figs:
@@ -405,7 +420,7 @@ def compare(*,
             out['filename2'] = str(image2)
 
         svg1list = _imshow(imgfile=image1, separate_figs=True, **kwargs)
-        svg2list = _imshow(imgfile=image2, separate_figs=True, **kwargs)
+        svg2list = _imshow(imgfile=image2, separate_figs=True, reference=image1, **kwargs)
 
         svg1 = doublemap(lambda svgsingle: _set_svg_class(svgsingle, 'first'),
                          svg1list)

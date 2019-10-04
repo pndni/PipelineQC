@@ -9,8 +9,9 @@ setup(
         'matplotlib>=3',
         'Jinja2>=2.10.1',
         'nibabel>=2.4.0',
+        'nilearn',
         'jsonschema',
-        'pybids==0.9.4'
+        'pybids>=0.9.4'
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
