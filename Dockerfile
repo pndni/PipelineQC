@@ -26,14 +26,26 @@ WORKDIR /
 
 ENV LC_ALL=en_US.utf-8
 
+ARG version="dev"
+ARG revision=""
+ARG builddate=""
+
 LABEL org.opencontainers.image.title=PipelineQC \
       org.opencontainers.image.documentation=file:///usr/share/man/man1/pipelineqc.1 \
       org.opencontainers.image.vcs-url=https://github.com/pndni/PipelineQC \
       org.opencontainers.image.licence=GPLv3 \
+      org.opencontainers.image.version=$version \
+      org.opencontainers.image.revision=$revision \
+      org.opencontainers.image.build-date=$builddate \
       org.label-schema.build-date="" \
       org.label-schema.license="" \
       org.label-schema.name="" \
       org.label-schema.schema-version="" \
       org.label-schema.vendor=""
+
+
+ENV PIPELINEQCVERSION=$version \
+    PIPELINEQCREVISION=$revision \
+    PIPELINEQCBUILDDATE=$builddate
 
 ENTRYPOINT ["PipelineQC"]

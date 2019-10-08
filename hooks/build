@@ -2,4 +2,4 @@
 
 set -u
 
-docker build -f "$DOCKERFILE_PATH" --label org.opencontainers.image.revision="$SOURCE_COMMIT" --label org.opencontainers.image.build-date="$(date --rfc-3339=seconds)" --label org.opencontainers.image.version="$DOCKER_TAG" -t "$IMAGE_NAME" .
+docker build -f "$DOCKERFILE_PATH" --build-arg revision="$SOURCE_COMMIT" --build-arg builddate="$(date --rfc-3339=seconds)" --build-arg version="$DOCKER_TAG" -t "$IMAGE_NAME" .
