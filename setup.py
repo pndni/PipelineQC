@@ -11,7 +11,10 @@ setup(
         'nibabel>=2.4.0',
         'nilearn',
         'jsonschema',
-        'pybids>=0.9.4'
+        'pybids>=0.9.4',
+        'scikit-learn>=0.19',
+        'scipy>=0.19',
+        'numpy>=1.11'
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
