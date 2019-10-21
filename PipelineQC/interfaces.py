@@ -141,6 +141,8 @@ class RatingInputSpec(BaseInterfaceInputSpec):
     radio = traits.Either(
         traits.Dict(),
         None,
+        default=None,
+        usedefault=True,
         desc='Description of the radio buttons for the reportlet. '
         'The dictionary must have "name" and "options" keys, '
         'where the value of name is a string and the value of '
@@ -149,11 +151,15 @@ class RatingInputSpec(BaseInterfaceInputSpec):
     checkbox = traits.Either(
         traits.Dict(),
         None,
+        default=None,
+        usedefault=True,
         desc='Description of the checkboxes for the reportlet. '
         'Must have "name" and "fields" keys, where "fields" '
         'is a list of names for different checkboxes.')
     text = traits.Either(traits.Dict(),
                          None,
+                         default=None,
+                         usedefault=True,
                          desc='Description of the text field. '
                          'Only requires "name"')
 

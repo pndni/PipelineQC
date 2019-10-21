@@ -623,7 +623,7 @@ def rating(*, name, radio, checkbox, text, out_file):
     :param out_file: File name
     :type out_file: path-like object
 
-    
+
 
     :Example:
 
@@ -650,12 +650,15 @@ def rating(*, name, radio, checkbox, text, out_file):
         'text': deepcopy(text)
     }
     for k in ['radio', 'checkbox', 'text']:
+        if out[k] is None:
+            continue
         out[k]['name_no_spaces'] = out[k]['name'].replace(' ', '_')
         out[k]['name_'] = out[k]['name']
         del out[k]['name']
-    for opt in out['radio']['options']:
-        opt['name_'] = opt['name']
-        del opt['name']
+    if out['radio'] is not None:
+        for opt in out['radio']['options']:
+            opt['name_'] = opt['name']
+            del opt['name']
     _render(out_file, 'rating.tpl', out)
 
 
