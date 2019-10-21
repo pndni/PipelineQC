@@ -1,4 +1,4 @@
-from .get_files import get_files
+from .get_files import get_files, filedict_to_json, json_to_filedict
 from .workflows import all_workflow
 from .configure import load_config
 from . import group
@@ -14,12 +14,15 @@ def qc_all(dirs,
            plugin_args=None,
            working_directory=None,
            filter_keys_dict=None,
+           filedict=None,
+           create_index=True,
            **kwargs):
     conf = load_config(configfile)
-    filedict = get_files(dirs, conf, **kwargs)
+    if filedict is None:
+        filedict = get_files(dirs, conf, **kwargs)
     if len(filedict) == 1:
         raise RuntimeError('No non-global files found!')
-    wf = all_workflow(filedict, output_dir, conf, filter_keys=filter_keys_dict)
+    wf = all_workflow(filedict, output_dir, conf, filter_keys_dict=filter_keys_dict, create_index=create_index)
     if working_directory is not None:
         if not Path(working_directory).exists():
             raise FileNotFoundError(f'{working_directory} does not exist')
@@ -70,6 +73,11 @@ def get_parser():
                          help='Only make pages for certain values of a key. '
                          'E.g., --filter_key=subject:1:2:10 will only '
                          'create qc pages for subjects 1, 2, and 10.')
+    qcpages.add_argument('--files', type=Path,
+                         help='JSON file from the running the findfiles '
+                         'subcommand')
+    qcpages.add_argument('--no_index', action='store_true',
+                         help='Do not create an index file')
     combine = subparsers.add_parser(
         'combine',
         help='Combine json QC forms downloaded from QC pages into a TSV file.')
@@ -99,6 +107,41 @@ def get_parser():
                           help='Output file type',
                           choices=['svg', 'png'],
                           default='svg')
+    findfiles = subparsers.add_parser(
+        'findfiles',
+        help='Search parse directories for input files based on config. '
+        'Performs the first step of the qcpages subcommand, for use '
+        'with the --files option')
+    findfiles.set_defaults(func=run_findfiles)
+    findfiles.add_argument(
+        'config_file',
+        type=argparse.FileType('r'),
+        help='JSON configuration file. See the documentation for details',
+        metavar='config_file')
+    findfiles.add_argument('output_file',
+                           type=Path,
+                           help='Output JSON file')
+    findfiles.add_argument('search_dirs',
+                           type=Path,
+                           nargs='+',
+                           help='Search these directories for files')
+    findfiles.add_argument(
+        '--validate_bids',
+        action='store_true',
+        help='If using bids, whether to validate the bids directories')
+    findfiles.add_argument(
+        '--exclude',
+        action='append',
+        help='If a filename matches this pattern (using re.search), '
+        'ignore it. May be specified multiple times')
+    index = subparsers.add_parser(
+        'index',
+        help='Create index file.')
+    index.set_defaults(func=run_index)
+    index.add_argument('QC_dir', type=Path, help='Directory with QC pages. '
+                       'Corresponds to output_dir with the qcpages command')
+    index.add_argument('index_filename', type=Path,
+                       help='Filename of output index file')
     return parser
 
 
@@ -108,15 +151,13 @@ def _parse_filter_key_string(fkstr):
     return k, vs
 
 
-def _parse_filter_keys(args):
-    if len(args.filter_key) == 0:
-        args.filter_key_dict = None
-    else:
-        outtmp = {}
-        for fkstr in args.filter_key:
+def _parse_filter_keys(filter_key_list):
+    outtmp = {}
+    if filter_key_list is not None:
+        for fkstr in filter_key_list:
             k, vs = _parse_filter_key_string(fkstr)
             outtmp[k] = vs
-        args.filter_key_dict = outtmp
+    return outtmp
 
 
 def run():
@@ -125,7 +166,10 @@ def run():
 
 
 def run_qcpages(args):
-    _parse_filter_keys(args)
+    if args.files is None:
+        filedict = None
+    else:
+        filedict = json_to_filedict(args.files)
     qc_all(args.search_dirs,
            args.output_dir,
            args.config_file,
@@ -133,7 +177,9 @@ def run_qcpages(args):
            working_directory=args.working_directory,
            bids_validate=args.validate_bids,
            exclude_patterns=args.exclude,
-           filter_keys_dict=args.filter_keys_dict)
+           filter_keys_dict=_parse_filter_keys(args.filter_key),
+           filedict=filedict,
+           create_index=not args.no_index)
 
 
 def run_combine(args):
@@ -149,3 +195,13 @@ def run_image(args):
         args.output_file.write_text(out)
     else:
         args.output_file.write_bytes(out)
+
+
+def run_findfiles(args):
+    conf = load_config(args.config_file)
+    filedict = get_files(args.search_dirs, conf, exclude_patterns=args.exclude, bids_validate=args.validate_bids)
+    filedict_to_json(filedict, args.output_file)
+
+
+def run_index(args):
+    group.make_index(args.QC_dir, args.index_filename)

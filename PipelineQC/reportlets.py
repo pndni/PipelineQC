@@ -694,7 +694,7 @@ def assemble(*,
     _dump(out_file, out)
 
 
-def index(*, out_file, in_files):
+def index(*, out_file, in_files, relative_dir=None):
     """
     Construct an html file linking all to other files
 
@@ -706,5 +706,7 @@ def index(*, out_file, in_files):
     env = jinja2.Environment(
         loader=jinja2.PackageLoader('PipelineQC', 'templates'))
     template = env.get_template('index.tpl')
+    if relative_dir is not None:
+        in_files = list(map(lambda in_file: os.path.relpath(in_file, relative_dir), in_files))
     out = template.render({'urls': in_files})
     _dump(out_file, out)

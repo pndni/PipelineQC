@@ -3,6 +3,8 @@ from collections import defaultdict
 from pathlib import Path
 from PipelineQC import get_files
 from PipelineQC import configure as conf
+import subprocess
+import json
 
 
 @pytest.fixture()
@@ -138,13 +140,27 @@ def compare(x, y):
                 assert x[k][k2] == y[k][k2]
 
 
+def cliwrapper(search_dirs, conffile, tmp_path, validate_bids=None, exclude=None):
+    cmd = ['PipelineQC', 'findfiles', conffile, str(tmp_path / 'filedict.json')] + search_dirs
+    if validate_bids is not None:
+        cmd.append('--validate_bids')
+    if exclude is not None:
+        raise RuntimeError
+    subprocess.check_call(cmd)
+    return get_files.json_to_filedict(tmp_path / 'filedict.json')
+
+
+@pytest.mark.parametrize('usecli', [False, True])
 @pytest.mark.parametrize(
     'conffilename',
     ['testconf1.json', 'testconf1bids.json', 'testconf1bids2.json'])
-def test_conf1(tmp_path, input_files_conf1, conffilename):
+def test_conf1(tmp_path, input_files_conf1, conffilename, usecli):
     infull = _make_files(tmp_path, input_files_conf1)
     conffile = Path(__file__).parent / conffilename
-    out = get_files.get_files([tmp_path], conf.load_config(conffile))
+    if usecli:
+        out = cliwrapper([tmp_path], conffile, tmp_path)
+    else:
+        out = get_files.get_files([tmp_path], conf.load_config(conffile))
     compare(out, infull)
     out = get_files.get_files([tmp_path],
                               conf.load_config(conffile),
@@ -184,10 +200,14 @@ def test_conf1_multfiles2(tmp_path, input_files_conf1):
         get_files.get_files([tmp_path], conf.load_config(conffile))
 
 
-def test_conf2(tmp_path, input_files_conf2):
+@pytest.mark.parametrize('usecli', [False, True])
+def test_conf2(tmp_path, input_files_conf2, usecli):
     infull = _make_files(tmp_path, input_files_conf2)
     conffile = Path(__file__).parent / 'testconf2.json'
-    out = get_files.get_files([tmp_path], conf.load_config(conffile))
+    if usecli:
+        out = cliwrapper([tmp_path], conffile, tmp_path)
+    else:
+        out = get_files.get_files([tmp_path], conf.load_config(conffile))
     compare(out, infull)
 
 
@@ -205,3 +225,16 @@ def test_search_types2(tmp_path, input_files_conf1):
     _make_files(tmp_path, input_files_conf1)
     c = conf.load_config(Path(__file__).parent / 'testconf1bids.json')
     layouts = get_files._get_bids_layouts([tmp_path], c)
+
+
+def test_convert(tmp_path):
+    filedict = {('1', None): {'T1w': Path('idontexit.nii.gz'),
+                              'proc': Path('neitherdoi.nii.gz')},
+                ('1', 'hi'): {'T1w': Path('idontexit2.nii.gz'),
+                              'proc': Path('neitherdoi2.nii.gz')},
+                ('2', None): {'T1w': Path('idontexit3.nii.gz')},
+                'global': {'model': Path('model.nii.gz')}}
+    outfile = tmp_path / 'test.json'
+    get_files.filedict_to_json(filedict, outfile)
+    out = get_files.json_to_filedict(outfile)
+    assert out == filedict

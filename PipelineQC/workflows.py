@@ -100,7 +100,7 @@ def _sort_key(intuple):
     return tuple((str(x) for x in intuple))
 
 
-def all_workflow(file_dict, output_dir, conf, filter_keys_dict=None):
+def all_workflow(file_dict, output_dir, conf, filter_keys_dict=None, create_index=True):
     if filter_keys_dict is None:
         filter_keys_dict = {}
     wf = pe.Workflow('report')
@@ -131,9 +131,10 @@ def all_workflow(file_dict, output_dir, conf, filter_keys_dict=None):
                                   next_=next_,
                                   prev=prev)
         wf.connect(page_wf, 'assemble.out_file', merge_pages, f'in{i + 1}')
-    index_pages = pe.Node(IndexReport(), 'index_pages')
-    out_file = Path(output_dir).resolve() / conf['index_filename']
-    out_file.parent.mkdir(exist_ok=True, parents=True)
-    index_pages.inputs.out_file = out_file
-    wf.connect(merge_pages, 'out', index_pages, 'in_files')
+    if create_index:
+        index_pages = pe.Node(IndexReport(), 'index_pages')
+        out_file = Path(output_dir).resolve() / conf['index_filename']
+        out_file.parent.mkdir(exist_ok=True, parents=True)
+        index_pages.inputs.out_file = out_file
+        wf.connect(merge_pages, 'out', index_pages, 'in_files')
     return wf

@@ -4,7 +4,7 @@ import re
 from functools import lru_cache
 import os
 from bids import layout
-from bids import config as bids_config
+import json
 
 FileMatch = namedtuple('FileMatch', ['name', 'page_key'])
 
@@ -172,3 +172,55 @@ def _get_bids_layouts(dirs, conf, validate=False):
             for dir_ in dirs
         ]
     return bids_layouts
+
+
+def filedictmap(func, filedict):
+    """
+    map func to each filename/Path in filedict
+    """
+    out = {}
+    for k1 in list(filedict.keys()):
+        out[k1] = {}
+        for k2 in list(filedict[k1].keys()):
+            if isinstance(filedict[k1][k2], list):
+                out[k1][k2] = list(map(func, filedict[k1][k2]))
+            else:
+                out[k1][k2] = func(filedict[k1][k2])
+    return out
+
+
+def _convert_to_str(x):
+    assert isinstance(x, Path)
+    return str(x)
+
+
+def _convert_to_path(x):
+    assert isinstance(x, str)
+    return Path(x)
+
+
+def filedict_to_json(filedict, output_file):
+    outdict = filedictmap(_convert_to_str, filedict)
+    outdict2 = {'filedict': {}, 'keymap': {}}
+    for i, (k, v) in enumerate(outdict.items()):
+        outdict2['filedict'][i] = v
+        if isinstance(k, tuple):
+            outdict2['keymap'][i] = list(k)
+        else:
+            outdict2['keymap'][i] = k
+    with open(output_file, 'w') as f:
+        json.dump(outdict2, f, indent=4)
+
+
+def json_to_filedict(input_file):
+    outdict = {}
+    with open(input_file, 'r') as f:
+        indict = json.load(f)
+    for i in indict['filedict'].keys():
+        if isinstance(indict['keymap'][i], list):
+            k = tuple(indict['keymap'][i])
+        else:
+            k = indict['keymap'][i]
+        outdict[k] = indict['filedict'][i]
+    outdict2 = filedictmap(_convert_to_path, outdict)
+    return outdict2
