@@ -13,12 +13,13 @@ def qc_all(dirs,
            plugin='MultiProc',
            plugin_args=None,
            working_directory=None,
+           filter_keys_dict=None,
            **kwargs):
     conf = load_config(configfile)
     filedict = get_files(dirs, conf, **kwargs)
     if len(filedict) == 1:
         raise RuntimeError('No non-global files found!')
-    wf = all_workflow(filedict, output_dir, conf)
+    wf = all_workflow(filedict, output_dir, conf, filter_keys=filter_keys_dict)
     if working_directory is not None:
         if not Path(working_directory).exists():
             raise FileNotFoundError(f'{working_directory} does not exist')
@@ -63,6 +64,12 @@ def get_parser():
         action='append',
         help='If a filename matches this pattern (using re.search), '
         'ignore it. May be specified multiple times')
+    qcpages.add_argument('--filter_key',
+                         type=str,
+                         action='append',
+                         help='Only make pages for certain values of a key. '
+                         'E.g., --filter_key=subject:1:2:10 will only '
+                         'create qc pages for subjects 1, 2, and 10.')
     combine = subparsers.add_parser(
         'combine',
         help='Combine json QC forms downloaded from QC pages into a TSV file.')
@@ -95,19 +102,38 @@ def get_parser():
     return parser
 
 
+def _parse_filter_key_string(fkstr):
+    k, v = fkstr.split('=')
+    vs = v.split(':')
+    return k, vs
+
+
+def _parse_filter_keys(args):
+    if len(args.filter_key) == 0:
+        args.filter_key_dict = None
+    else:
+        outtmp = {}
+        for fkstr in args.filter_key:
+            k, vs = _parse_filter_key_string(fkstr)
+            outtmp[k] = vs
+        args.filter_key_dict = outtmp
+
+
 def run():
     args = get_parser().parse_args()
     args.func(args)
 
 
 def run_qcpages(args):
+    _parse_filter_keys(args)
     qc_all(args.search_dirs,
            args.output_dir,
            args.config_file,
            plugin=args.nipype_plugin,
            working_directory=args.working_directory,
            bids_validate=args.validate_bids,
-           exclude_patterns=args.exclude)
+           exclude_patterns=args.exclude,
+           filter_keys_dict=args.filter_keys_dict)
 
 
 def run_combine(args):

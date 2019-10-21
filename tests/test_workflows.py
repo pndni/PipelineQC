@@ -45,12 +45,17 @@ def _make_files(tmp, files):
     return outfull
 
 
-def test_all_wf(tmp_path, input_files_conf1):
+@pytest.mark.parametrize('filter_sub1', [False, True])
+def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
     infull = _make_files(tmp_path, input_files_conf1)
     conffile = Path(__file__).parent / 'testconf1.json'
     conf = load_config(conffile)
     out = get_files.get_files([tmp_path], conf)
-    wf = workflows.all_workflow(out, tmp_path, conf)
+    if filter_sub1:
+        filter_dict = {'sub': ['1']}
+    else:
+        filter_dict = None
+    wf = workflows.all_workflow(out, tmp_path, conf, filter_keys_dict=filter_dict)
 
     defaultnslices = 7
     defaultqcform = True
@@ -324,5 +329,7 @@ def test_all_wf(tmp_path, input_files_conf1):
                     assert getattr(node.inputs, k) == settings[k]
                 else:
                     assert not isdefined(getattr(node.inputs, k))
+        if filter_sub1:
+            assert 'sub-2' not in node.fullname
 
     wf.run(plugin='Debug', plugin_args={'callable': callable})

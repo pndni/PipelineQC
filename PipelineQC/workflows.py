@@ -100,7 +100,9 @@ def _sort_key(intuple):
     return tuple((str(x) for x in intuple))
 
 
-def all_workflow(file_dict, output_dir, conf):
+def all_workflow(file_dict, output_dir, conf, filter_keys_dict=None):
+    if filter_keys_dict is None:
+        filter_keys_dict = {}
     wf = pe.Workflow('report')
     merge_pages = pe.Node(Merge(len(file_dict)), 'merge_pages')
     page_key_list = list(file_dict.keys())
@@ -110,7 +112,14 @@ def all_workflow(file_dict, output_dir, conf):
         page_key: Path(output_dir).resolve() / format_output(conf, page_key)
         for page_key in page_key_list
     }
-    for i, page_key in enumerate(page_key_list, start=0):
+
+    def _inc_page_key(pkl):
+        for filter_i, filter_page_key in enumerate(conf['page_keys']):
+            if filter_page_key in filter_keys_dict and pkl[filter_i] not in filter_keys_dict[filter_page_key]:
+                return False
+        return True
+
+    for i, page_key in enumerate(filter(_inc_page_key, page_key_list), start=0):
         next_ = out_files[page_key_list[
             i + 1]] if i + 1 < len(page_key_list) else None
         prev = out_files[page_key_list[i - 1]] if i > 0 else None
