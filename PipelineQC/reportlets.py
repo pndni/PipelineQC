@@ -109,9 +109,10 @@ def _calc_all_label_slices(nilabel, nslices):
     return out_slices
 
 
-def _get_vlims(x):
+def _get_vlims(x, frac):
     vals = np.sort(x.ravel())
-    ind = int(0.99 * len(vals))
+    vals = vals[vals > 0]
+    ind = int(frac * len(vals))
     return 0.0, vals[ind]
 
 
@@ -144,7 +145,8 @@ def imshowfig(*,
               nilabel=None,
               separate_figs=False,
               reference=None,
-              all_slice_locations=None):
+              all_slice_locations=None,
+              max_intensity_fraction=0.99):
     """Create a figure (or nested list of figures) from imgfile
 
     :param niimg: image
@@ -169,6 +171,16 @@ def imshowfig(*,
     :type reference: :py:class:`nibabel.Nifti1Image`
     :param all_slice_locations: where to slice each axis
     :type all_slice_locations: list of list of int
+    :param max_intensity_fraction: The intensity display range is 0, max where max
+                                   is calculated as:
+
+                                   .. code-block:: python
+
+                                      vals = np.sort(niimg.get_fdata()).ravel()
+                                      vals = vals[vals > 0]
+                                      max = vals[int(len(vals) * max_intensity_fraction)]
+
+    :type max_intensity_fraction: float
     :return: :py:obj:`matplotlib.figure.Figure` or a list of lists of
              :py:obj:`matplotlib.figure.Figure`
     """
@@ -210,7 +222,7 @@ def imshowfig(*,
                                    right=1,
                                    top=1,
                                    bottom=0)
-        vmin, vmax = _get_vlims(niimg.get_fdata())
+        vmin, vmax = _get_vlims(niimg.get_fdata(), max_intensity_fraction)
         pitch = np.sqrt(np.sum(niimg.affine[:3, :3]**2.0, axis=0))
         for rowind, ind in enumerate([2, 0, 1]):
             if separate_figs:
@@ -403,6 +415,8 @@ def compare(*,
             relative_dir=None,
             slice_to_image2=False,
             nslices=7,
+            max_intensity_fraction_image1=0.99,
+            max_intensity_fraction_image2=0.99,
             **kwargs):
     """Write an html file to :py:obj:`out_file` comparing :py:obj:`image1`
     with :py:obj:`image2` with :py:obj:`nslices` slices in all three axial planes
@@ -468,12 +482,14 @@ def compare(*,
                            all_slice_locations=slice_locations,
                            nslices=nslices,
                            reference=reference1,
+                           max_intensity_fraction=max_intensity_fraction_image1,
                            **kwargs)
         svg2list = _imshow(niimg=niimage2,
                            separate_figs=True,
                            reference=reference2,
                            all_slice_locations=slice_locations,
                            nslices=nslices,
+                           max_intensity_fraction=max_intensity_fraction_image2,
                            **kwargs)
 
         svg1 = doublemap(lambda svgsingle: _set_svg_class(svgsingle, 'first'),

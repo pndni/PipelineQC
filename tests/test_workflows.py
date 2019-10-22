@@ -69,7 +69,9 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'nslices': defaultnslices,
             'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
-            'slice_to_image2': False
+            'slice_to_image2': False,
+            'max_intensity_fraction_image1': 0.99,
+            'max_intensity_fraction_image2': 0.99
         },
         'report.page_sub-1_acq-10_rec-11_run-12.compare2': {
             'name1': 'Non-uniformity corrected',
@@ -79,7 +81,9 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'nslices': 3,
             'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
-            'slice_to_image2': False
+            'slice_to_image2': False,
+            'max_intensity_fraction_image1': 0.91,
+            'max_intensity_fraction_image2': 0.92
         },
         'report.page_sub-1_acq-10_rec-11_run-12.compare3': {
             'name1': 'Non-uniformity corrected',
@@ -89,28 +93,33 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'nslices': defaultnslices,
             'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
-            'slice_to_image2': True
+            'slice_to_image2': True,
+            'max_intensity_fraction_image1': 0.99,
+            'max_intensity_fraction_image2': 0.99
         },
         'report.page_sub-1_acq-10_rec-11_run-12.single4': {
             'name': 'Non-uniformity corrected',
             'image': str(infull[('1', '10', '11', '12', None)]['nu_bet']),
             'nslices': defaultnslices,
             'qcform': defaultqcform,
-            'relative_dir': str(tmp_path.resolve() / 'sub-1')
+            'relative_dir': str(tmp_path.resolve() / 'sub-1'),
+            'max_intensity_fraction': 0.99
         },
         'report.page_sub-1_acq-10_rec-11_run-12.single5': {
             'name': 'Non-uniformity corrected',
             'image': str(infull[('1', '10', '11', '12', None)]['nu_bet']),
             'nslices': 3,
             'qcform': defaultqcform,
-            'relative_dir': str(tmp_path.resolve() / 'sub-1')
+            'relative_dir': str(tmp_path.resolve() / 'sub-1'),
+            'max_intensity_fraction': 0.99
         },
         'report.page_sub-1_acq-10_rec-11_run-12.single6': {
             'name': 'Non-uniformity corrected',
             'image': str(infull[('1', '10', '11', '12', None)]['nu_bet']),
             'nslices': defaultnslices,
             'qcform': False,
-            'relative_dir': str(tmp_path.resolve() / 'sub-1')
+            'relative_dir': str(tmp_path.resolve() / 'sub-1'),
+            'max_intensity_fraction': 0.99
         },
         'report.page_sub-1_acq-10_rec-11_run-12.contour7': {
             'name': 'Non-uniformity corrected',
@@ -121,7 +130,8 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'contour_width': 5,
-            'slice_to_label': True
+            'slice_to_label': True,
+            'max_intensity_fraction': 0.99
         },
         'report.page_sub-1_acq-10_rec-11_run-12.contour8': {
             'name': 'Non-uniformity corrected',
@@ -132,7 +142,8 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'contour_width': 5,
-            'slice_to_label': False
+            'slice_to_label': False,
+            'max_intensity_fraction': 0.99
         },
         'report.page_sub-1_acq-10_rec-11_run-12.contour9': {
             'name': 'Non-uniformity corrected',
@@ -143,7 +154,8 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'contour_width': 2.2,
-            'slice_to_label': False
+            'slice_to_label': False,
+            'max_intensity_fraction': 0.95
         },
         'report.page_sub-1_acq-10_rec-11_run-12.distributions10': {
             'name': 'features',
@@ -202,7 +214,9 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'nslices': defaultnslices,
             'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
-            'slice_to_image2': False
+            'slice_to_image2': False,
+            'max_intensity_fraction_image1': 0.99,
+            'max_intensity_fraction_image2': 0.99
         },
         'report.page_sub-2_acq-10_rec-11_run-12.compare2': {
             'name1': 'Non-uniformity corrected',
@@ -212,7 +226,9 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'nslices': 3,
             'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
-            'slice_to_image2': False
+            'slice_to_image2': False,
+            'max_intensity_fraction_image1': 0.91,
+            'max_intensity_fraction_image2': 0.92
         },
         'report.page_sub-2_acq-10_rec-11_run-12.compare3': {
             'name1': 'Non-uniformity corrected',
@@ -222,28 +238,33 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'nslices': defaultnslices,
             'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
-            'slice_to_image2': True
+            'slice_to_image2': True,
+            'max_intensity_fraction_image1': 0.99,
+            'max_intensity_fraction_image2': 0.99
         },
         'report.page_sub-2_acq-10_rec-11_run-12.single4': {
             'name': 'Non-uniformity corrected',
             'image': str(infull[('2', '10', '11', '12', None)]['nu_bet']),
             'nslices': defaultnslices,
             'qcform': defaultqcform,
-            'relative_dir': str(tmp_path.resolve() / 'sub-2')
+            'relative_dir': str(tmp_path.resolve() / 'sub-2'),
+            'max_intensity_fraction': 0.99
         },
         'report.page_sub-2_acq-10_rec-11_run-12.single5': {
             'name': 'Non-uniformity corrected',
             'image': str(infull[('2', '10', '11', '12', None)]['nu_bet']),
             'nslices': 3,
             'qcform': defaultqcform,
-            'relative_dir': str(tmp_path.resolve() / 'sub-2')
+            'relative_dir': str(tmp_path.resolve() / 'sub-2'),
+            'max_intensity_fraction': 0.99
         },
         'report.page_sub-2_acq-10_rec-11_run-12.single6': {
             'name': 'Non-uniformity corrected',
             'image': str(infull[('2', '10', '11', '12', None)]['nu_bet']),
             'nslices': defaultnslices,
             'qcform': False,
-            'relative_dir': str(tmp_path.resolve() / 'sub-2')
+            'relative_dir': str(tmp_path.resolve() / 'sub-2'),
+            'max_intensity_fraction': 0.99
         },
         'report.page_sub-2_acq-10_rec-11_run-12.contour7': {
             'name': 'Non-uniformity corrected',
@@ -254,7 +275,8 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'contour_width': 5,
-            'slice_to_label': True
+            'slice_to_label': True,
+            'max_intensity_fraction': 0.99
         },
         'report.page_sub-2_acq-10_rec-11_run-12.contour8': {
             'name': 'Non-uniformity corrected',
@@ -265,7 +287,8 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'contour_width': 5,
-            'slice_to_label': False
+            'slice_to_label': False,
+            'max_intensity_fraction': 0.99
         },
         'report.page_sub-2_acq-10_rec-11_run-12.contour9': {
             'name': 'Non-uniformity corrected',
@@ -276,7 +299,8 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'contour_width': 2.2,
-            'slice_to_label': False
+            'slice_to_label': False,
+            'max_intensity_fraction': 0.95
         },
         'report.page_sub-2_acq-10_rec-11_run-12.distributions10': {
             'name': 'features',

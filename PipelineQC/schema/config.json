@@ -27,6 +27,9 @@
 		},
 		"image_height": {
 		    "type": "number"
+		},
+		"max_intensity_fraction": {
+		    "type": "number"
 		}
             }
 	},
@@ -65,6 +68,12 @@
 		},
 		"slice_to_image2": {
 		    "type": "boolean"
+		},
+		"max_intensity_fraction_image1": {
+		    "type": "number"
+		},
+		"max_intensity_fraction_image2": {
+		    "type": "number"
 		}
             }
 	},
@@ -103,6 +112,9 @@
 		},
 		"slice_to_label": {
 		    "type": "boolean"
+		},
+		"max_intensity_fraction": {
+		    "type": "number"
 		}
             }
 	},

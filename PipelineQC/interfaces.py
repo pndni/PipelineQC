@@ -62,6 +62,22 @@ class CompareInputSpec(ImageGridReportletInputSpec):
     slice_to_image2 = traits.Bool(False, usedefault=True,
                                   desc='If true, calculated slices based on '
                                   'non zero extent of image2')
+    max_intensity_fraction_image1 = traits.Float(
+        0.99, usedefault=True,
+        desc="""The intensity display range is 0, max where max is calculated as:
+        ``vals = np.sort(niimg.get_fdata()).ravel()``
+        ``vals = vals[vals > 0]``
+        ``max = vals[int(len(vals) * max_intensity_fraction)]``
+        """
+        )
+    max_intensity_fraction_image2 = traits.Float(
+        0.99, usedefault=True,
+        desc="""The intensity display range is 0, max where max is calculated as:
+        ``vals = np.sort(niimg.get_fdata()).ravel()``
+        ``vals = vals[vals > 0]``
+        ``max = vals[int(len(vals) * max_intensity_fraction)]``
+        """
+        )
 
 
 class Compare(Reportlet):
@@ -84,6 +100,14 @@ class ContourInputSpec(ImageGridReportletInputSpec):
     slice_to_label = traits.Bool(False, usedefault=True,
                                  desc='If true, calculated slices based on '
                                  'non zero extent of labelimage')
+    max_intensity_fraction = traits.Float(
+        0.99, usedefault=True,
+        desc="""The intensity display range is 0, max where max is calculated as:
+        ``vals = np.sort(niimg.get_fdata()).ravel()``
+        ``vals = vals[vals > 0]``
+        ``max = vals[int(len(vals) * max_intensity_fraction)]``
+        """
+        )
 
 
 class Contour(Reportlet):
@@ -95,6 +119,14 @@ class SingleInputSpec(ImageGridReportletInputSpec):
     name = traits.Str(mandatory=True, desc='Name of image')
     image = traits.Either(File(exists=True, mandatory=True, desc='Image file'),
                           None)
+    max_intensity_fraction = traits.Float(
+        0.99, usedefault=True,
+        desc="""The intensity display range is 0, max where max is calculated as:
+        ``vals = np.sort(niimg.get_fdata()).ravel()``
+        ``vals = vals[vals > 0]``
+        ``max = vals[int(len(vals) * max_intensity_fraction)]``
+        """
+        )
 
 
 class Single(Reportlet):

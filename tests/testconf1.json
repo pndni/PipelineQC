@@ -68,7 +68,9 @@
             "name2": "Inormalized",
             "image2": "normalized",
             "nslices": 3,
-	    "qcform": true
+	    "qcform": true,
+	    "max_intensity_fraction_image1": 0.91,
+	    "max_intensity_fraction_image2": 0.92
         },
         {
             "type": "compare",
@@ -117,7 +119,8 @@
             "name": "Non-uniformity corrected",
             "image": "nu_bet",
             "labelimage": "transformed_atlas",
-	    "contour_width": 2.2
+	    "contour_width": 2.2,
+	    "max_intensity_fraction": 0.95
         },
         {
             "type": "distributions",
