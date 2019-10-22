@@ -86,27 +86,32 @@ def test_single(images):
     i.run()
 
 
-def test_contour(images):
+@pytest.mark.parametrize('slice_to_label', [False, True])
+def test_contour(images, slice_to_label):
     tmp_path, image1, image2, image3 = images
     outfile = tmp_path / 'out.txt'
     reportlets.contours(name='testcontours',
                         image=image3,
                         labelimage=image2,
                         out_file=outfile,
+                        slice_to_label=slice_to_label,
                         nslices=1)
     reportlets.contours(name='testcontours',
                         image=image2,
                         labelimage=image2,
                         out_file=outfile,
+                        slice_to_label=slice_to_label,
                         nslices=1)
     i = interfaces.Contour(name='testcontours',
                            image=image3,
                            labelimage=image2,
+                           slice_to_label=slice_to_label,
                            nslices=1)
     i.run()
 
 
-def test_compare(images):
+@pytest.mark.parametrize('slice_to_image2', [False, True])
+def test_compare(images, slice_to_image2):
     tmp_path, image1, image2, image3 = images
     outfile = tmp_path / 'out.txt'
     reportlets.compare(name1='testcompare',
@@ -114,23 +119,27 @@ def test_compare(images):
                        name2='testcompare2',
                        image2=image2,
                        out_file=outfile,
+                       slice_to_image2=slice_to_image2,
                        nslices=1)
     reportlets.compare(name1='testcompare',
                        image1=image3,
                        name2='testcompare2',
                        image2=image2,
                        out_file=outfile,
+                       slice_to_image2=slice_to_image2,
                        nslices=1)
     reportlets.compare(name1='testcompare',
                        image1=image2,
                        name2='testcompare2',
                        image2=image3,
                        out_file=outfile,
+                       slice_to_image2=slice_to_image2,
                        nslices=1)
     i = interfaces.Compare(name1='testcompare',
                            image1=image1,
                            name2='testcompare2',
                            image2=image2,
+                           slice_to_image2=slice_to_image2,
                            nslices=1)
     i.run()
 

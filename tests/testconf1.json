@@ -75,7 +75,8 @@
             "name1": "Non-uniformity corrected",
             "image1": "nu_bet",
             "name2": "Inormalized",
-            "image2": "normalized"
+            "image2": "normalized",
+	    "slice_to_image2": true
         },
         {
             "type": "single",
@@ -100,7 +101,8 @@
             "name": "Non-uniformity corrected",
             "image": "nu_bet",
             "labelimage": "transformed_atlas",
-	    "qcform": true
+	    "qcform": true,
+	    "slice_to_label": true
         },
         {
             "type": "contour",

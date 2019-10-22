@@ -16,6 +16,7 @@ from nipype import utils as nputils
 from pndniworkflows import utils
 from copy import deepcopy
 from pathlib import Path
+from scipy import ndimage
 
 ORIENTATION = [[2, 1], [1, 1], [0, 1]]
 PLOTSIZE = 5, 4
@@ -79,17 +80,33 @@ def _load_and_orient(fname):
     return y
 
 
-def _calcslices(s, nslices):
+def _calcslices(s, nslices, allow_less_slices=False):
     if nslices == 1:
         return [s // 2]
     step = (s - 1) // (nslices - 1)
     if step == 0:
-        raise RuntimeError('step size is 0. nslices is probably too large')
+        if allow_less_slices:
+            return list(range(s))
+        else:
+            raise RuntimeError('step size is 0. nslices is probably too large')
     last = (nslices - 1) * step
     offset = (s - last - 1) // 2
     last += offset
     start = offset
     return list(range(start, last + 1, step))
+
+
+def _calc_all_label_slices(nilabel, nslices):
+    slices = ndimage.find_objects(nilabel.get_fdata() > 0)
+    assert len(slices) == 1
+    slices = slices[0]
+    out_slices = [
+        list(
+            map(lambda x: x + s.start,
+                _calcslices(s.stop - s.start, nslices,
+                            allow_less_slices=True))) for s in slices
+    ]
+    return out_slices
 
 
 def _get_vlims(x):
@@ -111,25 +128,27 @@ def _get_row_col(viewnum, slicenum, nslices, maxcols):
 
 
 def _resample(img, reference):
-    if img.shape == reference.shape and np.allclose(img.affine, reference.affine):
+    if img.shape == reference.shape and np.allclose(img.affine,
+                                                    reference.affine):
         return img
     return resample_to_img(img, reference)
 
 
 def imshowfig(*,
-              imgfile,
+              niimg,
               nslices=7,
               image_width=1.5,
               image_height=1.5,
               maxcols=8,
               contour_width=1.5,
-              labelfile=None,
+              nilabel=None,
               separate_figs=False,
-              reference=None):
+              reference=None,
+              all_slice_locations=None):
     """Create a figure (or nested list of figures) from imgfile
 
-    :param imgfile: Image file readable by nibabel
-    :type imgfile: path-like object
+    :param niimg: image
+    :type niimg: :py:class:`nibabel.Nifti1Image`
     :param nslices: The number of slices per view
     :type nslices: int
     :param image_width: The width of each axes/image (in.)
@@ -141,37 +160,40 @@ def imshowfig(*,
     :type maxcols: int
     :param contour_width: The width of contour lines (pts.)
     :type contour_width: float
-    :param labelfile: Image file of labels readable by nibabel
-    :type labelfile: path-like object
+    :param nilabel: Image of labels readable by nibabel
+    :type nilabel: :py:class:`nibabel.Nifti1Image`
     :param separate_figs: Whether to create separate figures for
                           each image
     :type separate_figs: bool
+    :param reference: Resample niimg to this reference image
+    :type reference: :py:class:`nibabel.Nifti1Image`
+    :param all_slice_locations: where to slice each axis
+    :type all_slice_locations: list of list of int
     :return: :py:obj:`matplotlib.figure.Figure` or a list of lists of
              :py:obj:`matplotlib.figure.Figure`
     """
-    img = _load_and_orient(imgfile)
-    if labelfile is not None:
+    if nilabel is not None:
         if reference is not None:
-            raise ValueError('Only one of labelfile and reference may be specified')
-        label = _load_and_orient(labelfile)
-        if label.shape != img.shape:
+            raise ValueError(
+                'Only one of labelfile and reference may be specified')
+        if nilabel.shape != niimg.shape:
             raise RuntimeError('label shape does not match image shape')
-        if not np.allclose(label.affine, img.affine):
+        if not np.allclose(nilabel.affine, niimg.affine):
             raise RuntimeError('label affine does not match image affine')
-        labelvals = list(np.unique(np.asarray(label.dataobj)))
+        labelvals = list(np.unique(np.asarray(nilabel.dataobj)))
         if 0 in labelvals:
             labelvals.pop(labelvals.index(0))
         if len(labelvals) > len(COLORLIST):
             raise RuntimeError('Not enough defined colors for label image')
     if reference is not None:
-        img = _resample(img, _load_and_orient(reference))
+        niimg = _resample(niimg, reference)
     with style.context({
             'image.origin': 'lower',
             'image.cmap': 'Greys_r',
             'axes.facecolor': 'black',
             'figure.facecolor': 'black',
             'figure.dpi': int(
-                np.ceil(np.max(img.shape) / min(image_width, image_height)))
+                np.ceil(np.max(niimg.shape) / min(image_width, image_height)))
     }):
         if separate_figs:
             fig_list = []
@@ -188,12 +210,15 @@ def imshowfig(*,
                                    right=1,
                                    top=1,
                                    bottom=0)
-        vmin, vmax = _get_vlims(img.get_fdata())
-        pitch = np.sqrt(np.sum(img.affine[:3, :3]**2.0, axis=0))
+        vmin, vmax = _get_vlims(niimg.get_fdata())
+        pitch = np.sqrt(np.sum(niimg.affine[:3, :3]**2.0, axis=0))
         for rowind, ind in enumerate([2, 0, 1]):
             if separate_figs:
                 fig_list_row = []
-            slice_locations = _calcslices(img.shape[ind], nslices)
+            if all_slice_locations is None:
+                slice_locations = _calcslices(niimg.shape[ind], nslices)
+            else:
+                slice_locations = all_slice_locations[ind]
             pitchtmp = list(pitch.copy())
             pitchtmp.pop(ind)
             aspect = pitchtmp[0] / pitchtmp[1]
@@ -202,7 +227,7 @@ def imshowfig(*,
                     slice(sl, sl + 1) if i == ind else slice(None)
                     for i in range(3))
                 imgslice = np.squeeze(np.asarray(
-                    img.slicer[slicespec].dataobj),
+                    niimg.slicer[slicespec].dataobj),
                                       axis=(ind, ))
                 if separate_figs:
                     fig = figure.Figure(figsize=(image_width, image_height),
@@ -215,9 +240,9 @@ def imshowfig(*,
                 ax.imshow(imgslice, vmin=vmin, vmax=vmax, aspect=aspect)
                 ax.set_xticks([])
                 ax.set_yticks([])
-                if labelfile is not None:
+                if nilabel is not None:
                     labeldata = np.squeeze(np.asarray(
-                        label.slicer[slicespec].dataobj),
+                        nilabel.slicer[slicespec].dataobj),
                                            axis=(ind, ))
                     for lvind, lv in enumerate(labelvals):
                         ax.contour(labeldata == lv,
@@ -305,26 +330,30 @@ def _render(out_file, template, data):
 
 
 def _single_opt_contours(name,
-                         image,
+                         niimage,
+                         imagefilename,
                          out_file,
-                         label=None,
+                         nilabel=None,
+                         labelfilename=None,
                          qcform=True,
                          relative_dir=None,
                          **kwargs):
     out = {
         'name': name, 'form': qcform, 'name_no_spaces': name.replace(' ', '_')
     }
-    out['svg'] = _imshow(imgfile=image,
-                         labelfile=label,
+    out['svg'] = _imshow(niimg=niimage,
+                         nilabel=nilabel,
                          separate_figs=True,
                          **kwargs)
-    out['filename'] = str(image)
+    out['filename'] = str(imagefilename)
     out['formfile'] = 'form_simple.tpl'
-    if label is not None:
-        out['labelfilename'] = str(label)
+    if nilabel is not None:
+        if labelfilename is None:
+            raise ValueError
+        out['labelfilename'] = str(labelfilename)
     if relative_dir is not None:
         out['filename'] = os.path.relpath(out['filename'], relative_dir)
-        if label is not None:
+        if nilabel is not None:
             out['labelfilename'] = os.path.relpath(out['labelfilename'],
                                                    relative_dir)
     _render(out_file, 'single.tpl', out)
@@ -356,6 +385,7 @@ def single(*, name, image, out_file, qcform=True, relative_dir=None, **kwargs):
         _render(out_file, 'single.tpl', out)
     else:
         _single_opt_contours(name,
+                             _load_and_orient(image),
                              image,
                              out_file,
                              qcform=qcform,
@@ -371,6 +401,8 @@ def compare(*,
             out_file,
             qcform=True,
             relative_dir=None,
+            slice_to_image2=False,
+            nslices=7,
             **kwargs):
     """Write an html file to :py:obj:`out_file` comparing :py:obj:`image1`
     with :py:obj:`image2` with :py:obj:`nslices` slices in all three axial planes
@@ -385,12 +417,14 @@ def compare(*,
     :type image2: path-like object or :py:obj:`None`
     :param out_file: File name
     :type out_file: path-like object
-    :param nslices: Number of slices to show in each plane
-    :type nslices: int
     :param qcform: Include a QC form in the output
     :type qcform: bool
     :param relative_dir: Create links to filenames relative to this directory
     :type relative_dir: path-like object
+    :param slice_to_image2: Calculate slices based on non-zero extent of image2
+    :type slice_to_image2: bool
+    :param nslices: Number of slices to show in each plane
+    :type nslices: int
     """
 
     out = {
@@ -419,8 +453,28 @@ def compare(*,
             out['filename1'] = str(image1)
             out['filename2'] = str(image2)
 
-        svg1list = _imshow(imgfile=image1, separate_figs=True, **kwargs)
-        svg2list = _imshow(imgfile=image2, separate_figs=True, reference=image1, **kwargs)
+        niimage1 = _load_and_orient(image1)
+        niimage2 = _load_and_orient(image2)
+        if slice_to_image2:
+            slice_locations = _calc_all_label_slices(niimage2, nslices)
+            reference1 = niimage2
+            reference2 = None
+        else:
+            slice_locations = None
+            reference2 = niimage1
+            reference1 = None
+        svg1list = _imshow(niimg=niimage1,
+                           separate_figs=True,
+                           all_slice_locations=slice_locations,
+                           nslices=nslices,
+                           reference=reference1,
+                           **kwargs)
+        svg2list = _imshow(niimg=niimage2,
+                           separate_figs=True,
+                           reference=reference2,
+                           all_slice_locations=slice_locations,
+                           nslices=nslices,
+                           **kwargs)
 
         svg1 = doublemap(lambda svgsingle: _set_svg_class(svgsingle, 'first'),
                          svg1list)
@@ -437,6 +491,8 @@ def contours(*,
              out_file,
              qcform=True,
              relative_dir=None,
+             slice_to_label=False,
+             nslices=7,
              **kwargs):
     """Write an html file to :py:obj:`out_file` showing the :py:obj:`image`
     with :py:obj:`nslices` slices in all three axial planes. Include contour
@@ -450,12 +506,14 @@ def contours(*,
     :type labelimage: path-like object or :py:obj:`None`
     :param out_file: File name
     :type out_file: path-like object
-    :param nslices: Number of slices to show in each plane
-    :type nslices: int
     :param qcform: Include a QC form in the output
     :type qcform: bool
     :param relative_dir: Create links to filenames relative to this directory
     :type relative_dir: path-like object
+    :param slice_to_label: Calculate slices based on non-zero extent of labelimage
+    :type slice_to_label: bool
+    :param nslices: Number of slices to show in each plane
+    :type nslices: int
     """
     if image is None or labelimage is None:
         out = {
@@ -473,12 +531,21 @@ def contours(*,
             errormessages) + ' not specified for this reportlet'
         _render(out_file, 'single.tpl', out)
     else:
+        nilabel = _load_and_orient(labelimage)
+        if slice_to_label:
+            slice_locations = _calc_all_label_slices(nilabel, nslices)
+        else:
+            slice_locations = None
         _single_opt_contours(name,
+                             _load_and_orient(image),
                              image,
                              out_file,
-                             label=labelimage,
+                             nilabel=nilabel,
+                             labelfilename=labelimage,
                              qcform=qcform,
                              relative_dir=relative_dir,
+                             all_slice_locations=slice_locations,
+                             nslices=nslices,
                              **kwargs)
 
 
@@ -705,11 +772,15 @@ def index(*, out_file, in_files, relative_dir=None):
     :type out_file: path-like object
     :param in_file: list of html files to link to from out_file
     :type in_file: list of path-like object
+    :param relative_dir: Create links to filenames relative to this directory
+    :type relative_dir: path-like object
     """
     env = jinja2.Environment(
         loader=jinja2.PackageLoader('PipelineQC', 'templates'))
     template = env.get_template('index.tpl')
     if relative_dir is not None:
-        in_files = list(map(lambda in_file: os.path.relpath(in_file, relative_dir), in_files))
+        in_files = list(
+            map(lambda in_file: os.path.relpath(in_file, relative_dir),
+                in_files))
     out = template.render({'urls': in_files})
     _dump(out_file, out)

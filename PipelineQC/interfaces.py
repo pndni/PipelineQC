@@ -59,6 +59,9 @@ class CompareInputSpec(ImageGridReportletInputSpec):
         File(exists=True, mandatory=True, desc='First image file'), None)
     image2 = traits.Either(
         File(exists=True, mandatory=True, desc='Second image file'), None)
+    slice_to_image2 = traits.Bool(False, usedefault=True,
+                                  desc='If true, calculated slices based on '
+                                  'non zero extent of image2')
 
 
 class Compare(Reportlet):
@@ -78,6 +81,9 @@ class ContourInputSpec(ImageGridReportletInputSpec):
     contour_width = traits.Float(1,
                                  usedefault=True,
                                  desc='Contour line width (in pts)')
+    slice_to_label = traits.Bool(False, usedefault=True,
+                                 desc='If true, calculated slices based on '
+                                 'non zero extent of labelimage')
 
 
 class Contour(Reportlet):
