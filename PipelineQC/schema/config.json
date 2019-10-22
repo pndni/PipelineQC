@@ -118,6 +118,44 @@
 		}
             }
 	},
+	"probmapreportlet": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "name", "image", "probmapimage"],
+            "properties": {
+		"type": {
+		    "type": "string",
+		    "const": "probmap"
+		},
+		"qcform": {
+		    "type": "boolean"
+		},
+		"nslices": {
+		    "type": "integer"
+		},
+		"name": {
+		    "type": "string"
+		},
+		"image": {
+		    "type": "string"
+		},
+		"probmapimage": {
+		    "type": "string"
+		},
+		"image_width": {
+		    "type": "number"
+		},
+		"image_height": {
+		    "type": "number"
+		},
+		"slice_to_probmap": {
+		    "type": "boolean"
+		},
+		"max_intensity_fraction": {
+		    "type": "number"
+		}
+            }
+	},
 	"distributionsreportlet": {
             "type": "object",
             "additionalProperties": false,
@@ -290,6 +328,7 @@
 		    { "$ref": "#/definitions/singlereportlet" },
 		    { "$ref": "#/definitions/comparereportlet" },
 		    { "$ref": "#/definitions/contourreportlet" },
+		    { "$ref": "#/definitions/probmapreportlet" },
 		    { "$ref": "#/definitions/distributionsreportlet" },
 		    { "$ref": "#/definitions/crashreportlet" },
 		    { "$ref": "#/definitions/ratingreportlet" }

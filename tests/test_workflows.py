@@ -206,6 +206,17 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
                 'name': 'Other'
             }
         },
+        'report.page_sub-1_acq-10_rec-11_run-12.probmap14': {
+            'name': 'Non-uniformity corrected',
+            'image': str(infull[('1', '10', '11', '12', None)]['nu_bet']),
+            'probmapimage': str(infull[('1', '10', '11', '12',
+                                        None)]['transformed_atlas']),
+            'nslices': defaultnslices,
+            'qcform': False,
+            'relative_dir': str(tmp_path.resolve() / 'sub-1'),
+            'slice_to_probmap': False,
+            'max_intensity_fraction': 0.95
+        },
         'report.page_sub-2_acq-10_rec-11_run-12.compare1': {
             'name1': 'Non-uniformity corrected',
             'image1': str(infull[('2', '10', '11', '12', None)]['nu_bet']),
@@ -350,6 +361,17 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'text': {
                 'name': 'Other'
             }
+        },
+        'report.page_sub-2_acq-10_rec-11_run-12.probmap14': {
+            'name': 'Non-uniformity corrected',
+            'image': str(infull[('2', '10', '11', '12', None)]['nu_bet']),
+            'probmapimage': str(infull[('2', '10', '11', '12',
+                                        None)]['transformed_atlas']),
+            'nslices': defaultnslices,
+            'qcform': False,
+            'relative_dir': str(tmp_path.resolve() / 'sub-2'),
+            'slice_to_probmap': False,
+            'max_intensity_fraction': 0.95
         },
     }
 

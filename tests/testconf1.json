@@ -163,7 +163,14 @@
 	    "text": {
 		"name": "Other"
 	    }
-	}
+	},
+        {
+            "type": "probmap",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet",
+            "probmapimage": "transformed_atlas",
+	    "max_intensity_fraction": 0.95
+        }
     ],
     "global_reportlet_settings": {
 	"image_width": 2,

@@ -146,7 +146,8 @@ def imshowfig(*,
               separate_figs=False,
               reference=None,
               all_slice_locations=None,
-              max_intensity_fraction=0.99):
+              max_intensity_fraction=0.99,
+              labeldisplay='contour'):
     """Create a figure (or nested list of figures) from imgfile
 
     :param niimg: image
@@ -192,11 +193,12 @@ def imshowfig(*,
             raise RuntimeError('label shape does not match image shape')
         if not np.allclose(nilabel.affine, niimg.affine):
             raise RuntimeError('label affine does not match image affine')
-        labelvals = list(np.unique(np.asarray(nilabel.dataobj)))
-        if 0 in labelvals:
-            labelvals.pop(labelvals.index(0))
-        if len(labelvals) > len(COLORLIST):
-            raise RuntimeError('Not enough defined colors for label image')
+        if labeldisplay == 'contour':
+            labelvals = list(np.unique(np.asarray(nilabel.dataobj)))
+            if 0 in labelvals:
+                labelvals.pop(labelvals.index(0))
+            if len(labelvals) > len(COLORLIST):
+                raise RuntimeError('Not enough defined colors for label image')
     if reference is not None:
         niimg = _resample(niimg, reference)
     with style.context({
@@ -256,12 +258,22 @@ def imshowfig(*,
                     labeldata = np.squeeze(np.asarray(
                         nilabel.slicer[slicespec].dataobj),
                                            axis=(ind, ))
-                    for lvind, lv in enumerate(labelvals):
-                        ax.contour(labeldata == lv,
-                                   levels=[0.5],
-                                   colors=[COLORLIST[lvind]],
-                                   linewidths=[contour_width],
-                                   aspect=aspect)
+                    if labeldisplay == 'contour':
+                        for lvind, lv in enumerate(labelvals):
+                            ax.contour(labeldata == lv,
+                                       levels=[0.5],
+                                       colors=[COLORLIST[lvind]],
+                                       linewidths=[contour_width],
+                                       aspect=aspect)
+                    elif labeldisplay == 'probmap':
+                        probimage = np.ones([*labeldata.shape, 4]) * np.array(
+                            [0.0, 1.0, 0.0, 0.0])
+                        probimage[..., 3] = labeldata
+                        ax.imshow(probimage, aspect=aspect)
+                    else:
+                        raise ValueError(
+                            f'{labeldisplay} is not a valid option for labeldisplay'
+                        )
                 if separate_figs:
                     fig_list_row.append(fig)
             if separate_figs:
@@ -295,6 +307,15 @@ def doublezip(iterable1, iterable2):
         list(zip(rowleft, rowright)) for rowleft,
         rowright in zip(iterable1, iterable2)
     ]
+
+
+def imshow_from_files(*, imagefile, labelfile=None, **kwargs):
+    niimg = _load_and_orient(imagefile)
+    if labelfile is not None:
+        nilabel = _load_and_orient(labelfile)
+    else:
+        nilabel = None
+    return _imshow(niimg=niimg, nilabel=nilabel, **kwargs)
 
 
 def _imshow(*, outtype='svg', separate_figs=False, **kwargs):
@@ -477,20 +498,22 @@ def compare(*,
             slice_locations = None
             reference2 = niimage1
             reference1 = None
-        svg1list = _imshow(niimg=niimage1,
-                           separate_figs=True,
-                           all_slice_locations=slice_locations,
-                           nslices=nslices,
-                           reference=reference1,
-                           max_intensity_fraction=max_intensity_fraction_image1,
-                           **kwargs)
-        svg2list = _imshow(niimg=niimage2,
-                           separate_figs=True,
-                           reference=reference2,
-                           all_slice_locations=slice_locations,
-                           nslices=nslices,
-                           max_intensity_fraction=max_intensity_fraction_image2,
-                           **kwargs)
+        svg1list = _imshow(
+            niimg=niimage1,
+            separate_figs=True,
+            all_slice_locations=slice_locations,
+            nslices=nslices,
+            reference=reference1,
+            max_intensity_fraction=max_intensity_fraction_image1,
+            **kwargs)
+        svg2list = _imshow(
+            niimg=niimage2,
+            separate_figs=True,
+            reference=reference2,
+            all_slice_locations=slice_locations,
+            nslices=nslices,
+            max_intensity_fraction=max_intensity_fraction_image2,
+            **kwargs)
 
         svg1 = doublemap(lambda svgsingle: _set_svg_class(svgsingle, 'first'),
                          svg1list)
@@ -531,6 +554,72 @@ def contours(*,
     :param nslices: Number of slices to show in each plane
     :type nslices: int
     """
+    _contours_or_probmap(name=name,
+                         image=image,
+                         labelimage=labelimage,
+                         out_file=out_file,
+                         labeldisplay='contour',
+                         qcform=qcform,
+                         relative_dir=relative_dir,
+                         slice_to_label=slice_to_label,
+                         nslices=nslices,
+                         **kwargs)
+
+
+def probmap(*,
+            name,
+            image,
+            probmapimage,
+            out_file,
+            qcform=True,
+            relative_dir=None,
+            slice_to_probmap=False,
+            nslices=7,
+            **kwargs):
+    """Write an html file to :py:obj:`out_file` showing the :py:obj:`image`
+    with :py:obj:`nslices` slices in all three axial planes. Include probability
+    map defined by :py:obj:`probmapimage`.
+
+    :param name: Name describing :py:obj:`image`
+    :type name: str
+    :param image: Image file name to show (readable by :py:mod:`nibabel`)
+    :type image: path-like object or :py:obj:`None`
+    :param probmapimage: Probability map file name (readable by :py:mod:`nibabel`)
+    :type probmapimage: path-like object or :py:obj:`None`
+    :param out_file: File name
+    :type out_file: path-like object
+    :param qcform: Include a QC form in the output
+    :type qcform: bool
+    :param relative_dir: Create links to filenames relative to this directory
+    :type relative_dir: path-like object
+    :param slice_to_probmap: Calculate slices based on non-zero extent of probmapimage
+    :type slice_to_probmap: bool
+    :param nslices: Number of slices to show in each plane
+    :type nslices: int
+    """
+    _contours_or_probmap(name=name,
+                         image=image,
+                         labelimage=probmapimage,
+                         out_file=out_file,
+                         labeldisplay='probmap',
+                         qcform=qcform,
+                         relative_dir=relative_dir,
+                         slice_to_label=slice_to_probmap,
+                         nslices=nslices,
+                         **kwargs)
+
+
+def _contours_or_probmap(*,
+                         name,
+                         image,
+                         labelimage,
+                         out_file,
+                         labeldisplay,
+                         qcform=True,
+                         relative_dir=None,
+                         slice_to_label=False,
+                         nslices=7,
+                         **kwargs):
     if image is None or labelimage is None:
         out = {
             'name': name,
@@ -542,7 +631,10 @@ def contours(*,
         if image is None:
             errormessages.append('image')
         if labelimage is None:
-            errormessages.append('labelimage')
+            if labeldisplay == 'contour':
+                errormessages.append('labelimage')
+            elif labeldisplay == 'probmap':
+                errormessages.append('probmap')
         out['errormessage'] = ' and '.join(
             errormessages) + ' not specified for this reportlet'
         _render(out_file, 'single.tpl', out)
@@ -562,6 +654,7 @@ def contours(*,
                              relative_dir=relative_dir,
                              all_slice_locations=slice_locations,
                              nslices=nslices,
+                             labeldisplay=labeldisplay,
                              **kwargs)
 
 

@@ -99,14 +99,18 @@ def get_parser():
         type=int,
         default=7,
         help='The number of slices to display for each anatomical plane.')
-    contours.add_argument('--labelimage',
-                          type=Path,
-                          help='Label image from which to draw contours')
     contours.add_argument('--output_type',
                           type=str,
                           help='Output file type',
                           choices=['svg', 'png'],
                           default='svg')
+    contours_mo = contours.add_mutually_exclusive_group()
+    contours_mo.add_argument('--labelimage',
+                             type=Path,
+                             help='Label image from which to draw contours')
+    contours_mo.add_argument('--probmap',
+                             type=Path,
+                             help='Probability map')
     findfiles = subparsers.add_parser(
         'findfiles',
         help='Search parse directories for input files based on config. '
@@ -161,7 +165,11 @@ def _parse_filter_keys(filter_key_list):
 
 
 def run():
-    args = get_parser().parse_args()
+    parser = get_parser()
+    args = parser.parse_args()
+    if 'func' not in args:
+        parser.print_help()
+        return 1
     args.func(args)
 
 
@@ -187,10 +195,17 @@ def run_combine(args):
 
 
 def run_image(args):
-    out = reportlets._imshow(imgfile=args.image,
-                             nslices=args.nslices,
-                             labelfile=args.labelimage,
-                             outtype=args.output_type)
+    if args.probmap is not None:
+        labelfile = args.probmap
+        labeldisplay = 'probmap'
+    else:
+        labelfile = args.labelimage
+        labeldisplay = 'contour'
+    out = reportlets.imshow_from_files(imagefile=args.image,
+                                       nslices=args.nslices,
+                                       labelfile=labelfile,
+                                       labeldisplay=labeldisplay,
+                                       outtype=args.output_type)
     if args.output_type == 'svg':
         args.output_file.write_text(out)
     else:

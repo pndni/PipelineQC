@@ -110,6 +110,30 @@ def test_contour(images, slice_to_label):
     i.run()
 
 
+@pytest.mark.parametrize('slice_to_probmap', [False, True])
+def test_probmap(images, slice_to_probmap):
+    tmp_path, image1, image2, image3 = images
+    outfile = tmp_path / 'out.txt'
+    reportlets.probmap(name='testprobmap',
+                       image=image3,
+                       probmapimage=image2,
+                       out_file=outfile,
+                       slice_to_probmap=slice_to_probmap,
+                       nslices=1)
+    reportlets.probmap(name='testprobmap',
+                       image=image2,
+                       probmapimage=image2,
+                       out_file=outfile,
+                       slice_to_probmap=slice_to_probmap,
+                       nslices=1)
+    i = interfaces.ProbMap(name='testprobmap',
+                           image=image3,
+                           probmapimage=image2,
+                           slice_to_probmap=slice_to_probmap,
+                           nslices=1)
+    i.run()
+
+
 @pytest.mark.parametrize('slice_to_image2', [False, True])
 def test_compare(images, slice_to_image2):
     tmp_path, image1, image2, image3 = images
