@@ -104,7 +104,11 @@ def _sort_key(intuple):
     return tuple((str(x) for x in intuple))
 
 
-def all_workflow(file_dict, output_dir, conf, filter_keys_dict=None, create_index=True):
+def all_workflow(file_dict,
+                 output_dir,
+                 conf,
+                 filter_keys_dict=None,
+                 create_index=True):
     if filter_keys_dict is None:
         filter_keys_dict = {}
     wf = pe.Workflow('report')
@@ -119,7 +123,8 @@ def all_workflow(file_dict, output_dir, conf, filter_keys_dict=None, create_inde
 
     def _inc_page_key(pkl):
         for filter_i, filter_page_key in enumerate(conf['page_keys']):
-            if filter_page_key in filter_keys_dict and pkl[filter_i] not in filter_keys_dict[filter_page_key]:
+            if filter_page_key in filter_keys_dict and pkl[
+                    filter_i] not in filter_keys_dict[filter_page_key]:
                 return False
         return True
 

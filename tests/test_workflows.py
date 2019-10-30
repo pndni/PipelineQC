@@ -55,7 +55,10 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
         filter_dict = {'sub': ['1']}
     else:
         filter_dict = None
-    wf = workflows.all_workflow(out, tmp_path, conf, filter_keys_dict=filter_dict)
+    wf = workflows.all_workflow(out,
+                                tmp_path,
+                                conf,
+                                filter_keys_dict=filter_dict)
 
     defaultnslices = 7
     defaultqcform = True

@@ -22,7 +22,11 @@ def qc_all(dirs,
         filedict = get_files(dirs, conf, **kwargs)
     if len(filedict) == 1:
         raise RuntimeError('No non-global files found!')
-    wf = all_workflow(filedict, output_dir, conf, filter_keys_dict=filter_keys_dict, create_index=create_index)
+    wf = all_workflow(filedict,
+                      output_dir,
+                      conf,
+                      filter_keys_dict=filter_keys_dict,
+                      create_index=create_index)
     if working_directory is not None:
         if not Path(working_directory).exists():
             raise FileNotFoundError(f'{working_directory} does not exist')
@@ -73,10 +77,12 @@ def get_parser():
                          help='Only make pages for certain values of a key. '
                          'E.g., --filter_key=subject:1:2:10 will only '
                          'create qc pages for subjects 1, 2, and 10.')
-    qcpages.add_argument('--files', type=Path,
+    qcpages.add_argument('--files',
+                         type=Path,
                          help='JSON file from the running the findfiles '
                          'subcommand')
-    qcpages.add_argument('--no_index', action='store_true',
+    qcpages.add_argument('--no_index',
+                         action='store_true',
                          help='Do not create an index file')
     combine = subparsers.add_parser(
         'combine',
@@ -108,9 +114,7 @@ def get_parser():
     contours_mo.add_argument('--labelimage',
                              type=Path,
                              help='Label image from which to draw contours')
-    contours_mo.add_argument('--probmap',
-                             type=Path,
-                             help='Probability map')
+    contours_mo.add_argument('--probmap', type=Path, help='Probability map')
     findfiles = subparsers.add_parser(
         'findfiles',
         help='Search parse directories for input files based on config. '
@@ -122,9 +126,7 @@ def get_parser():
         type=argparse.FileType('r'),
         help='JSON configuration file. See the documentation for details',
         metavar='config_file')
-    findfiles.add_argument('output_file',
-                           type=Path,
-                           help='Output JSON file')
+    findfiles.add_argument('output_file', type=Path, help='Output JSON file')
     findfiles.add_argument('search_dirs',
                            type=Path,
                            nargs='+',
@@ -138,13 +140,14 @@ def get_parser():
         action='append',
         help='If a filename matches this pattern (using re.search), '
         'ignore it. May be specified multiple times')
-    index = subparsers.add_parser(
-        'index',
-        help='Create index file.')
+    index = subparsers.add_parser('index', help='Create index file.')
     index.set_defaults(func=run_index)
-    index.add_argument('QC_dir', type=Path, help='Directory with QC pages. '
+    index.add_argument('QC_dir',
+                       type=Path,
+                       help='Directory with QC pages. '
                        'Corresponds to output_dir with the qcpages command')
-    index.add_argument('index_filename', type=Path,
+    index.add_argument('index_filename',
+                       type=Path,
                        help='Filename of output index file')
     return parser
 
@@ -214,7 +217,10 @@ def run_image(args):
 
 def run_findfiles(args):
     conf = load_config(args.config_file)
-    filedict = get_files(args.search_dirs, conf, exclude_patterns=args.exclude, bids_validate=args.validate_bids)
+    filedict = get_files(args.search_dirs,
+                         conf,
+                         exclude_patterns=args.exclude,
+                         bids_validate=args.validate_bids)
     filedict_to_json(filedict, args.output_file)
 
 

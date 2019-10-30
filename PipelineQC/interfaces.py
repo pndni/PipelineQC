@@ -35,12 +35,16 @@ class ImageGridReportletInputSpec(ReportletInputSpec):
                                 usedefault=True,
                                 desc='Image height (in inches)')
     nslices = traits.Int(7, usedefault=True, desc='Number of slices to plot')
-    affine_absolute_tolerance = traits.Float(1e-3, usedefault=True,
-                                             desc="atol parameter of np.allclose "
-                                                  "when comparing affines")
-    affine_relative_tolerance = traits.Float(1e-5, usedefault=True,
-                                             desc="atol parameter of np.allclose "
-                                                  "when comparing affines")
+    affine_absolute_tolerance = traits.Float(
+        1e-3,
+        usedefault=True,
+        desc="atol parameter of np.allclose "
+        "when comparing affines")
+    affine_relative_tolerance = traits.Float(
+        1e-5,
+        usedefault=True,
+        desc="atol parameter of np.allclose "
+        "when comparing affines")
 
 
 class Reportlet(SimpleInterface):
@@ -65,25 +69,26 @@ class CompareInputSpec(ImageGridReportletInputSpec):
         File(exists=True, mandatory=True, desc='First image file'), None)
     image2 = traits.Either(
         File(exists=True, mandatory=True, desc='Second image file'), None)
-    slice_to_image2 = traits.Bool(False, usedefault=True,
+    slice_to_image2 = traits.Bool(False,
+                                  usedefault=True,
                                   desc='If true, calculated slices based on '
                                   'non zero extent of image2')
     max_intensity_fraction_image1 = traits.Float(
-        0.99, usedefault=True,
+        0.99,
+        usedefault=True,
         desc="""The intensity display range is 0, max where max is calculated as:
         ``vals = np.sort(niimg.get_fdata()).ravel()``
         ``vals = vals[vals > 0]``
         ``max = vals[int(len(vals) * max_intensity_fraction)]``
-        """
-        )
+        """)
     max_intensity_fraction_image2 = traits.Float(
-        0.99, usedefault=True,
+        0.99,
+        usedefault=True,
         desc="""The intensity display range is 0, max where max is calculated as:
         ``vals = np.sort(niimg.get_fdata()).ravel()``
         ``vals = vals[vals > 0]``
         ``max = vals[int(len(vals) * max_intensity_fraction)]``
-        """
-        )
+        """)
 
 
 class Compare(Reportlet):
@@ -103,17 +108,18 @@ class ContourInputSpec(ImageGridReportletInputSpec):
     contour_width = traits.Float(1,
                                  usedefault=True,
                                  desc='Contour line width (in pts)')
-    slice_to_label = traits.Bool(False, usedefault=True,
+    slice_to_label = traits.Bool(False,
+                                 usedefault=True,
                                  desc='If true, calculated slices based on '
                                  'non zero extent of labelimage')
     max_intensity_fraction = traits.Float(
-        0.99, usedefault=True,
+        0.99,
+        usedefault=True,
         desc="""The intensity display range is 0, max where max is calculated as:
         ``vals = np.sort(niimg.get_fdata()).ravel()``
         ``vals = vals[vals > 0]``
         ``max = vals[int(len(vals) * max_intensity_fraction)]``
-        """
-        )
+        """)
 
 
 class Contour(Reportlet):
@@ -126,21 +132,19 @@ class ProbMapInputSpec(ImageGridReportletInputSpec):
     image = traits.Either(File(exists=True, mandatory=True, desc='Image file'),
                           None)
     probmapimage = traits.Either(
-        File(exists=True,
-             mandatory=True,
-             desc='Probability map'),
-        None)
-    slice_to_probmap = traits.Bool(False, usedefault=True,
+        File(exists=True, mandatory=True, desc='Probability map'), None)
+    slice_to_probmap = traits.Bool(False,
+                                   usedefault=True,
                                    desc='If true, calculated slices based on '
                                    'non zero extent of labelimage')
     max_intensity_fraction = traits.Float(
-        0.99, usedefault=True,
+        0.99,
+        usedefault=True,
         desc="""The intensity display range is 0, max where max is calculated as:
         ``vals = np.sort(niimg.get_fdata()).ravel()``
         ``vals = vals[vals > 0]``
         ``max = vals[int(len(vals) * max_intensity_fraction)]``
-        """
-        )
+        """)
 
 
 class ProbMap(Reportlet):
@@ -153,13 +157,13 @@ class SingleInputSpec(ImageGridReportletInputSpec):
     image = traits.Either(File(exists=True, mandatory=True, desc='Image file'),
                           None)
     max_intensity_fraction = traits.Float(
-        0.99, usedefault=True,
+        0.99,
+        usedefault=True,
         desc="""The intensity display range is 0, max where max is calculated as:
         ``vals = np.sort(niimg.get_fdata()).ravel()``
         ``vals = vals[vals > 0]``
         ``max = vals[int(len(vals) * max_intensity_fraction)]``
-        """
-        )
+        """)
 
 
 class Single(Reportlet):

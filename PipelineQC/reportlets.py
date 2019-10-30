@@ -129,10 +129,8 @@ def _get_row_col(viewnum, slicenum, nslices, maxcols):
 
 
 def _resample(img, reference, atol, rtol):
-    if img.shape == reference.shape and np.allclose(img.affine,
-                                                    reference.affine,
-                                                    atol=atol,
-                                                    rtol=rtol):
+    if img.shape == reference.shape and np.allclose(
+            img.affine, reference.affine, atol=atol, rtol=rtol):
         return img
     return resample_to_img(img, reference)
 
@@ -195,7 +193,10 @@ def imshowfig(*,
                 'Only one of labelfile and reference may be specified')
         if nilabel.shape != niimg.shape:
             raise RuntimeError('label shape does not match image shape')
-        if not np.allclose(nilabel.affine, niimg.affine, atol=affine_absolute_tolerance, rtol=affine_relative_tolerance):
+        if not np.allclose(nilabel.affine,
+                           niimg.affine,
+                           atol=affine_absolute_tolerance,
+                           rtol=affine_relative_tolerance):
             raise RuntimeError('label affine does not match image affine')
         if labeldisplay == 'contour':
             labelvals = list(np.unique(np.asarray(nilabel.dataobj)))
@@ -204,7 +205,10 @@ def imshowfig(*,
             if len(labelvals) > len(COLORLIST):
                 raise RuntimeError('Not enough defined colors for label image')
     if reference is not None:
-        niimg = _resample(niimg, reference, affine_absolute_tolerance, affine_relative_tolerance)
+        niimg = _resample(niimg,
+                          reference,
+                          affine_absolute_tolerance,
+                          affine_relative_tolerance)
     with style.context({
             'image.origin': 'lower',
             'image.cmap': 'Greys_r',

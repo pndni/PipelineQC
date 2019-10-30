@@ -17,5 +17,6 @@ def make_tsv(list_of_files, outputfile):
 def make_index(output_dir, index_filename):
     outdir = Path(output_dir)
     fnames = list(sorted(outdir.glob('**/*.html')))
-    index(out_file=index_filename, in_files=fnames,
+    index(out_file=index_filename,
+          in_files=fnames,
           relative_dir=index_filename.parent)

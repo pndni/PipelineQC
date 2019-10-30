@@ -140,8 +140,14 @@ def compare(x, y):
                 assert x[k][k2] == y[k][k2]
 
 
-def cliwrapper(search_dirs, conffile, tmp_path, validate_bids=None, exclude=None):
-    cmd = ['PipelineQC', 'findfiles', conffile, str(tmp_path / 'filedict.json')] + search_dirs
+def cliwrapper(search_dirs,
+               conffile,
+               tmp_path,
+               validate_bids=None,
+               exclude=None):
+    cmd = [
+        'PipelineQC', 'findfiles', conffile, str(tmp_path / 'filedict.json')
+    ] + search_dirs
     if validate_bids is not None:
         cmd.append('--validate_bids')
     if exclude is not None:
@@ -228,12 +234,19 @@ def test_search_types2(tmp_path, input_files_conf1):
 
 
 def test_convert(tmp_path):
-    filedict = {('1', None): {'T1w': Path('idontexit.nii.gz'),
-                              'proc': Path('neitherdoi.nii.gz')},
-                ('1', 'hi'): {'T1w': Path('idontexit2.nii.gz'),
-                              'proc': Path('neitherdoi2.nii.gz')},
-                ('2', None): {'T1w': Path('idontexit3.nii.gz')},
-                'global': {'model': Path('model.nii.gz')}}
+    filedict = {
+        ('1', None): {
+            'T1w': Path('idontexit.nii.gz'), 'proc': Path('neitherdoi.nii.gz')
+        }, ('1', 'hi'): {
+            'T1w': Path('idontexit2.nii.gz'),
+            'proc': Path('neitherdoi2.nii.gz')
+        }, ('2', None): {
+            'T1w': Path('idontexit3.nii.gz')
+        },
+        'global': {
+            'model': Path('model.nii.gz')
+        }
+    }
     outfile = tmp_path / 'test.json'
     get_files.filedict_to_json(filedict, outfile)
     out = get_files.json_to_filedict(outfile)
