@@ -30,6 +30,12 @@
 		},
 		"max_intensity_fraction": {
 		    "type": "number"
+		},
+		"affine_absolute_tolerance": {
+		    "type": "number"
+		},
+		"affine_relative_tolerance": {
+		    "type": "number"
 		}
             }
 	},
@@ -74,6 +80,12 @@
 		},
 		"max_intensity_fraction_image2": {
 		    "type": "number"
+		},
+		"affine_absolute_tolerance": {
+		    "type": "number"
+		},
+		"affine_relative_tolerance": {
+		    "type": "number"
 		}
             }
 	},
@@ -115,6 +127,12 @@
 		},
 		"max_intensity_fraction": {
 		    "type": "number"
+		},
+		"affine_absolute_tolerance": {
+		    "type": "number"
+		},
+		"affine_relative_tolerance": {
+		    "type": "number"
 		}
             }
 	},
@@ -152,6 +170,12 @@
 		    "type": "boolean"
 		},
 		"max_intensity_fraction": {
+		    "type": "number"
+		},
+		"affine_absolute_tolerance": {
+		    "type": "number"
+		},
+		"affine_relative_tolerance": {
 		    "type": "number"
 		}
             }

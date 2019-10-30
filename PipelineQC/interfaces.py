@@ -35,6 +35,12 @@ class ImageGridReportletInputSpec(ReportletInputSpec):
                                 usedefault=True,
                                 desc='Image height (in inches)')
     nslices = traits.Int(7, usedefault=True, desc='Number of slices to plot')
+    affine_absolute_tolerance = traits.Float(1e-3, usedefault=True,
+                                             desc="atol parameter of np.allclose "
+                                                  "when comparing affines")
+    affine_relative_tolerance = traits.Float(1e-5, usedefault=True,
+                                             desc="atol parameter of np.allclose "
+                                                  "when comparing affines")
 
 
 class Reportlet(SimpleInterface):

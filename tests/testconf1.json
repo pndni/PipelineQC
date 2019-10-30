@@ -104,7 +104,8 @@
             "image": "nu_bet",
             "labelimage": "transformed_atlas",
 	    "qcform": true,
-	    "slice_to_label": true
+	    "slice_to_label": true,
+	    "affine_absolute_tolerance": 1e-2
         },
         {
             "type": "contour",
@@ -112,7 +113,8 @@
             "image": "nu_bet",
             "labelimage": "transformed_atlas",
             "nslices": 3,
-	    "qcform": true
+	    "qcform": true,
+	    "affine_relative_tolerance": 1e-3
         },
         {
             "type": "contour",
