@@ -287,6 +287,12 @@ class IndexReportInputSpec(BaseInterfaceInputSpec):
                               mandatory=True,
                               desc='QC pages')
     out_file = File(mandatory=True, desc='Name of output index file')
+    relative_dir = traits.Either(Directory(
+        exists=True,
+        desc='Create links to filenames relative to this directory'),
+                                 None,
+                                 default=None,
+                                 usedefault=True)
 
 
 class IndexReportOutputSpec(TraitedSpec):
@@ -304,6 +310,6 @@ class IndexReport(SimpleInterface):
             str(os.path.relpath(in_file, out_dir))
             for in_file in self.inputs.in_files
         ]
-        reportlets.index(out_file=self.inputs.out_file, in_files=in_files)
+        reportlets.index(out_file=self.inputs.out_file, in_files=in_files, relative_dir=self.inputs.relative_dir)
         self._results['out_file'] = self.inputs.out_file
         return runtime
