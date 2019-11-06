@@ -21,6 +21,9 @@ class ReportletInputSpec(BaseInterfaceInputSpec):
                                  None,
                                  default=None,
                                  usedefault=True)
+    description = traits.Str(desc='Longer description of reportlet',
+                             default='',
+                             usedefault=True)
 
 
 class ReportletOutputSpec(TraitedSpec):
@@ -234,7 +237,7 @@ class Rating(Reportlet):
     _func = staticmethod(reportlets.rating)
 
 
-class AssembleReportInputSpec(ReportletInputSpec):
+class AssembleReportInputSpec(BaseInterfaceInputSpec):
     in_files = InputMultiPath(File(exists=True),
                               mandatory=True,
                               desc='Reportlet files')
@@ -242,6 +245,15 @@ class AssembleReportInputSpec(ReportletInputSpec):
     out_file = File(desc='Output file')
     next_ = File(desc='File name of next QC page')
     prev_ = File(desc='File name of previous QC page')
+    qcform = traits.Bool(False,
+                         usedefault=True,
+                         desc='Include qc form beneath each reportlet.')
+    relative_dir = traits.Either(Directory(
+        exists=True,
+        desc='Create links to filenames relative to this directory'),
+                                 None,
+                                 default=None,
+                                 usedefault=True)
 
 
 class AssembleReportOutputSpec(TraitedSpec):
@@ -277,12 +289,6 @@ class IndexReportInputSpec(BaseInterfaceInputSpec):
                               mandatory=True,
                               desc='QC pages')
     out_file = File(mandatory=True, desc='Name of output index file')
-    relative_dir = traits.Either(Directory(
-        exists=True,
-        desc='Create links to filenames relative to this directory'),
-                                 None,
-                                 default=None,
-                                 usedefault=True)
 
 
 class IndexReportOutputSpec(TraitedSpec):
@@ -296,10 +302,6 @@ class IndexReport(SimpleInterface):
     def _run_interface(self, runtime):
         # https://stackoverflow.com/questions/38083555/using-pathlibs-relative-to-for-directories-on-the-same-level
         out_dir = Path(self.inputs.out_file).parent
-        in_files = [
-            str(os.path.relpath(in_file, out_dir))
-            for in_file in self.inputs.in_files
-        ]
-        reportlets.index(out_file=self.inputs.out_file, in_files=in_files, relative_dir=self.inputs.relative_dir)
+        reportlets.index(out_file=self.inputs.out_file, in_files=self.inputs.in_files, relative_dir=out_dir)
         self._results['out_file'] = self.inputs.out_file
         return runtime

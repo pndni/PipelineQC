@@ -36,6 +36,9 @@
 		},
 		"affine_relative_tolerance": {
 		    "type": "number"
+		},
+		"description": {
+		    "type": "string"
 		}
             }
 	},
@@ -86,6 +89,9 @@
 		},
 		"affine_relative_tolerance": {
 		    "type": "number"
+		},
+		"description": {
+		    "type": "string"
 		}
             }
 	},
@@ -133,6 +139,9 @@
 		},
 		"affine_relative_tolerance": {
 		    "type": "number"
+		},
+		"description": {
+		    "type": "string"
 		}
             }
 	},
@@ -177,6 +186,9 @@
 		},
 		"affine_relative_tolerance": {
 		    "type": "number"
+		},
+		"description": {
+		    "type": "string"
 		}
             }
 	},
@@ -202,6 +214,9 @@
 		    "type": "string"
 		},
 		"labelfile": {
+		    "type": "string"
+		},
+		"description": {
 		    "type": "string"
 		}
             }

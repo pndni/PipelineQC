@@ -378,6 +378,7 @@ def _single_opt_contours(name,
                          labelfilename=None,
                          qcform=True,
                          relative_dir=None,
+                         description='',
                          **kwargs):
     out = {
         'name': name, 'form': qcform, 'name_no_spaces': name.replace(' ', '_')
@@ -388,6 +389,8 @@ def _single_opt_contours(name,
                          **kwargs)
     out['filename'] = str(imagefilename)
     out['formfile'] = 'form_simple.tpl'
+    if description:
+        out['description'] = description
     if nilabel is not None:
         if labelfilename is None:
             raise ValueError
@@ -400,7 +403,7 @@ def _single_opt_contours(name,
     _render(out_file, 'single.tpl', out)
 
 
-def single(*, name, image, out_file, qcform=True, relative_dir=None, **kwargs):
+def single(*, name, image, out_file, qcform=True, relative_dir=None, description='', **kwargs):
     """Write an html file to :py:obj:`out_file` showing the :py:obj:`image`
     with :py:obj:`nslices` slices in all three axial planes
 
@@ -422,6 +425,8 @@ def single(*, name, image, out_file, qcform=True, relative_dir=None, **kwargs):
             'formfile': 'form_simple.tpl',
             'name_no_spaces': name.replace(' ', '_')
         }
+        if description:
+            out['description'] = description
         out['errormessage'] = 'No image file for this reportlet'
         _render(out_file, 'single.tpl', out)
     else:
@@ -431,6 +436,7 @@ def single(*, name, image, out_file, qcform=True, relative_dir=None, **kwargs):
                              out_file,
                              qcform=qcform,
                              relative_dir=relative_dir,
+                             description=description,
                              **kwargs)
 
 
@@ -446,6 +452,7 @@ def compare(*,
             nslices=7,
             max_intensity_fraction_image1=0.99,
             max_intensity_fraction_image2=0.99,
+            description='',
             **kwargs):
     """Write an html file to :py:obj:`out_file` comparing :py:obj:`image1`
     with :py:obj:`image2` with :py:obj:`nslices` slices in all three axial planes
@@ -478,6 +485,8 @@ def compare(*,
         'name_no_spaces': '_'.join(
             [nametmp.replace(' ', '_') for nametmp in [name1, name2]])
     }
+    if description:
+        out['description'] = description
 
     if image1 is None or image2 is None:
         errormessages = []
@@ -540,6 +549,7 @@ def contours(*,
              relative_dir=None,
              slice_to_label=False,
              nslices=7,
+             description='',
              **kwargs):
     """Write an html file to :py:obj:`out_file` showing the :py:obj:`image`
     with :py:obj:`nslices` slices in all three axial planes. Include contour
@@ -571,6 +581,7 @@ def contours(*,
                          relative_dir=relative_dir,
                          slice_to_label=slice_to_label,
                          nslices=nslices,
+                         description=description,
                          **kwargs)
 
 
@@ -583,6 +594,7 @@ def probmap(*,
             relative_dir=None,
             slice_to_probmap=False,
             nslices=7,
+            description='',
             **kwargs):
     """Write an html file to :py:obj:`out_file` showing the :py:obj:`image`
     with :py:obj:`nslices` slices in all three axial planes. Include probability
@@ -614,6 +626,7 @@ def probmap(*,
                          relative_dir=relative_dir,
                          slice_to_label=slice_to_probmap,
                          nslices=nslices,
+                         description=description,
                          **kwargs)
 
 
@@ -627,6 +640,7 @@ def _contours_or_probmap(*,
                          relative_dir=None,
                          slice_to_label=False,
                          nslices=7,
+                         description='',
                          **kwargs):
     if image is None or labelimage is None:
         out = {
@@ -635,6 +649,8 @@ def _contours_or_probmap(*,
             'formfile': 'form_simple.tpl',
             'name_no_spaces': name.replace(' ', '_')
         }
+        if description:
+            out['description'] = description
         errormessages = []
         if image is None:
             errormessages.append('image')
@@ -663,6 +679,7 @@ def _contours_or_probmap(*,
                              all_slice_locations=slice_locations,
                              nslices=nslices,
                              labeldisplay=labeldisplay,
+                             description=description,
                              **kwargs)
 
 
@@ -691,6 +708,7 @@ def distributions(*,
                   distsfile,
                   out_file,
                   labelfile,
+                  description='',
                   qcform=True,
                   relative_dir=None):
     """Write an html file to :py:obj:`out_file` showing the distributions
@@ -719,6 +737,8 @@ def distributions(*,
         'form': qcform,
         'formfile': 'form_simple.tpl'
     }
+    if description:
+        out['description'] = description
     if distsfile is None or labelfile is None:
         errormessages = []
         if distsfile is None:
@@ -827,11 +847,11 @@ def rating(*, name, widgets, out_file):
     out = {'widgets': [deepcopy(widget) for widget in widgets],
            'name': name}
     for k in range(len(out['widgets'])):
-        out[k]['name_no_spaces'] = out[k]['name'].replace(' ', '_')
-        out[k]['name_'] = out[k]['name']
-        del out[k]['name']
-        if out[k]['type'] == 'radio':
-            for opt in out[k]['options']:
+        out['widgets'][k]['name_no_spaces'] = out['widgets'][k]['name'].replace(' ', '_')
+        out['widgets'][k]['name_'] = out['widgets'][k]['name']
+        del out['widgets'][k]['name']
+        if out['widgets'][k]['type'] == 'radio':
+            for opt in out['widgets'][k]['options']:
                 opt['name_'] = opt['name']
                 del opt['name']
     _render(out_file, 'rating.tpl', out)
@@ -863,11 +883,12 @@ def assemble(*,
     params = {'body': body, 'title': title, 'form': qcform}
     if prev is not None:
         params['prev'] = prev
+        if relative_dir is not None:
+            params['prev'] = os.path.relpath(params['prev'], relative_dir)
     if next_ is not None:
         params['next'] = next_
-    if relative_dir is not None:
-        params['prev'] = os.path.relpath(params['prev'], relative_dir)
-        params['next'] = os.path.relpath(params['next'], relative_dir)
+        if relative_dir is not None:
+            params['next'] = os.path.relpath(params['next'], relative_dir)
     out = template.render(params)
     _dump(out_file, out)
 

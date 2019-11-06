@@ -5,6 +5,9 @@
     </div>
     {% else %}
     <div class="description">
+    {% if description %}
+	<p>{{ description|e }}</p>
+    {% endif %}
     {% block description %}{% endblock %}
     </div>
     {% block images %}{% endblock %}

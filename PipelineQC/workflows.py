@@ -94,8 +94,8 @@ def report_workflow(page_dict,
         assemble_node.inputs.next_ = next_
     if prev is not None:
         assemble_node.inputs.prev = prev
-    assemble_node.relative_dir = out_file.parent
-    assemble_node.qcform = inlineform and not rating
+    assemble_node.inputs.relative_dir = out_file.parent
+    assemble_node.inputs.qcform = inlineform and not rating
     wf.connect(reportlets, 'out', assemble_node, 'in_files')
     return wf
 
@@ -141,7 +141,7 @@ def all_workflow(file_dict,
                                   prev=prev)
         wf.connect(page_wf, 'assemble.out_file', merge_pages, f'in{i + 1}')
     if create_index:
-        index_pages = pe.Node(IndexReport(relative_dir=Path(output_dir).resolve()), 'index_pages')
+        index_pages = pe.Node(IndexReport(), 'index_pages')
         out_file = Path(output_dir).resolve() / conf['index_filename']
         out_file.parent.mkdir(exist_ok=True, parents=True)
         index_pages.inputs.out_file = out_file

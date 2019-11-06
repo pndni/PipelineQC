@@ -84,7 +84,7 @@ def test_confdoc(tmp_path, conffilename):
     wf = workflows.all_workflow(outfiles, out, conf)
 
     truth = {
-        'report.page_sub-1.compare1': {
+        'report.page_subject-1.compare1': {
             'name1': 'T1w input file',
             'image1': str(tmp_path / 'in' / 'sub-1' / 'anat' /
                           'sub-1_T1w.nii'),
@@ -92,24 +92,24 @@ def test_confdoc(tmp_path, conffilename):
             'image2': str(tmp_path / 'out' / 'sub-1' / 'BET' /
                           'sub-1_bet.nii'),
             'nslices': 7,
-            'qcform': True,
+            'qcform': False,
             'relative_dir': str(out.resolve())
         },
-        'report.page_sub-1.contour2': {
+        'report.page_subject-1.contour2': {
             'name': 'Tissue classification',
             'image': str(tmp_path / 'out' / 'sub-1' / 'BET' / 'sub-1_bet.nii'),
             'labelimage': str(tmp_path / 'out' / 'sub-1' / 'classify' /
                               'sub-1_dseg.nii'),
             'nslices': 7,
-            'qcform': True,
+            'qcform': False,
             'relative_dir': str(out.resolve())
         },
-        'report.page_sub-1.crash3': {
+        'report.page_subject-1.crash3': {
             'name': 'Errors',
             'crashfiles': [],
             'relative_dir': str(out.resolve())
         },
-        'report.page_sub-1_acq-fast.compare1': {
+        'report.page_subject-1_acquisition-fast.compare1': {
             'name1': 'T1w input file',
             'image1': str(tmp_path / 'in' / 'sub-1' / 'anat' /
                           'sub-1_acq-fast_T1w.nii'),
@@ -117,20 +117,20 @@ def test_confdoc(tmp_path, conffilename):
             'image2': str(tmp_path / 'out' / 'sub-1' / 'BET' /
                           'sub-1_acq-fast_bet.nii'),
             'nslices': 7,
-            'qcform': True,
+            'qcform': False,
             'relative_dir': str(out.resolve())
         },
-        'report.page_sub-1_acq-fast.contour2': {
+        'report.page_subject-1_acquisition-fast.contour2': {
             'name': 'Tissue classification',
             'image': str(tmp_path / 'out' / 'sub-1' / 'BET' /
                          'sub-1_acq-fast_bet.nii'),
             'labelimage': str(tmp_path / 'out' / 'sub-1' / 'classify' /
                               'sub-1_acq-fast_dseg.nii'),
             'nslices': 7,
-            'qcform': True,
+            'qcform': False,
             'relative_dir': str(out.resolve())
         },
-        'report.page_sub-1_acq-fast.crash3': {
+        'report.page_subject-1_acquisition-fast.crash3': {
             'name': 'Errors',
             'crashfiles': [
                 str(tmp_path / 'out' / 'sub-1' / 'logs' / 'sub-1_acq-fast' /
@@ -138,7 +138,7 @@ def test_confdoc(tmp_path, conffilename):
             ],
             'relative_dir': str(out.resolve())
         },
-        'report.page_sub-2.compare1': {
+        'report.page_subject-2.compare1': {
             'name1': 'T1w input file',
             'image1': str(tmp_path / 'in' / 'sub-2' / 'anat' /
                           'sub-2_T1w.nii'),
@@ -146,49 +146,58 @@ def test_confdoc(tmp_path, conffilename):
             'image2': str(tmp_path / 'out' / 'sub-2' / 'BET' /
                           'sub-2_bet.nii'),
             'nslices': 7,
-            'qcform': True,
+            'qcform': False,
             'relative_dir': str(out.resolve())
         },
-        'report.page_sub-2.contour2': {
+        'report.page_subject-2.contour2': {
             'name': 'Tissue classification',
             'image': str(tmp_path / 'out' / 'sub-2' / 'BET' / 'sub-2_bet.nii'),
             'labelimage': str(tmp_path / 'out' / 'sub-2' / 'classify' /
                               'sub-2_dseg.nii'),
             'nslices': 7,
-            'qcform': True,
+            'qcform': False,
             'relative_dir': str(out.resolve())
         },
-        'report.page_sub-2.crash3': {
+        'report.page_subject-2.crash3': {
             'name': 'Errors',
             'crashfiles': [],
             'relative_dir': str(out.resolve())
         },
-        'report.page_sub-1.assemble': {
-            'out_file': str(out / 'sub-1_QC.html'), 'title': 'sub-1'
+        'report.page_subject-1.assemble': {
+            'out_file': str(out / 'sub-1_QC.html'), 'title': 'subject-1'
         },
-        'report.page_sub-1-acq-fast.assemble': {
-            'out_file': str(out / 'sub-1_acq-1_QC.html'),
-            'title': 'sub-1_acq-1'
+        'report.page_subject-1_acquisition-fast.assemble': {
+            'out_file': str(out / 'sub-1_acq-fast_QC.html'),
+            'title': 'subject-1_acquisition-fast'
         },
-        'report.page_sub-2.assemble': {
-            'out_file': str(out / 'sub-2_QC.html'), 'title': 'sub-2'
+        'report.page_subject-2.assemble': {
+            'out_file': str(out / 'sub-2_QC.html'), 'title': 'subject-2'
         },
         'report.index_pages': {
-            'out_file': str(out / 'QC_index.html'),
-            'relative_dir': str(out.resolve())
+            'out_file': str(out / 'QC_index.html')
         },
     }
 
-    def callable(node, graph):
-        if node.fullname in truth.keys():
-            node_traits = set(
-                node.inputs.trait_names()) - {'trait_added', 'trait_modified'}
-            for k in set(truth[node.fullname].keys()):
-                assert getattr(node.inputs, k) == truth[node.fullname][k]
-            for k in node_traits - set(truth[node.fullname].keys()):
-                assert not isdefined(getattr(node.inputs, k))
+    class Callable(object):
 
+        def __init__(self):
+            self.nodes_checked = set()
+            self.nodes_seen = set()
+
+        def __call__(self, node, graph):
+            self.nodes_seen.add(node.fullname)
+            if node.fullname in truth.keys():
+                self.nodes_checked.add(node.fullname)
+                # node_traits = set(
+                #     node.inputs.trait_names()) - {'trait_added', 'trait_modified'}
+                for k in set(truth[node.fullname].keys()):
+                    assert getattr(node.inputs, k) == truth[node.fullname][k]
+                # for k in node_traits - set(truth[node.fullname].keys()):
+                #     assert not isdefined(getattr(node.inputs, k))
+
+    callable = Callable()
     wf.run(plugin='Debug', plugin_args={'callable': callable})
+    assert callable.nodes_checked == set(truth.keys())
 
     del conf["files"]["MNI"]["global"]
     with pytest.raises(IndexError):

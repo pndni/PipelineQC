@@ -76,7 +76,8 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'max_intensity_fraction_image1': 0.99,
             'max_intensity_fraction_image2': 0.99,
             'affine_absolute_tolerance': 1e-3,
-            'affine_relative_tolerance': 1e-5
+            'affine_relative_tolerance': 1e-5,
+            'description': '',
         },
         'report.page_sub-1_acq-10_rec-11_run-12.compare2': {
             'name1': 'Non-uniformity corrected',
@@ -90,6 +91,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'max_intensity_fraction_image1': 0.91,
             'max_intensity_fraction_image2': 0.92,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-1_acq-10_rec-11_run-12.compare3': {
@@ -104,6 +106,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'max_intensity_fraction_image1': 0.99,
             'max_intensity_fraction_image2': 0.99,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-1_acq-10_rec-11_run-12.single4': {
@@ -114,6 +117,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-1_acq-10_rec-11_run-12.single5': {
@@ -124,6 +128,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-1_acq-10_rec-11_run-12.single6': {
@@ -134,6 +139,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-1_acq-10_rec-11_run-12.contour7': {
@@ -148,6 +154,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'slice_to_label': True,
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-2,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-1_acq-10_rec-11_run-12.contour8': {
@@ -162,6 +169,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'slice_to_label': False,
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-3
         },
         'report.page_sub-1_acq-10_rec-11_run-12.contour9': {
@@ -176,6 +184,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'slice_to_label': False,
             'max_intensity_fraction': 0.95,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-1_acq-10_rec-11_run-12.distributions10': {
@@ -185,6 +194,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'labelfile': str(infull[('1', '10', '11', '12',
                                      None)]['features_label']),
             'qcform': defaultqcform,
+            'description': '',
             'relative_dir': str(tmp_path.resolve() / 'sub-1')
         },
         'report.page_sub-1_acq-10_rec-11_run-12.distributions11': {
@@ -194,6 +204,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'labelfile': str(infull[('1', '10', '11', '12',
                                      None)]['features_label']),
             'qcform': False,
+            'description': '',
             'relative_dir': str(tmp_path.resolve() / 'sub-1')
         },
         'report.page_sub-1_acq-10_rec-11_run-12.crash12': {
@@ -243,6 +254,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'slice_to_probmap': False,
             'max_intensity_fraction': 0.95,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-2_acq-10_rec-11_run-12.compare1': {
@@ -257,6 +269,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'max_intensity_fraction_image1': 0.99,
             'max_intensity_fraction_image2': 0.99,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-2_acq-10_rec-11_run-12.compare2': {
@@ -271,6 +284,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'max_intensity_fraction_image1': 0.91,
             'max_intensity_fraction_image2': 0.92,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-2_acq-10_rec-11_run-12.compare3': {
@@ -285,6 +299,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'max_intensity_fraction_image1': 0.99,
             'max_intensity_fraction_image2': 0.99,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-2_acq-10_rec-11_run-12.single4': {
@@ -295,6 +310,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-2_acq-10_rec-11_run-12.single5': {
@@ -305,6 +321,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-2_acq-10_rec-11_run-12.single6': {
@@ -315,6 +332,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-2_acq-10_rec-11_run-12.contour7': {
@@ -329,6 +347,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'slice_to_label': True,
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-2,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-2_acq-10_rec-11_run-12.contour8': {
@@ -343,6 +362,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'slice_to_label': False,
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-3
         },
         'report.page_sub-2_acq-10_rec-11_run-12.contour9': {
@@ -357,6 +377,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'slice_to_label': False,
             'max_intensity_fraction': 0.95,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
         'report.page_sub-2_acq-10_rec-11_run-12.distributions10': {
@@ -366,6 +387,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'labelfile': str(infull[('2', '10', '11', '12',
                                      None)]['features_label']),
             'qcform': defaultqcform,
+            'description': '',
             'relative_dir': str(tmp_path.resolve() / 'sub-2')
         },
         'report.page_sub-2_acq-10_rec-11_run-12.distributions11': {
@@ -375,6 +397,7 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'labelfile': str(infull[('2', '10', '11', '12',
                                      None)]['features_label']),
             'qcform': False,
+            'description': '',
             'relative_dir': str(tmp_path.resolve() / 'sub-2')
         },
         'report.page_sub-2_acq-10_rec-11_run-12.crash12': {
@@ -424,23 +447,37 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'slice_to_probmap': False,
             'max_intensity_fraction': 0.95,
             'affine_absolute_tolerance': 1e-3,
+            'description': '',
             'affine_relative_tolerance': 1e-5
         },
     }
 
     settings = {'image_width': 2, 'image_height': 1.75}
 
-    def callable(node, graph):
-        if node.fullname in truth.keys():
-            node_traits = set(node.inputs.visible_traits())
-            for k in set(truth[node.fullname].keys()):
-                assert getattr(node.inputs, k) == truth[node.fullname][k]
-            for k in node_traits - set(truth[node.fullname].keys()):
-                if k in settings:
-                    assert getattr(node.inputs, k) == settings[k]
-                else:
-                    assert not isdefined(getattr(node.inputs, k))
-        if filter_sub1:
-            assert 'sub-2' not in node.fullname
+    class Callable(object):
 
+        def __init__(self):
+            self.nodes_seen = set()
+            self.nodes_checked = set()
+
+        def __call__(self, node, graph):
+            self.nodes_seen.add(node.fullname)
+            if node.fullname in truth.keys():
+                self.nodes_checked.add(node.fullname)
+                node_traits = set(node.inputs.visible_traits())
+                for k in set(truth[node.fullname].keys()):
+                    assert getattr(node.inputs, k) == truth[node.fullname][k]
+                for k in node_traits - set(truth[node.fullname].keys()):
+                    if k in settings:
+                        assert getattr(node.inputs, k) == settings[k]
+                    else:
+                        assert not isdefined(getattr(node.inputs, k))
+            if filter_sub1:
+                assert 'sub-2' not in node.fullname
+
+    callable = Callable()
     wf.run(plugin='Debug', plugin_args={'callable': callable})
+    if filter_sub1:
+        assert callable.nodes_checked == set(filter(lambda x: 'sub-2' not in x, truth.keys()))
+    else:
+        assert callable.nodes_checked == set(truth.keys())
