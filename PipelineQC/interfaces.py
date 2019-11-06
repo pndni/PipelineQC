@@ -213,30 +213,20 @@ class Crash(Reportlet):
 
 class RatingInputSpec(BaseInterfaceInputSpec):
     name = traits.Str(mandatory=True, desc='Name of first image')
-    radio = traits.Either(
-        traits.Dict(),
-        None,
-        default=None,
-        usedefault=True,
-        desc='Description of the radio buttons for the reportlet. '
-        'The dictionary must have "name" and "options" keys, '
-        'where the value of name is a string and the value of '
-        'options is a list of dictionaries, each with "name" '
-        'and "value"')
-    checkbox = traits.Either(
-        traits.Dict(),
-        None,
-        default=None,
-        usedefault=True,
-        desc='Description of the checkboxes for the reportlet. '
-        'Must have "name" and "fields" keys, where "fields" '
-        'is a list of names for different checkboxes.')
-    text = traits.Either(traits.Dict(),
-                         None,
-                         default=None,
-                         usedefault=True,
-                         desc='Description of the text field. '
-                         'Only requires "name"')
+    widgets = traits.List(trait=traits.Dict(), mandatory=True,
+                          desc="""
+List of discriptions for each widget. Each widget must have a "name" key
+and a "type" key, with string values. "type" determines the type of
+widget. It can be
+**radio:** Description of the radio buttons for the reportlet.
+The an "options" key, where the value of
+options is a list of dictionaries, each with "name"
+and "value"
+**checkbox:** Description of the checkboxes for the reportlet.
+Must have "fields" key, which
+is a list of names for different checkboxes.
+**text:** Description of the text field. Only requires "name".
+""")
 
 
 class Rating(Reportlet):

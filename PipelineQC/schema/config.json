@@ -241,59 +241,81 @@
 		"name": {
 		    "type": "string"
 		},
-		"radio": {
-		    "type": "object",
-		    "additionalProperties": false,
-		    "required": ["name", "options"],
-		    "properties": {
-			"name": {
-			    "type": "string"
-			},
-			"options": {
-			    "type": "array",
-			    "items": {
-				"type": "object",
-				"additionalProperties": false,
-				"required": ["name", "value"],
-				"properties": {
-				    "name": {
-					"type": "string"
-				    },
-				    "value": {
-					"type": ["string", "number"]
-				    }
-				}
-			    }
-			}
+		"widgets": {
+		    "type": "array",
+		    "items": {
+			"anyOf": [
+			    { "$ref": "#/definitions/radiowidget" },
+			    { "$ref": "#/definitions/checkboxwidget" },
+			    { "$ref": "#/definitions/textwidget" }
+			]
 		    }
+		}
+	    }
+	},
+	"radiowidget": {
+	    "type": "object",
+	    "additionalProperties": false,
+	    "required": ["name", "type", "options"],
+	    "properties": {
+		"name": {
+		    "type": "string"
 		},
-		"checkbox": {
-		    "type": "object",
-		    "additionalProperties": false,
-		    "requried": ["name", "fields"],
-		    "properties": {
-			"name": {
-			    "type": "string"
-			},
-			"fields": {
-			    "type": "array",
-			    "items": {
+		"type": {
+		    "type": "string",
+		    "const": "radio"
+		},
+		"options": {
+		    "type": "array",
+		    "items": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["name", "value"],
+			"properties": {
+			    "name": {
 				"type": "string"
+			    },
+			    "value": {
+				"type": ["string", "number"]
 			    }
-			}
-		    }
-		},
-		"text": {
-		    "type": "object",
-		    "additionalProperties": false,
-		    "required": ["name"],
-		    "properties": {
-			"name": {
-			    "type": "string"
 			}
 		    }
 		}
-            }
+	    }
+	},
+	"checkboxwidget": {
+	    "type": "object",
+	    "additionalProperties": false,
+	    "requried": ["name", "type", "fields"],
+	    "properties": {
+		"name": {
+		    "type": "string"
+		},
+		"type": {
+		    "type": "string",
+		    "const": "checkbox"
+		},
+		"fields": {
+		    "type": "array",
+		    "items": {
+			"type": "string"
+		    }
+		}
+	    }
+	},
+	"textwidget": {
+	    "type": "object",
+	    "additionalProperties": false,
+	    "required": ["name", "type"],
+	    "properties": {
+		"name": {
+		    "type": "string"
+		},
+		"type": {
+		    "type": "string",
+		    "const": "text"
+		}
+	    }
 	}
     },
     "type": "object",

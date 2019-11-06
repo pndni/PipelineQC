@@ -793,17 +793,13 @@ def crash(*, name, crashfiles, out_file, relative_dir=None):
     _render(out_file, 'crash.tpl', out)
 
 
-def rating(*, name, radio, checkbox, text, out_file):
+def rating(*, name, widgets, out_file):
     """Write an html file to :py:obj:`out_file` descripting a rating tool
 
     :param name: Name descripting the reportlet
     :type name: str
-    :param radio: Dictionary describing the radio buttons of the rating tool.
-    :type radio: dict
-    :param checkbox: Dictionary describing the checkboxes of the rating tool.
-    :type radio: dict
-    :param radio: Dictionary describing the text field of the rating tool.
-    :type radio: dict
+    :param widgets: List of dictionaries describing the different widgets
+    :type widgets: list
     :param out_file: File name
     :type out_file: path-like object
 
@@ -813,36 +809,31 @@ def rating(*, name, radio, checkbox, text, out_file):
 
     .. code-block:: python
 
-       radio = {'name': 'Overall',
-                'options': [{'name': 'Poor', 'value': 1},
-                            {'name': 'Good', 'value': 2},
-                            {'name': 'Excellent', 'value': 3}]
-                }
-       checkbox = {'name': 'Notes',
+       widgets = [{'type': 'radio',
+                   'name': 'Overall',
+                   'options': [{'name': 'Poor', 'value': 1},
+                               {'name': 'Good', 'value': 2},
+                               {'name': 'Excellent', 'value': 3}]},
+                  {'type': 'checkbox',
+                   'name': 'Notes',
                    'fields': ['Poor registration',
                               'Poor segmentation',
-                              'Poor initial T1 quality']
-                   }
-       text = {'name': 'Other'}
-       rating('Rating', radio, checkbox, text, 'out.html')
+                              'Poor initial T1 quality']},
+                  {'type': 'text',
+                   'name': 'Other'}]
+       rating('Rating', widgets, 'out.html')
 
     """
-    out = {
-        'name': deepcopy(name),
-        'radio': deepcopy(radio),
-        'checkbox': deepcopy(checkbox),
-        'text': deepcopy(text)
-    }
-    for k in ['radio', 'checkbox', 'text']:
-        if out[k] is None:
-            continue
+    out = {'widgets': [deepcopy(widget) for widget in widgets],
+           'name': name}
+    for k in range(len(out['widgets'])):
         out[k]['name_no_spaces'] = out[k]['name'].replace(' ', '_')
         out[k]['name_'] = out[k]['name']
         del out[k]['name']
-    if out['radio'] is not None:
-        for opt in out['radio']['options']:
-            opt['name_'] = opt['name']
-            del opt['name']
+        if out[k]['type'] == 'radio':
+            for opt in out[k]['options']:
+                opt['name_'] = opt['name']
+                del opt['name']
     _render(out_file, 'rating.tpl', out)
 
 

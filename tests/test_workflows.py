@@ -205,27 +205,32 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
         },
         'report.page_sub-1_acq-10_rec-11_run-12.rating13': {
             'name': 'Rating',
-            'radio': {
-                'name': 'Overall',
-                'options': [{
-                    "name": "Reject", "value": 1
-                }, {
-                    "name": "Poor", "value": 2
-                }, {
-                    "name": "Acceptable", "value": 3
-                }, {
-                    "name": "Good", "value": 4
-                }, {
-                    "name": "Great", "value": 5
-                }]
-            },
-            'checkbox': {
-                'name': 'Notes',
-                'fields': ["Non-uniformity failed", "Registration failed"]
-            },
-            'text': {
-                'name': 'Other'
-            }
+            'widgets': [
+                {
+                 'name': 'Overall',
+                 'type': 'radio',
+                 'options': [{
+                     "name": "Reject", "value": 1
+                 }, {
+                     "name": "Poor", "value": 2
+                 }, {
+                     "name": "Acceptable", "value": 3
+                 }, {
+                     "name": "Good", "value": 4
+                 }, {
+                     "name": "Great", "value": 5
+                 }]
+                },
+                {
+                    'name': 'Notes',
+                    'type': 'checkbox',
+                    'fields': ["Non-uniformity failed", "Registration failed"]
+                },
+                {
+                    'name': 'Other',
+                    'type': 'text'
+                }
+            ]
         },
         'report.page_sub-1_acq-10_rec-11_run-12.probmap14': {
             'name': 'Non-uniformity corrected',
@@ -381,27 +386,32 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
         },
         'report.page_sub-2_acq-10_rec-11_run-12.rating13': {
             'name': 'Rating',
-            'radio': {
-                'name': 'Overall',
-                'options': [{
-                    "name": "Reject", "value": 1
-                }, {
-                    "name": "Poor", "value": 2
-                }, {
-                    "name": "Acceptable", "value": 3
-                }, {
-                    "name": "Good", "value": 4
-                }, {
-                    "name": "Great", "value": 5
-                }]
-            },
-            'checkbox': {
-                'name': 'Notes',
-                'fields': ["Non-uniformity failed", "Registration failed"]
-            },
-            'text': {
-                'name': 'Other'
-            }
+            'widgets': [
+                {
+                 'name': 'Overall',
+                 'type': 'radio',
+                 'options': [{
+                     "name": "Reject", "value": 1
+                 }, {
+                     "name": "Poor", "value": 2
+                 }, {
+                     "name": "Acceptable", "value": 3
+                 }, {
+                     "name": "Good", "value": 4
+                 }, {
+                     "name": "Great", "value": 5
+                 }]
+                },
+                {
+                    'name': 'Notes',
+                    'type': 'checkbox',
+                    'fields': ["Non-uniformity failed", "Registration failed"]
+                },
+                {
+                    'name': 'Other',
+                    'type': 'text'
+                }
+            ]
         },
         'report.page_sub-2_acq-10_rec-11_run-12.probmap14': {
             'name': 'Non-uniformity corrected',

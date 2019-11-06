@@ -174,7 +174,8 @@ def test_confdoc(tmp_path, conffilename):
             'out_file': str(out / 'sub-2_QC.html'), 'title': 'sub-2'
         },
         'report.index_pages': {
-            'out_file': str(out / 'QC_index.html')
+            'out_file': str(out / 'QC_index.html'),
+            'relative_dir': str(out.resolve())
         },
     }
 

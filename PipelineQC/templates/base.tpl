@@ -28,7 +28,7 @@
 		   animation-iteration-count: infinite;
 		   animation-timing-function: linear; }
       .output { max-height: 15em; overflow: auto }
-      .leftcolumn { position: fixed;
+      .rightcolumn { position: fixed;
 		    top: 5px;
 		    right: 5px;
 		    border-style: solid;
