@@ -178,5 +178,8 @@
 		}
 	    ]
 	}
-    ]
+    ],
+    "global_reportlet_settings": {
+	"use_relative_dir": true
+    }
 }

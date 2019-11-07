@@ -93,7 +93,7 @@ def test_confdoc(tmp_path, conffilename):
                           'sub-1_bet.nii'),
             'nslices': 7,
             'qcform': False,
-            'relative_dir': str(out.resolve())
+            'relative_dir': None
         },
         'report.page_subject-1.contour2': {
             'name': 'Tissue classification',
@@ -102,12 +102,12 @@ def test_confdoc(tmp_path, conffilename):
                               'sub-1_dseg.nii'),
             'nslices': 7,
             'qcform': False,
-            'relative_dir': str(out.resolve())
+            'relative_dir': None
         },
         'report.page_subject-1.crash3': {
             'name': 'Errors',
             'crashfiles': [],
-            'relative_dir': str(out.resolve())
+            'relative_dir': None
         },
         'report.page_subject-1_acquisition-fast.compare1': {
             'name1': 'T1w input file',
@@ -118,7 +118,7 @@ def test_confdoc(tmp_path, conffilename):
                           'sub-1_acq-fast_bet.nii'),
             'nslices': 7,
             'qcform': False,
-            'relative_dir': str(out.resolve())
+            'relative_dir': None
         },
         'report.page_subject-1_acquisition-fast.contour2': {
             'name': 'Tissue classification',
@@ -128,7 +128,7 @@ def test_confdoc(tmp_path, conffilename):
                               'sub-1_acq-fast_dseg.nii'),
             'nslices': 7,
             'qcform': False,
-            'relative_dir': str(out.resolve())
+            'relative_dir': None
         },
         'report.page_subject-1_acquisition-fast.crash3': {
             'name': 'Errors',
@@ -136,7 +136,7 @@ def test_confdoc(tmp_path, conffilename):
                 str(tmp_path / 'out' / 'sub-1' / 'logs' / 'sub-1_acq-fast' /
                     'crash.pklz')
             ],
-            'relative_dir': str(out.resolve())
+            'relative_dir': None
         },
         'report.page_subject-2.compare1': {
             'name1': 'T1w input file',
@@ -147,7 +147,7 @@ def test_confdoc(tmp_path, conffilename):
                           'sub-2_bet.nii'),
             'nslices': 7,
             'qcform': False,
-            'relative_dir': str(out.resolve())
+            'relative_dir': None
         },
         'report.page_subject-2.contour2': {
             'name': 'Tissue classification',
@@ -156,12 +156,12 @@ def test_confdoc(tmp_path, conffilename):
                               'sub-2_dseg.nii'),
             'nslices': 7,
             'qcform': False,
-            'relative_dir': str(out.resolve())
+            'relative_dir': None
         },
         'report.page_subject-2.crash3': {
             'name': 'Errors',
             'crashfiles': [],
-            'relative_dir': str(out.resolve())
+            'relative_dir': None
         },
         'report.page_subject-1.assemble': {
             'out_file': str(out / 'sub-1_QC.html'), 'title': 'subject-1'

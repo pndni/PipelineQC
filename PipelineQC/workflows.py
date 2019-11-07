@@ -80,12 +80,19 @@ def report_workflow(page_dict,
                             page_dict.get(rpval, no_entry_val))
             else:
                 setattr(node.inputs, rpkey, rpval)
-        if 'relative_dir' in node.inputs.visible_traits():
-            node.inputs.relative_dir = out_file.parent
         for settings_key, settings_value in conf['global_reportlet_settings'].items():
-            if (settings_key in node.inputs.visible_traits()
-                    and settings_key not in rpspec):
-                setattr(node.inputs, settings_key, settings_value)
+            if settings_key == 'use_relative_dir':
+                settings_node_key = 'relative_dir'
+                if settings_value:
+                    settings_node_value = out_file.parent
+                else:
+                    settings_node_value = None
+            else:
+                settings_node_key = settings_key
+                settings_node_value = settings_value
+            if (settings_node_key in node.inputs.visible_traits()
+                    and settings_node_key not in rpspec):
+                setattr(node.inputs, settings_node_key, settings_node_value)
         wf.connect(node, 'out_file', reportlets, f'in{reportletnum}')
     assemble_node = pe.Node(AssembleReport(), 'assemble')
     assemble_node.inputs.title = title
