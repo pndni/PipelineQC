@@ -17,6 +17,8 @@ from pndniworkflows import utils
 from copy import deepcopy
 from pathlib import Path
 from scipy import ndimage
+import traceback
+import sys
 
 ORIENTATION = [[2, 1], [1, 1], [0, 1]]
 PLOTSIZE = 5, 4
@@ -430,14 +432,29 @@ def single(*, name, image, out_file, qcform=True, relative_dir=None, description
         out['errormessage'] = 'No image file for this reportlet'
         _render(out_file, 'single.tpl', out)
     else:
-        _single_opt_contours(name,
-                             _load_and_orient(image),
-                             image,
-                             out_file,
-                             qcform=qcform,
-                             relative_dir=relative_dir,
-                             description=description,
-                             **kwargs)
+        try:
+            niimage = _load_and_orient(image)
+        except ValueError:
+            out = {
+                'name': name,
+                'form': qcform,
+                'formfile': 'form_simple.tpl',
+                'name_no_spaces': name.replace(' ', '_')
+            }
+            if description:
+                out['description'] = description
+            out['errormessage'] = 'Unable to load image.'
+            out['errormessageverbatim'] = '\n'.join(traceback.format_tb(sys.exc_info()[2]))
+            _render(out_file, 'single.tpl', out)
+        else:
+            _single_opt_contours(name,
+                                 niimage,
+                                 image,
+                                 out_file,
+                                 qcform=qcform,
+                                 relative_dir=relative_dir,
+                                 description=description,
+                                 **kwargs)
 
 
 def compare(*,
@@ -505,38 +522,49 @@ def compare(*,
             out['filename1'] = str(image1)
             out['filename2'] = str(image2)
 
-        niimage1 = _load_and_orient(image1)
-        niimage2 = _load_and_orient(image2)
-        if slice_to_image2:
-            slice_locations = _calc_all_label_slices(niimage2, nslices)
-            reference1 = niimage2
-            reference2 = None
+        errormessages = []
+        try:
+            niimage1 = _load_and_orient(image1)
+        except ValueError:
+            errormessages.append('\n'.join(traceback.format_tb(sys.exc_info()[2])))
+        try:
+            niimage2 = _load_and_orient(image2)
+        except ValueError:
+            errormessages.append('\n'.join(traceback.format_tb(sys.exc_info()[2])))
+        if len(errormessages) > 0:
+            out['errormessage'] = 'Unable to load image(s)'
+            out['errormessageverbatim'] = '\n'.join(errormessages)
         else:
-            slice_locations = None
-            reference2 = niimage1
-            reference1 = None
-        svg1list = _imshow(
-            niimg=niimage1,
-            separate_figs=True,
-            all_slice_locations=slice_locations,
-            nslices=nslices,
-            reference=reference1,
-            max_intensity_fraction=max_intensity_fraction_image1,
-            **kwargs)
-        svg2list = _imshow(
-            niimg=niimage2,
-            separate_figs=True,
-            reference=reference2,
-            all_slice_locations=slice_locations,
-            nslices=nslices,
-            max_intensity_fraction=max_intensity_fraction_image2,
-            **kwargs)
+            if slice_to_image2:
+                slice_locations = _calc_all_label_slices(niimage2, nslices)
+                reference1 = niimage2
+                reference2 = None
+            else:
+                slice_locations = None
+                reference2 = niimage1
+                reference1 = None
+            svg1list = _imshow(
+                niimg=niimage1,
+                separate_figs=True,
+                all_slice_locations=slice_locations,
+                nslices=nslices,
+                reference=reference1,
+                max_intensity_fraction=max_intensity_fraction_image1,
+                **kwargs)
+            svg2list = _imshow(
+                niimg=niimage2,
+                separate_figs=True,
+                reference=reference2,
+                all_slice_locations=slice_locations,
+                nslices=nslices,
+                max_intensity_fraction=max_intensity_fraction_image2,
+                **kwargs)
 
-        svg1 = doublemap(lambda svgsingle: _set_svg_class(svgsingle, 'first'),
-                         svg1list)
-        svg2 = doublemap(lambda svgsingle: _set_svg_class(svgsingle, 'second'),
-                         svg2list)
-        out['svg'] = doublezip(svg1, svg2)
+            svg1 = doublemap(lambda svgsingle: _set_svg_class(svgsingle, 'first'),
+                             svg1list)
+            svg2 = doublemap(lambda svgsingle: _set_svg_class(svgsingle, 'second'),
+                             svg2list)
+            out['svg'] = doublezip(svg1, svg2)
     _render(out_file, 'compare.tpl', out)
 
 
@@ -663,24 +691,45 @@ def _contours_or_probmap(*,
             errormessages) + ' not specified for this reportlet'
         _render(out_file, 'single.tpl', out)
     else:
-        nilabel = _load_and_orient(labelimage)
-        if slice_to_label:
-            slice_locations = _calc_all_label_slices(nilabel, nslices)
+        errormessages = []
+        try:
+            nilabel = _load_and_orient(labelimage)
+        except ValueError:
+            errormessages.append('\n'.join(traceback.format_tb(sys.exc_info()[2])))
+        try:
+            niimage = _load_and_orient(image)
+        except ValueError:
+            errormessages.append('\n'.join(traceback.format_tb(sys.exc_info()[2])))
+        if len(errormessages) > 0:
+            out = {
+                'name': name,
+                'form': qcform,
+                'formfile': 'form_simple.tpl',
+                'name_no_spaces': name.replace(' ', '_')
+            }
+            if description:
+                out['description'] = description
+            out['errormessage'] = 'Failed to load image(s)'
+            out['errormessageverbatim'] = '\n'.join(errormessages)
+            _render(out_file, 'single.tpl', out)
         else:
-            slice_locations = None
-        _single_opt_contours(name,
-                             _load_and_orient(image),
-                             image,
-                             out_file,
-                             nilabel=nilabel,
-                             labelfilename=labelimage,
-                             qcform=qcform,
-                             relative_dir=relative_dir,
-                             all_slice_locations=slice_locations,
-                             nslices=nslices,
-                             labeldisplay=labeldisplay,
-                             description=description,
-                             **kwargs)
+            if slice_to_label:
+                slice_locations = _calc_all_label_slices(nilabel, nslices)
+            else:
+                slice_locations = None
+            _single_opt_contours(name,
+                                 niimage,
+                                 image,
+                                 out_file,
+                                 nilabel=nilabel,
+                                 labelfilename=labelimage,
+                                 qcform=qcform,
+                                 relative_dir=relative_dir,
+                                 all_slice_locations=slice_locations,
+                                 nslices=nslices,
+                                 labeldisplay=labeldisplay,
+                                 description=description,
+                                 **kwargs)
 
 
 def _str2int(s):

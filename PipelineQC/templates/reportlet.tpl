@@ -2,6 +2,9 @@
     {% if errormessage %}
     <div class="errormessage">
     {{ errormessage|e }}
+    {% if errormessageverbatim %}
+    <pre>{{ errormessageverbatim|e }}<pre>
+    {% endif %}
     </div>
     {% else %}
     <div class="description">
