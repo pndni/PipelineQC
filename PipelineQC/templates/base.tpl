@@ -52,7 +52,7 @@
 		  outobj[e.name] = e[0].value
 	      } else if (e.className == "checkboxform"){
 		  for (r of e){
-		      outobj[r.value] = r.checked;
+		      outobj[e.name.concat("-", r.value)] = r.checked;
 		  }
 	      }
 	  }
