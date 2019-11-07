@@ -5,6 +5,7 @@ from . import group
 from . import reportlets
 from pathlib import Path
 import argparse
+import nipype
 
 
 def qc_all(dirs,
@@ -22,6 +23,7 @@ def qc_all(dirs,
         filedict = get_files(dirs, conf, **kwargs)
     if len(filedict) == 1:
         raise RuntimeError('No non-global files found!')
+    nipype.config.update_config({'execution': {'crashfile_format': 'txt'}})
     wf = all_workflow(filedict,
                       output_dir,
                       conf,
