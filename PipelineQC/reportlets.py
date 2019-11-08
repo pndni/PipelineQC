@@ -188,6 +188,16 @@ def imshowfig(*,
                                       max = vals[int(len(vals) * max_intensity_fraction)]
 
     :type max_intensity_fraction: float
+    :param labeldisplay: How to display nilabel. Either contour, overlay, probmap, or contour_nonzero
+    :type labeldisplay: str
+    :name affine_absolute_tolerance: pass to numpy.allclose as atol
+    :type affine_absolute_tolerance: float
+    :name affine_relative_tolerance: pass to numpy.allclose as rtol
+    :type affine_relative_tolerance: float
+    :name transparency: Transparency over overlay
+    :type transparency: float
+    :name contour_levels: The levels at which to draw the contours.
+    :type contour_levels: list
     :return: :py:obj:`matplotlib.figure.Figure` or a list of lists of
              :py:obj:`matplotlib.figure.Figure`
     """
@@ -405,12 +415,11 @@ def _single_opt_contours(name,
                          out_file,
                          nilabel=None,
                          labelfilename=None,
-                         qcform=True,
                          relative_dir=None,
                          description='',
                          **kwargs):
     out = {
-        'name': name, 'form': qcform, 'name_no_spaces': name.replace(' ', '_')
+        'name': name, 'name_no_spaces': name.replace(' ', '_')
     }
     out['svg'] = _imshow(niimg=niimage,
                          nilabel=nilabel,
@@ -432,7 +441,7 @@ def _single_opt_contours(name,
     _render(out_file, 'single.tpl', out)
 
 
-def single(*, name, image, out_file, qcform=True, relative_dir=None, description='', **kwargs):
+def single(*, name, image, out_file, relative_dir=None, description='', **kwargs):
     """Write an html file to :py:obj:`out_file` showing the :py:obj:`image`
     with :py:obj:`nslices` slices in all three axial planes
 
@@ -442,16 +451,16 @@ def single(*, name, image, out_file, qcform=True, relative_dir=None, description
     :type image: path-like object or :py:obj:`None`
     :param out_file: File name
     :type out_file: path-like object
-    :param qcform: Include a QC form in the output
-    :type qcform: bool
     :param relative_dir: Create links to filenames relative to this directory
     :type relative_dir: path-like object
+    :param description: Description of reportlet
+    :type description: str
+
+    keyword arguments are passed to imshowfig
     """
     if image is None:
         out = {
             'name': name,
-            'form': qcform,
-            'formfile': 'form_simple.tpl',
             'name_no_spaces': name.replace(' ', '_')
         }
         if description:
@@ -464,8 +473,6 @@ def single(*, name, image, out_file, qcform=True, relative_dir=None, description
         except ValueError:
             out = {
                 'name': name,
-                'form': qcform,
-                'formfile': 'form_simple.tpl',
                 'name_no_spaces': name.replace(' ', '_')
             }
             if description:
@@ -478,7 +485,6 @@ def single(*, name, image, out_file, qcform=True, relative_dir=None, description
                                  niimage,
                                  image,
                                  out_file,
-                                 qcform=qcform,
                                  relative_dir=relative_dir,
                                  description=description,
                                  **kwargs)
@@ -490,7 +496,6 @@ def compare(*,
             name2,
             image2,
             out_file,
-            qcform=True,
             relative_dir=None,
             slice_to_image2=False,
             nslices=7,
@@ -511,21 +516,25 @@ def compare(*,
     :type image2: path-like object or :py:obj:`None`
     :param out_file: File name
     :type out_file: path-like object
-    :param qcform: Include a QC form in the output
-    :type qcform: bool
     :param relative_dir: Create links to filenames relative to this directory
     :type relative_dir: path-like object
     :param slice_to_image2: Calculate slices based on non-zero extent of image2
     :type slice_to_image2: bool
     :param nslices: Number of slices to show in each plane
     :type nslices: int
+    :max_intensity_fraction_image1: see :py:func:`imshowfig`
+    :type max_intensity_fraction_image1: float
+    :max_intensity_fraction_image2: see :py:func:`imshowfig`
+    :type max_intensity_fraction_image2: float
+    :param description: Description of reportlet
+    :type description: str
+
+    keyword arguments are passed to imshowfig
     """
 
     out = {
         'name1': name1,
         'name2': name2,
-        'form': qcform,
-        'formfile': 'form_simple.tpl',
         'name_no_spaces': '_'.join(
             [nametmp.replace(' ', '_') for nametmp in [name1, name2]])
     }
@@ -600,7 +609,6 @@ def overlay(*,
             image,
             labelimage,
             out_file,
-            qcform=True,
             relative_dir=None,
             slice_to_label=False,
             nslices=7,
@@ -618,14 +626,16 @@ def overlay(*,
     :type labelimage: path-like object or :py:obj:`None`
     :param out_file: File name
     :type out_file: path-like object
-    :param qcform: Include a QC form in the output
-    :type qcform: bool
     :param relative_dir: Create links to filenames relative to this directory
     :type relative_dir: path-like object
     :param slice_to_label: Calculate slices based on non-zero extent of labelimage
     :type slice_to_label: bool
     :param nslices: Number of slices to show in each plane
     :type nslices: int
+    :param description: Description of reportlet
+    :type description: str
+
+    keyword arguments are passed to imshowfig
     """
     labeldisplay = 'overlay'
     _contours_or_probmap(name=name,
@@ -633,7 +643,6 @@ def overlay(*,
                          labelimage=labelimage,
                          out_file=out_file,
                          labeldisplay=labeldisplay,
-                         qcform=qcform,
                          relative_dir=relative_dir,
                          slice_to_label=slice_to_label,
                          nslices=nslices,
@@ -646,7 +655,6 @@ def contours(*,
              image,
              labelimage,
              out_file,
-             qcform=True,
              relative_dir=None,
              slice_to_label=False,
              nslices=7,
@@ -665,14 +673,18 @@ def contours(*,
     :type labelimage: path-like object or :py:obj:`None`
     :param out_file: File name
     :type out_file: path-like object
-    :param qcform: Include a QC form in the output
-    :type qcform: bool
     :param relative_dir: Create links to filenames relative to this directory
     :type relative_dir: path-like object
     :param slice_to_label: Calculate slices based on non-zero extent of labelimage
     :type slice_to_label: bool
     :param nslices: Number of slices to show in each plane
     :type nslices: int
+    :param description: Description of reportlet
+    :type description: str
+    :param threshold_above_zero: If true, threshold the image with >0 and draw a contour at 0.5
+    :type threshold_above_zero: bool
+
+    keyword arguments are passed to imshowfig
     """
     labeldisplay = 'contour_nonzero' if threshold_above_zero else 'contour'
     _contours_or_probmap(name=name,
@@ -680,7 +692,6 @@ def contours(*,
                          labelimage=labelimage,
                          out_file=out_file,
                          labeldisplay=labeldisplay,
-                         qcform=qcform,
                          relative_dir=relative_dir,
                          slice_to_label=slice_to_label,
                          nslices=nslices,
@@ -693,7 +704,6 @@ def probmap(*,
             image,
             probmapimage,
             out_file,
-            qcform=True,
             relative_dir=None,
             slice_to_probmap=False,
             nslices=7,
@@ -711,21 +721,22 @@ def probmap(*,
     :type probmapimage: path-like object or :py:obj:`None`
     :param out_file: File name
     :type out_file: path-like object
-    :param qcform: Include a QC form in the output
-    :type qcform: bool
     :param relative_dir: Create links to filenames relative to this directory
     :type relative_dir: path-like object
     :param slice_to_probmap: Calculate slices based on non-zero extent of probmapimage
     :type slice_to_probmap: bool
     :param nslices: Number of slices to show in each plane
     :type nslices: int
+    :param description: Description of reportlet
+    :type description: str
+
+    keyword arguments are passed to imshowfig
     """
     _contours_or_probmap(name=name,
                          image=image,
                          labelimage=probmapimage,
                          out_file=out_file,
                          labeldisplay='probmap',
-                         qcform=qcform,
                          relative_dir=relative_dir,
                          slice_to_label=slice_to_probmap,
                          nslices=nslices,
@@ -739,7 +750,6 @@ def _contours_or_probmap(*,
                          labelimage,
                          out_file,
                          labeldisplay,
-                         qcform=True,
                          relative_dir=None,
                          slice_to_label=False,
                          nslices=7,
@@ -748,8 +758,6 @@ def _contours_or_probmap(*,
     if image is None or labelimage is None:
         out = {
             'name': name,
-            'form': qcform,
-            'formfile': 'form_simple.tpl',
             'name_no_spaces': name.replace(' ', '_')
         }
         if description:
@@ -778,8 +786,6 @@ def _contours_or_probmap(*,
         if len(errormessages) > 0:
             out = {
                 'name': name,
-                'form': qcform,
-                'formfile': 'form_simple.tpl',
                 'name_no_spaces': name.replace(' ', '_')
             }
             if description:
@@ -798,7 +804,6 @@ def _contours_or_probmap(*,
                                  out_file,
                                  nilabel=nilabel,
                                  labelfilename=labelimage,
-                                 qcform=qcform,
                                  relative_dir=relative_dir,
                                  all_slice_locations=slice_locations,
                                  nslices=nslices,
@@ -832,9 +837,8 @@ def distributions(*,
                   distsfile,
                   out_file,
                   labelfile,
-                  description='',
-                  qcform=True,
-                  relative_dir=None):
+                  relative_dir=None,
+                  description=''):
     """Write an html file to :py:obj:`out_file` showing the distributions
     defined in :py:obj:`distsfile`.
 
@@ -850,16 +854,14 @@ def distributions(*,
                       distributions. ("index" corresponds to the second column in
                       distsfile)
     :type labelfile: path-like object or :py:obj:`None`
-    :param qcform: Include a QC form in the output
-    :type qcform: bool
     :param relative_dir: Create links to filenames relative to this directory
     :type relative_dir: path-like object
+    :param description: Description of reportlet
+    :type description: str
     """
     out = {
         'name': name,
         'name_no_spaces': name.replace(' ', '_'),
-        'form': qcform,
-        'formfile': 'form_simple.tpl'
     }
     if description:
         out['description'] = description
@@ -985,7 +987,6 @@ def assemble(*,
              out_file,
              in_files,
              title,
-             qcform=True,
              prev=None,
              next_=None,
              relative_dir=None):
@@ -997,14 +998,18 @@ def assemble(*,
     :type in_files: list of path-like objects
     :param title: title of html page
     :type title: str
-    :param qcform: inputs contain QC forms
-    :type qcform: bool
+    :param prev: Name of previous qc page for linking
+    :type prev: path-like object
+    :param next: Name of next qc page for linking
+    :type next: path-like object
+    :param relative_dir: Create links to filenames relative to this directory
+    :type relative_dir: path-like object
     """
     env = jinja2.Environment(
         loader=jinja2.PackageLoader('PipelineQC', 'templates'))
     template = env.get_template('base.tpl')
     body = '\n'.join((_load(in_f) for in_f in in_files))
-    params = {'body': body, 'title': title, 'form': qcform}
+    params = {'body': body, 'title': title}
     if prev is not None:
         params['prev'] = prev
         if relative_dir is not None:

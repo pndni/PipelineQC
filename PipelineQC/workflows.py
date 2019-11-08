@@ -31,11 +31,7 @@ def report_workflow(page_dict,
                       v in zip(conf['page_keys'], page_key) if v is not None))
     wf = pe.Workflow('page_' + title)
     reportlets = pe.Node(Merge(len(conf['reportlets'])), 'reportlets')
-    inlineform = False
-    rating = False
     for reportletnum, rpspec in enumerate(conf['reportlets'], start=1):
-        if rpspec.get('qcform', False):
-            inlineform = True
         if rpspec['type'] == 'single':
             node = pe.Node(Single(), f'single{reportletnum}')
         elif rpspec['type'] == 'contour':
@@ -52,7 +48,6 @@ def report_workflow(page_dict,
             node = pe.Node(Crash(), f'crash{reportletnum}')
         elif rpspec['type'] == 'rating':
             node = pe.Node(Rating(), f'rating{reportletnum}')
-            rating = True
         else:
             raise InvalidReportletTypeError(
                 f'{rpspec["type"]} is not a recognized reportlet')
@@ -105,7 +100,6 @@ def report_workflow(page_dict,
     if prev is not None:
         assemble_node.inputs.prev = prev
     assemble_node.inputs.relative_dir = out_file.parent
-    assemble_node.inputs.qcform = inlineform and not rating
     wf.connect(reportlets, 'out', assemble_node, 'in_files')
     return wf
 

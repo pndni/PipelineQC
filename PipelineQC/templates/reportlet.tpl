@@ -15,6 +15,3 @@
     </div>
     {% block images %}{% endblock %}
     {% endif %}
-    {% if form %}
-    {% include formfile %}
-    {% endif %}

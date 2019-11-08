@@ -171,7 +171,13 @@ to the reportlet indicated by "type".
 .. literalinclude:: ../tests/testconfdocs.json
    :lines: 37-56
 
-All key/value pairs besides "type" are sent to the corresponding :doc:`reportlet interface </interfaces>`.
+All key/value pairs besides "type" and "relative_dir" are sent to the corresponding :doc:`reportlet interface </interfaces>`.
+The parameter "use_relative_dir" may be specified (boolean), and if true then "relative_dir" will be set to the proper directory.
+
+global_reportlet_settings
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Settings that should apply to all (relevant) reportlets.
 
 Final
 -----

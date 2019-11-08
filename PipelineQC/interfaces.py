@@ -11,9 +11,6 @@ from . import reportlets
 
 
 class ReportletInputSpec(BaseInterfaceInputSpec):
-    qcform = traits.Bool(False,
-                         usedefault=True,
-                         desc='Include qc form beneath each reportlet.')
     relative_dir = traits.Either(Directory(
         exists=True,
         desc='Create links to filenames relative to this directory'),
@@ -283,9 +280,6 @@ class AssembleReportInputSpec(BaseInterfaceInputSpec):
     out_file = File(desc='Output file')
     next_ = File(desc='File name of next QC page')
     prev_ = File(desc='File name of previous QC page')
-    qcform = traits.Bool(False,
-                         usedefault=True,
-                         desc='Include qc form beneath each reportlet.')
     relative_dir = traits.Either(Directory(
         exists=True,
         desc='Create links to filenames relative to this directory'),
@@ -314,7 +308,6 @@ class AssembleReport(SimpleInterface):
         reportlets.assemble(out_file=out_file,
                             in_files=self.inputs.in_files,
                             title=self.inputs.title,
-                            qcform=self.inputs.qcform,
                             next_=next_,
                             prev=prev,
                             relative_dir=reldir)

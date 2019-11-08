@@ -76,11 +76,6 @@
   <div class="maincolumn">
   {{ body }}
 
-  {% if form %}
-  <form onsubmit="submitform()">
-    <input type="submit" value="Download QC">
-  </form>
-  {% endif %}
   </div>
 
   {% if prev %}<span class="prev"><a href={{ prev }}>Previous</a></span>{% endif %}

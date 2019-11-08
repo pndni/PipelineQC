@@ -6,7 +6,7 @@
         "T1w": "sub-(?P<sub>[a-zA-Z0-9]+)(/ses-(?P<ses>[a-zA-Z0-9]+))?/anat/sub-(?P=sub)(_ses-(?P=ses))?(_acq-(?P<acq>[a-zA-Z0-9]+))?(_rec-(?P<rec>[a-zA-Z0-9]+))?(_run-(?P<run>[0-9]+))?_T1w\\.nii(\\.gz)?",
         "derivatives": "sub-(?P<sub>[a-zA-Z0-9]+)(/ses-(?P<ses>[a-zA-Z0-9]+))?/anat/sub-(?P=sub)(_ses-(?P=ses))?(_acq-(?P<acq>[a-zA-Z0-9]+))?(_rec-(?P<rec>[a-zA-Z0-9]+))?(_run-(?P<run>[0-9]+))?(_space-(?P<space>[a-zA-Z0-9]+))?(_label-(?P<label>[a-zA-Z0-9]+))?(_skullstripped-(?P<skullstripped>[a-zA-Z0-9]+))?(_desc-(?P<desc>[a-zA-Z0-9]+))?(_map-(?P<map>[a-zA-Z0-9]+))?_(?P<suffix>[a-zA-Z0-9]+)(_(?P<labels>labels))?\\.(?P<extension>.*)",
         "simple": "(?P<base>.*)\\.(?P<extension>.*)",
-        "crash": "sub-(?P<sub>[a-zA-Z0-9]+)(/ses-(?P<ses>[a-zA-Z0-9]+))?/logs/sub-(?P=sub)(_ses-(?P=ses))?(_acq-(?P<acq>[a-zA-Z0-9]+))?(_rec-(?P<rec>[a-zA-Z0-9]+))?(_run-(?P<run>[0-9]+))?/crash.*\\.pklz"
+        "crash": "sub-(?P<sub>[a-zA-Z0-9]+)(/ses-(?P<ses>[a-zA-Z0-9]+))?/logs/sub-(?P=sub)(_ses-(?P=ses))?(_acq-(?P<acq>[a-zA-Z0-9]+))?(_rec-(?P<rec>[a-zA-Z0-9]+))?(_run-(?P<run>[0-9]+))?/crash.*\\.(txt|pklz)"
     },
     "files": {
         "model": {
@@ -58,8 +58,7 @@
             "name1": "Non-uniformity corrected",
             "image1": "nu_bet",
             "name2": "Inormalized",
-            "image2": "normalized",
-	    "qcform": true
+            "image2": "normalized"
         },
         {
             "type": "compare",
@@ -68,7 +67,6 @@
             "name2": "Inormalized",
             "image2": "normalized",
             "nslices": 3,
-	    "qcform": true,
 	    "max_intensity_fraction_image1": 0.91,
 	    "max_intensity_fraction_image2": 0.92
         },
@@ -83,15 +81,13 @@
         {
             "type": "single",
             "name": "Non-uniformity corrected",
-            "image": "nu_bet",
-	    "qcform": true
+            "image": "nu_bet"
         },
         {
             "type": "single",
             "name": "Non-uniformity corrected",
             "image": "nu_bet",
-            "nslices": 3,
-	    "qcform": true
+            "nslices": 3
         },
         {
             "type": "single",
@@ -103,7 +99,6 @@
             "name": "Non-uniformity corrected",
             "image": "nu_bet",
             "labelimage": "transformed_atlas",
-	    "qcform": true,
 	    "slice_to_label": true,
 	    "affine_absolute_tolerance": 1e-2
         },
@@ -113,7 +108,6 @@
             "image": "nu_bet",
             "labelimage": "transformed_atlas",
             "nslices": 3,
-	    "qcform": true,
 	    "affine_relative_tolerance": 1e-3,
 	    "contour_levels": [0.001]
         },
@@ -129,8 +123,7 @@
             "type": "distributions",
             "name": "features",
             "distsfile": "features",
-            "labelfile": "features_label",
-	    "qcform": true
+            "labelfile": "features_label"
         },
         {
             "type": "distributions",

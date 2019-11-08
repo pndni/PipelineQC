@@ -5,42 +5,50 @@ from collections import defaultdict
 from pathlib import Path
 from PipelineQC import get_files
 from nipype.interfaces.base import isdefined
+import numpy as np
+import nibabel
 
 
 @pytest.fixture()
 def input_files_conf1():
+    array = np.zeros((100, 101, 102))
+    array[2:8, 2:8, 2:8] = 1.0
+    aff = np.eye(4)
+    niimage = nibabel.Nifti1Image(array, affine=aff)
     out = defaultdict(dict)
     for subnum in [1, 2]:
-        out[(str(subnum), '10', '11', '12', None)]['normalized'] = Path(
+        out[(str(subnum), '10', '11', '12', None)]['normalized'] = (Path(
             f'sub-{subnum}/anat/sub-{subnum}_acq-10_rec-11_run-12_skullstripped-true_desc-normalized_T1w.nii'
-        )
-        out[(str(subnum), '10', '11', '12', None)]['nu_bet'] = Path(
+        ), niimage)
+        out[(str(subnum), '10', '11', '12', None)]['nu_bet'] = (Path(
             f'sub-{subnum}/anat/sub-{subnum}_acq-10_rec-11_run-12_skullstripped-true_desc-nucor_T1w.nii'
-        )
-        out[(str(subnum), '10', '11', '12', None)]['transformed_atlas'] = Path(
+        ), niimage)
+        out[(str(subnum), '10', '11', '12', None)]['transformed_atlas'] = (Path(
             f'sub-{subnum}/anat/sub-{subnum}_acq-10_rec-11_run-12_space-T1w_desc-lobes_dseg.nii'
-        )
-        out[(str(subnum), '10', '11', '12', None)]['features'] = Path(
+        ), niimage)
+        out[(str(subnum), '10', '11', '12', None)]['features'] = (Path(
             f'sub-{subnum}/anat/sub-{subnum}_acq-10_rec-11_run-12_space-T1w_desc-tissue_features.txt'
-        )
-        out[(str(subnum), '10', '11', '12', None)]['features_label'] = Path(
+        ), 'index\tvalue\n1.0\t100.0\n2.0\t200.0\n')
+        out[(str(subnum), '10', '11', '12', None)]['features_label'] = (Path(
             f'sub-{subnum}/anat/sub-{subnum}_acq-10_rec-11_run-12_space-T1w_desc-tissue_features_labels.tsv'
-        )
-        out[(str(subnum), '10', '11', '12', None)]['crashfiles'] = Path(
-            f'sub-{subnum}/logs/sub-{subnum}_acq-10_rec-11_run-12/crash.pklz')
+        ), 'index\tname\n1\tGM\n2\tWM\n')
+        out[(str(subnum), '10', '11', '12', None)]['crashfiles'] = (Path(
+            f'sub-{subnum}/logs/sub-{subnum}_acq-10_rec-11_run-12/crash.txt'), None)
     return out
 
 
 def _make_files(tmp, files):
     outfull = defaultdict(dict)
     for key1, val1 in files.items():
-        for key2, val2 in val1.items():
+        for key2, (val2, val2towrite) in val1.items():
             ftmp = tmp / val2
             ftmp.parent.mkdir(parents=True, exist_ok=True)
-            if key2 == 'features_label':
-                ftmp.write_text('index\tname\n1\tGM\n2\tWM\n')
-            else:
+            if val2towrite is None:
                 ftmp.write_text(str(val2))
+            elif isinstance(val2towrite, nibabel.Nifti1Image):
+                val2towrite.to_filename(str(ftmp))
+            else:
+                ftmp.write_text(val2towrite)
             outfull[key1][key2] = ftmp
     return outfull
 
@@ -61,7 +69,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
                                 filter_keys_dict=filter_dict)
 
     defaultnslices = 7
-    defaultqcform = True
 
     truth = {
         'report.page_sub-1_acq-10_rec-11_run-12.compare1': {
@@ -70,7 +77,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'name2': 'Inormalized',
             'image2': str(infull[('1', '10', '11', '12', None)]['normalized']),
             'nslices': defaultnslices,
-            'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'slice_to_image2': False,
             'max_intensity_fraction_image1': 0.99,
@@ -85,7 +91,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'name2': 'Inormalized',
             'image2': str(infull[('1', '10', '11', '12', None)]['normalized']),
             'nslices': 3,
-            'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'slice_to_image2': False,
             'max_intensity_fraction_image1': 0.91,
@@ -100,7 +105,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'name2': 'Inormalized',
             'image2': str(infull[('1', '10', '11', '12', None)]['normalized']),
             'nslices': defaultnslices,
-            'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'slice_to_image2': True,
             'max_intensity_fraction_image1': 0.99,
@@ -113,7 +117,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'name': 'Non-uniformity corrected',
             'image': str(infull[('1', '10', '11', '12', None)]['nu_bet']),
             'nslices': defaultnslices,
-            'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
@@ -124,7 +127,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'name': 'Non-uniformity corrected',
             'image': str(infull[('1', '10', '11', '12', None)]['nu_bet']),
             'nslices': 3,
-            'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
@@ -135,7 +137,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'name': 'Non-uniformity corrected',
             'image': str(infull[('1', '10', '11', '12', None)]['nu_bet']),
             'nslices': defaultnslices,
-            'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
@@ -148,7 +149,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'labelimage': str(infull[('1', '10', '11', '12',
                                       None)]['transformed_atlas']),
             'nslices': defaultnslices,
-            'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'contour_width': 5,
             'slice_to_label': True,
@@ -165,7 +165,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'labelimage': str(infull[('1', '10', '11', '12',
                                       None)]['transformed_atlas']),
             'nslices': 3,
-            'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'contour_width': 5,
             'slice_to_label': False,
@@ -182,7 +181,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'labelimage': str(infull[('1', '10', '11', '12',
                                       None)]['transformed_atlas']),
             'nslices': defaultnslices,
-            'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'contour_width': 2.2,
             'slice_to_label': False,
@@ -199,7 +197,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
                                      None)]['features']),
             'labelfile': str(infull[('1', '10', '11', '12',
                                      None)]['features_label']),
-            'qcform': defaultqcform,
             'description': '',
             'relative_dir': str(tmp_path.resolve() / 'sub-1')
         },
@@ -209,7 +206,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
                                      None)]['features']),
             'labelfile': str(infull[('1', '10', '11', '12',
                                      None)]['features_label']),
-            'qcform': False,
             'description': '',
             'relative_dir': str(tmp_path.resolve() / 'sub-1')
         },
@@ -255,7 +251,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'probmapimage': str(infull[('1', '10', '11', '12',
                                         None)]['transformed_atlas']),
             'nslices': defaultnslices,
-            'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'slice_to_probmap': False,
             'max_intensity_fraction': 0.95,
@@ -269,7 +264,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'labelimage': str(infull[('1', '10', '11', '12',
                                       None)]['transformed_atlas']),
             'nslices': defaultnslices,
-            'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-1'),
             'slice_to_label': False,
             'max_intensity_fraction': 0.95,
@@ -284,7 +278,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'name2': 'Inormalized',
             'image2': str(infull[('2', '10', '11', '12', None)]['normalized']),
             'nslices': defaultnslices,
-            'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'slice_to_image2': False,
             'max_intensity_fraction_image1': 0.99,
@@ -299,7 +292,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'name2': 'Inormalized',
             'image2': str(infull[('2', '10', '11', '12', None)]['normalized']),
             'nslices': 3,
-            'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'slice_to_image2': False,
             'max_intensity_fraction_image1': 0.91,
@@ -314,7 +306,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'name2': 'Inormalized',
             'image2': str(infull[('2', '10', '11', '12', None)]['normalized']),
             'nslices': defaultnslices,
-            'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'slice_to_image2': True,
             'max_intensity_fraction_image1': 0.99,
@@ -327,7 +318,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'name': 'Non-uniformity corrected',
             'image': str(infull[('2', '10', '11', '12', None)]['nu_bet']),
             'nslices': defaultnslices,
-            'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
@@ -338,7 +328,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'name': 'Non-uniformity corrected',
             'image': str(infull[('2', '10', '11', '12', None)]['nu_bet']),
             'nslices': 3,
-            'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
@@ -349,7 +338,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'name': 'Non-uniformity corrected',
             'image': str(infull[('2', '10', '11', '12', None)]['nu_bet']),
             'nslices': defaultnslices,
-            'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
@@ -362,7 +350,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'labelimage': str(infull[('2', '10', '11', '12',
                                       None)]['transformed_atlas']),
             'nslices': defaultnslices,
-            'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'contour_width': 5,
             'slice_to_label': True,
@@ -379,7 +366,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'labelimage': str(infull[('2', '10', '11', '12',
                                       None)]['transformed_atlas']),
             'nslices': 3,
-            'qcform': defaultqcform,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'contour_width': 5,
             'slice_to_label': False,
@@ -396,7 +382,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'labelimage': str(infull[('2', '10', '11', '12',
                                       None)]['transformed_atlas']),
             'nslices': defaultnslices,
-            'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'contour_width': 2.2,
             'slice_to_label': False,
@@ -413,7 +398,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
                                      None)]['features']),
             'labelfile': str(infull[('2', '10', '11', '12',
                                      None)]['features_label']),
-            'qcform': defaultqcform,
             'description': '',
             'relative_dir': str(tmp_path.resolve() / 'sub-2')
         },
@@ -423,7 +407,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
                                      None)]['features']),
             'labelfile': str(infull[('2', '10', '11', '12',
                                      None)]['features_label']),
-            'qcform': False,
             'description': '',
             'relative_dir': str(tmp_path.resolve() / 'sub-2')
         },
@@ -469,7 +452,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'probmapimage': str(infull[('2', '10', '11', '12',
                                         None)]['transformed_atlas']),
             'nslices': defaultnslices,
-            'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'slice_to_probmap': False,
             'max_intensity_fraction': 0.95,
@@ -483,7 +465,6 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'labelimage': str(infull[('2', '10', '11', '12',
                                       None)]['transformed_atlas']),
             'nslices': defaultnslices,
-            'qcform': False,
             'relative_dir': str(tmp_path.resolve() / 'sub-2'),
             'slice_to_label': False,
             'max_intensity_fraction': 0.95,
@@ -523,3 +504,4 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
         assert callable.nodes_checked == set(filter(lambda x: 'sub-2' not in x, truth.keys()))
     else:
         assert callable.nodes_checked == set(truth.keys())
+    wf.run(plugin='Linear')

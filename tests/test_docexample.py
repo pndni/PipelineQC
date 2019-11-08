@@ -92,7 +92,6 @@ def test_confdoc(tmp_path, conffilename):
             'image2': str(tmp_path / 'out' / 'sub-1' / 'BET' /
                           'sub-1_bet.nii'),
             'nslices': 7,
-            'qcform': False,
             'relative_dir': None
         },
         'report.page_subject-1.contour2': {
@@ -101,7 +100,6 @@ def test_confdoc(tmp_path, conffilename):
             'labelimage': str(tmp_path / 'out' / 'sub-1' / 'classify' /
                               'sub-1_dseg.nii'),
             'nslices': 7,
-            'qcform': False,
             'relative_dir': None,
             'contour_levels': None
         },
@@ -118,7 +116,6 @@ def test_confdoc(tmp_path, conffilename):
             'image2': str(tmp_path / 'out' / 'sub-1' / 'BET' /
                           'sub-1_acq-fast_bet.nii'),
             'nslices': 7,
-            'qcform': False,
             'relative_dir': None
         },
         'report.page_subject-1_acquisition-fast.contour2': {
@@ -128,7 +125,6 @@ def test_confdoc(tmp_path, conffilename):
             'labelimage': str(tmp_path / 'out' / 'sub-1' / 'classify' /
                               'sub-1_acq-fast_dseg.nii'),
             'nslices': 7,
-            'qcform': False,
             'relative_dir': None,
             'contour_levels': None
         },
@@ -148,7 +144,6 @@ def test_confdoc(tmp_path, conffilename):
             'image2': str(tmp_path / 'out' / 'sub-2' / 'BET' /
                           'sub-2_bet.nii'),
             'nslices': 7,
-            'qcform': False,
             'relative_dir': None
         },
         'report.page_subject-2.contour2': {
@@ -157,7 +152,6 @@ def test_confdoc(tmp_path, conffilename):
             'labelimage': str(tmp_path / 'out' / 'sub-2' / 'classify' /
                               'sub-2_dseg.nii'),
             'nslices': 7,
-            'qcform': False,
             'relative_dir': None,
             'contour_levels': None
         },
