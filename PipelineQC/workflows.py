@@ -2,6 +2,7 @@ from nipype.pipeline import engine as pe
 from nipype import Merge
 from .interfaces import (Single,
                          Contour,
+                         Overlay,
                          ProbMap,
                          Compare,
                          Distributions,
@@ -39,6 +40,8 @@ def report_workflow(page_dict,
             node = pe.Node(Single(), f'single{reportletnum}')
         elif rpspec['type'] == 'contour':
             node = pe.Node(Contour(), f'contour{reportletnum}')
+        elif rpspec['type'] == 'overlay':
+            node = pe.Node(Overlay(), f'overlay{reportletnum}')
         elif rpspec['type'] == 'probmap':
             node = pe.Node(ProbMap(), f'probmap{reportletnum}')
         elif rpspec['type'] == 'compare':

@@ -155,7 +155,9 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-2,
             'description': '',
-            'affine_relative_tolerance': 1e-5
+            'affine_relative_tolerance': 1e-5,
+            'contour_levels': None,
+            'threshold_above_zero': False
         },
         'report.page_sub-1_acq-10_rec-11_run-12.contour8': {
             'name': 'Non-uniformity corrected',
@@ -170,7 +172,9 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
             'description': '',
-            'affine_relative_tolerance': 1e-3
+            'affine_relative_tolerance': 1e-3,
+            'contour_levels': [1e-3],
+            'threshold_above_zero': False
         },
         'report.page_sub-1_acq-10_rec-11_run-12.contour9': {
             'name': 'Non-uniformity corrected',
@@ -185,7 +189,9 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'max_intensity_fraction': 0.95,
             'affine_absolute_tolerance': 1e-3,
             'description': '',
-            'affine_relative_tolerance': 1e-5
+            'affine_relative_tolerance': 1e-5,
+            'contour_levels': None,
+            'threshold_above_zero': False
         },
         'report.page_sub-1_acq-10_rec-11_run-12.distributions10': {
             'name': 'features',
@@ -256,6 +262,21 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'affine_absolute_tolerance': 1e-3,
             'description': '',
             'affine_relative_tolerance': 1e-5
+        },
+        'report.page_sub-1_acq-10_rec-11_run-12.overlay15': {
+            'name': 'Non-uniformity corrected',
+            'image': str(infull[('1', '10', '11', '12', None)]['nu_bet']),
+            'labelimage': str(infull[('1', '10', '11', '12',
+                                      None)]['transformed_atlas']),
+            'nslices': defaultnslices,
+            'qcform': False,
+            'relative_dir': str(tmp_path.resolve() / 'sub-1'),
+            'slice_to_label': False,
+            'max_intensity_fraction': 0.95,
+            'affine_absolute_tolerance': 1e-3,
+            'description': '',
+            'affine_relative_tolerance': 1e-5,
+            'transparency': 0.5
         },
         'report.page_sub-2_acq-10_rec-11_run-12.compare1': {
             'name1': 'Non-uniformity corrected',
@@ -348,7 +369,9 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-2,
             'description': '',
-            'affine_relative_tolerance': 1e-5
+            'affine_relative_tolerance': 1e-5,
+            'contour_levels': None,
+            'threshold_above_zero': False
         },
         'report.page_sub-2_acq-10_rec-11_run-12.contour8': {
             'name': 'Non-uniformity corrected',
@@ -363,7 +386,9 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'max_intensity_fraction': 0.99,
             'affine_absolute_tolerance': 1e-3,
             'description': '',
-            'affine_relative_tolerance': 1e-3
+            'affine_relative_tolerance': 1e-3,
+            'contour_levels': [1e-3],
+            'threshold_above_zero': False
         },
         'report.page_sub-2_acq-10_rec-11_run-12.contour9': {
             'name': 'Non-uniformity corrected',
@@ -378,7 +403,9 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'max_intensity_fraction': 0.95,
             'affine_absolute_tolerance': 1e-3,
             'description': '',
-            'affine_relative_tolerance': 1e-5
+            'affine_relative_tolerance': 1e-5,
+            'contour_levels': None,
+            'threshold_above_zero': False
         },
         'report.page_sub-2_acq-10_rec-11_run-12.distributions10': {
             'name': 'features',
@@ -449,6 +476,21 @@ def test_all_wf(tmp_path, input_files_conf1, filter_sub1):
             'affine_absolute_tolerance': 1e-3,
             'description': '',
             'affine_relative_tolerance': 1e-5
+        },
+        'report.page_sub-2_acq-10_rec-11_run-12.overlay15': {
+            'name': 'Non-uniformity corrected',
+            'image': str(infull[('2', '10', '11', '12', None)]['nu_bet']),
+            'labelimage': str(infull[('2', '10', '11', '12',
+                                      None)]['transformed_atlas']),
+            'nslices': defaultnslices,
+            'qcform': False,
+            'relative_dir': str(tmp_path.resolve() / 'sub-2'),
+            'slice_to_label': False,
+            'max_intensity_fraction': 0.95,
+            'affine_absolute_tolerance': 1e-3,
+            'description': '',
+            'affine_relative_tolerance': 1e-5,
+            'transparency': 0.5
         },
     }
 

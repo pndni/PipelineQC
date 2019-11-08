@@ -6,7 +6,6 @@ from nipype.interfaces.base import (File,
                                     SimpleInterface,
                                     BaseInterfaceInputSpec,
                                     InputMultiPath)
-import os
 from pathlib import Path
 from . import reportlets
 
@@ -123,11 +122,50 @@ class ContourInputSpec(ImageGridReportletInputSpec):
         ``vals = vals[vals > 0]``
         ``max = vals[int(len(vals) * max_intensity_fraction)]``
         """)
+    contour_levels = traits.Either(None, traits.List(trait=traits.Float()),
+                                   default=None, usedefault=True,
+                                   desc='Levels at which to draw contours. If none '
+                                        'assume label image is integers.')
+    threshold_above_zero = traits.Bool(False,
+                                       usedefault=True,
+                                       desc='If true, threshold lable image above zero and '
+                                            'draw a single contour separating 0 and 1')
 
 
 class Contour(Reportlet):
     input_spec = ContourInputSpec
     _func = staticmethod(reportlets.contours)
+
+
+class OverlayInputSpec(ImageGridReportletInputSpec):
+    name = traits.Str(mandatory=True, desc='Name of image')
+    image = traits.Either(File(exists=True, mandatory=True, desc='Image file'),
+                          None)
+    labelimage = traits.Either(
+        File(exists=True,
+             mandatory=True,
+             desc='Label image to calculate overlays'),
+        None)
+    slice_to_label = traits.Bool(False,
+                                 usedefault=True,
+                                 desc='If true, calculated slices based on '
+                                 'non zero extent of labelimage')
+    max_intensity_fraction = traits.Float(
+        0.99,
+        usedefault=True,
+        desc="""The intensity display range is 0, max where max is calculated as:
+        ``vals = np.sort(niimg.get_fdata()).ravel()``
+        ``vals = vals[vals > 0]``
+        ``max = vals[int(len(vals) * max_intensity_fraction)]``
+        """)
+    transparency = traits.Float(0.5,
+                                usedefault=True,
+                                desc='Transparency of overlays')
+
+
+class Overlay(Reportlet):
+    input_spec = OverlayInputSpec
+    _func = staticmethod(reportlets.overlay)
 
 
 class ProbMapInputSpec(ImageGridReportletInputSpec):

@@ -151,7 +151,9 @@ def imshowfig(*,
               max_intensity_fraction=0.99,
               labeldisplay='contour',
               affine_absolute_tolerance=1e-3,
-              affine_relative_tolerance=1e-5):
+              affine_relative_tolerance=1e-5,
+              transparency=0.5,
+              contour_levels=None):
     """Create a figure (or nested list of figures) from imgfile
 
     :param niimg: image
@@ -189,7 +191,10 @@ def imshowfig(*,
     :return: :py:obj:`matplotlib.figure.Figure` or a list of lists of
              :py:obj:`matplotlib.figure.Figure`
     """
+    colorlist = COLORLIST
     if nilabel is not None:
+        if labeldisplay == 'contour_nonzero' and contour_levels is not None:
+            raise ValueError('If contour_levels is set contour_nonzero must be False')
         if reference is not None:
             raise ValueError(
                 'Only one of labelfile and reference may be specified')
@@ -200,12 +205,15 @@ def imshowfig(*,
                            atol=affine_absolute_tolerance,
                            rtol=affine_relative_tolerance):
             raise RuntimeError('label affine does not match image affine')
-        if labeldisplay == 'contour':
+        if labeldisplay in ['contour', 'overlay'] and contour_levels is None:
             labelvals = list(np.unique(np.asarray(nilabel.dataobj)))
             if 0 in labelvals:
                 labelvals.pop(labelvals.index(0))
-            if len(labelvals) > len(COLORLIST):
+            if len(labelvals) > len(colorlist):
                 raise RuntimeError('Not enough defined colors for label image')
+        elif labeldisplay == 'contour' and contour_levels is not None:
+            if len(contour_levels) > len(colorlist):
+                raise RuntimeError('Not enough defined colors for contour_levels')
     if reference is not None:
         niimg = _resample(niimg,
                           reference,
@@ -269,17 +277,36 @@ def imshowfig(*,
                         nilabel.slicer[slicespec].dataobj),
                                            axis=(ind, ))
                     if labeldisplay == 'contour':
-                        for lvind, lv in enumerate(labelvals):
-                            ax.contour(labeldata == lv,
-                                       levels=[0.5],
-                                       colors=[COLORLIST[lvind]],
-                                       linewidths=[contour_width],
+                        if contour_levels is None:
+                            for lvind, lv in enumerate(labelvals):
+                                ax.contour(labeldata == lv,
+                                           levels=[0.5],
+                                           colors=[colorlist[lvind]],
+                                           linewidths=[contour_width],
+                                           aspect=aspect)
+                        else:
+                            ax.contour(labeldata,
+                                       levels=contour_levels,
+                                       colors=colorlist[:len(contour_levels)],
+                                       linewidths=[contour_width] * len(contour_levels),
                                        aspect=aspect)
+                    elif labeldisplay == 'contour_nonzero':
+                        ax.contour(labeldata > 0,
+                                   levels=[0.5],
+                                   colors=colorlist[:1],
+                                   linewidths=[contour_width],
+                                   aspect=aspect)
                     elif labeldisplay == 'probmap':
                         probimage = np.ones([*labeldata.shape, 4]) * np.array(
                             [0.0, 1.0, 0.0, 0.0])
                         probimage[..., 3] = labeldata
                         ax.imshow(probimage, aspect=aspect)
+                    elif labeldisplay == 'overlay':
+                        overlay = np.zeros([*labeldata.shape, 4])
+                        for lvind, lv in enumerate(labelvals):
+                            color_alpha = np.array([*colorlist[lvind], transparency])
+                            overlay[labeldata == lv, :] = color_alpha
+                        ax.imshow(overlay, aspect=aspect)
                     else:
                         raise ValueError(
                             f'{labeldisplay} is not a valid option for labeldisplay'
@@ -568,6 +595,52 @@ def compare(*,
     _render(out_file, 'compare.tpl', out)
 
 
+def overlay(*,
+            name,
+            image,
+            labelimage,
+            out_file,
+            qcform=True,
+            relative_dir=None,
+            slice_to_label=False,
+            nslices=7,
+            description='',
+            **kwargs):
+    """Write an html file to :py:obj:`out_file` showing the :py:obj:`image`
+    with :py:obj:`nslices` slices in all three axial planes. Include an overaly
+    of the areas defined by :py:obj:`labels`.
+
+    :param name: Name describing :py:obj:`image`
+    :type name: str
+    :param image: Image file name to show (readable by :py:mod:`nibabel`)
+    :type image: path-like object or :py:obj:`None`
+    :param labelimage: Label file of overlays (readable by :py:mod:`nibabel`)
+    :type labelimage: path-like object or :py:obj:`None`
+    :param out_file: File name
+    :type out_file: path-like object
+    :param qcform: Include a QC form in the output
+    :type qcform: bool
+    :param relative_dir: Create links to filenames relative to this directory
+    :type relative_dir: path-like object
+    :param slice_to_label: Calculate slices based on non-zero extent of labelimage
+    :type slice_to_label: bool
+    :param nslices: Number of slices to show in each plane
+    :type nslices: int
+    """
+    labeldisplay = 'overlay'
+    _contours_or_probmap(name=name,
+                         image=image,
+                         labelimage=labelimage,
+                         out_file=out_file,
+                         labeldisplay=labeldisplay,
+                         qcform=qcform,
+                         relative_dir=relative_dir,
+                         slice_to_label=slice_to_label,
+                         nslices=nslices,
+                         description=description,
+                         **kwargs)
+
+
 def contours(*,
              name,
              image,
@@ -578,6 +651,7 @@ def contours(*,
              slice_to_label=False,
              nslices=7,
              description='',
+             threshold_above_zero=False,
              **kwargs):
     """Write an html file to :py:obj:`out_file` showing the :py:obj:`image`
     with :py:obj:`nslices` slices in all three axial planes. Include contour
@@ -600,11 +674,12 @@ def contours(*,
     :param nslices: Number of slices to show in each plane
     :type nslices: int
     """
+    labeldisplay = 'contour_nonzero' if threshold_above_zero else 'contour'
     _contours_or_probmap(name=name,
                          image=image,
                          labelimage=labelimage,
                          out_file=out_file,
-                         labeldisplay='contour',
+                         labeldisplay=labeldisplay,
                          qcform=qcform,
                          relative_dir=relative_dir,
                          slice_to_label=slice_to_label,

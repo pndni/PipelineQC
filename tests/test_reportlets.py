@@ -86,8 +86,9 @@ def test_single(images):
     i.run()
 
 
+@pytest.mark.parametrize('contour_levels', [None, [1e-3]])
 @pytest.mark.parametrize('slice_to_label', [False, True])
-def test_contour(images, slice_to_label):
+def test_contour(images, slice_to_label, contour_levels):
     tmp_path, image1, image2, image3 = images
     outfile = tmp_path / 'out.txt'
     reportlets.contours(name='testcontours',
@@ -95,17 +96,48 @@ def test_contour(images, slice_to_label):
                         labelimage=image2,
                         out_file=outfile,
                         slice_to_label=slice_to_label,
+                        contour_levels=contour_levels,
                         nslices=1)
     reportlets.contours(name='testcontours',
                         image=image2,
                         labelimage=image2,
                         out_file=outfile,
                         slice_to_label=slice_to_label,
+                        contour_levels=contour_levels,
                         nslices=1)
     i = interfaces.Contour(name='testcontours',
                            image=image3,
                            labelimage=image2,
                            slice_to_label=slice_to_label,
+                           contour_levels=contour_levels,
+                           nslices=1)
+    i.run()
+
+
+@pytest.mark.parametrize('transparency', [0.2, 0.5])
+@pytest.mark.parametrize('slice_to_label', [False, True])
+def test_overlay(images, slice_to_label, transparency):
+    tmp_path, image1, image2, image3 = images
+    outfile = tmp_path / 'out.txt'
+    reportlets.overlay(name='testoverlay',
+                       image=image3,
+                       labelimage=image2,
+                       out_file=outfile,
+                       slice_to_label=slice_to_label,
+                       transparency=transparency,
+                       nslices=1)
+    reportlets.overlay(name='testoverlay',
+                       image=image2,
+                       labelimage=image2,
+                       out_file=outfile,
+                       slice_to_label=slice_to_label,
+                       transparency=transparency,
+                       nslices=1)
+    i = interfaces.Overlay(name='testoverlay',
+                           image=image3,
+                           labelimage=image2,
+                           slice_to_label=slice_to_label,
+                           transparency=transparency,
                            nslices=1)
     i.run()
 

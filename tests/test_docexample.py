@@ -102,7 +102,8 @@ def test_confdoc(tmp_path, conffilename):
                               'sub-1_dseg.nii'),
             'nslices': 7,
             'qcform': False,
-            'relative_dir': None
+            'relative_dir': None,
+            'contour_levels': None
         },
         'report.page_subject-1.crash3': {
             'name': 'Errors',
@@ -128,7 +129,8 @@ def test_confdoc(tmp_path, conffilename):
                               'sub-1_acq-fast_dseg.nii'),
             'nslices': 7,
             'qcform': False,
-            'relative_dir': None
+            'relative_dir': None,
+            'contour_levels': None
         },
         'report.page_subject-1_acquisition-fast.crash3': {
             'name': 'Errors',
@@ -156,7 +158,8 @@ def test_confdoc(tmp_path, conffilename):
                               'sub-2_dseg.nii'),
             'nslices': 7,
             'qcform': False,
-            'relative_dir': None
+            'relative_dir': None,
+            'contour_levels': None
         },
         'report.page_subject-2.crash3': {
             'name': 'Errors',

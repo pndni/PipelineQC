@@ -142,6 +142,67 @@
 		},
 		"description": {
 		    "type": "string"
+		},
+		"contour_levels": {
+		    "type": "array",
+		    "items": {
+			"type": "number"
+		    }
+		},
+		"threshold_above_zero": {
+		    "type": "boolean"
+		}
+            }
+	},
+	"overlayreportlet": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "name", "image", "labelimage"],
+            "properties": {
+		"type": {
+		    "type": "string",
+		    "const": "overlay"
+		},
+		"qcform": {
+		    "type": "boolean"
+		},
+		"nslices": {
+		    "type": "integer"
+		},
+		"name": {
+		    "type": "string"
+		},
+		"image": {
+		    "type": "string"
+		},
+		"labelimage": {
+		    "type": "string"
+		},
+		"image_width": {
+		    "type": "number"
+		},
+		"image_height": {
+		    "type": "number"
+		},
+		"slice_to_label": {
+		    "type": "boolean"
+		},
+		"max_intensity_fraction": {
+		    "type": "number"
+		},
+		"affine_absolute_tolerance": {
+		    "type": "number"
+		},
+		"affine_relative_tolerance": {
+		    "type": "number"
+		},
+		"description": {
+		    "type": "string"
+		},
+		"transparency": {
+		    "type": "number",
+		    "minimum": 0.0,
+		    "maximum": 1.0
 		}
             }
 	},
@@ -390,6 +451,7 @@
 		    { "$ref": "#/definitions/comparereportlet" },
 		    { "$ref": "#/definitions/contourreportlet" },
 		    { "$ref": "#/definitions/probmapreportlet" },
+		    { "$ref": "#/definitions/overlayreportlet" },
 		    { "$ref": "#/definitions/distributionsreportlet" },
 		    { "$ref": "#/definitions/crashreportlet" },
 		    { "$ref": "#/definitions/ratingreportlet" }

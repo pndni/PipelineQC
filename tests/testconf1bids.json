@@ -103,7 +103,8 @@
             "name": "Non-uniformity corrected",
             "image": "nu_bet",
             "labelimage": "transformed_atlas",
-            "nslices": 3
+            "nslices": 3,
+	    "contour_levels": [0.001]
         },
         {
             "type": "contour",
@@ -157,6 +158,20 @@
 		    "type": "text"
 		}
 	    ]
+	},
+        {
+            "type": "probmap",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet",
+            "probmapimage": "transformed_atlas",
+	    "max_intensity_fraction": 0.95
+        },
+        {
+            "type": "overlay",
+            "name": "Non-uniformity corrected",
+            "image": "nu_bet",
+            "labelimage": "transformed_atlas",
+	    "max_intensity_fraction": 0.95
 	}
     ],
     "global_reportlet_settings": {
