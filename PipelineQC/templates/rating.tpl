@@ -5,7 +5,7 @@
         {% if widget.type == "radio" %}
         	<form name="{{ widget.name_no_spaces }}" class=radioform>
         	{% for option in widget.options %}
-        	   <input type="radio" value="{{ option.value }}">{{ option.name_|e }}<br>
+        	   <input type="radio" name="{{ widget.name_no_spaces }}" value="{{ option.value }}">{{ option.name_|e }}<br>
         	{% endfor %}
         	</form>
         {% endif %}
