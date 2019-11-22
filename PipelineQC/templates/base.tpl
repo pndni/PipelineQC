@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta charset="UTF-8">
 <!--http://css3.bradshawenterprises.com/cfimg/-->
 <!--https://www.w3schools.com/html/html_forms.asp-->
 <!--https://www.w3schools.com/TAGS/ev_onsubmit.asp-->

@@ -77,7 +77,7 @@ def get_parser():
                          type=str,
                          action='append',
                          help='Only make pages for certain values of a key. '
-                         'E.g., --filter_key=subject:1:2:10 will only '
+                         'E.g., --filter_key=subject=1:2:10 will only '
                          'create qc pages for subjects 1, 2, and 10.')
     qcpages.add_argument('--files',
                          type=Path,
