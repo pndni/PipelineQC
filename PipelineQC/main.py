@@ -3,6 +3,7 @@ from .workflows import all_workflow
 from .configure import load_config
 from . import group
 from . import reportlets
+from . import derived
 from pathlib import Path
 import argparse
 import nipype
@@ -24,18 +25,22 @@ def qc_all(dirs,
     if len(filedict) == 1:
         raise RuntimeError('No non-global files found!')
     nipype.config.update_config({'execution': {'crashfile_format': 'txt'}})
-    wf = all_workflow(filedict,
-                      output_dir,
-                      conf,
-                      filter_keys_dict=filter_keys_dict,
-                      create_index=create_index)
-    if working_directory is not None:
-        if not Path(working_directory).exists():
-            raise FileNotFoundError(f'{working_directory} does not exist')
-        wf.base_dir = str(working_directory.resolve())
-    if plugin_args is None:
-        plugin_args = {}
-    wf.run(plugin=plugin, plugin_args=plugin_args)
+    derived.procderived(conf, filedict)
+    try:
+        wf = all_workflow(filedict,
+                          output_dir,
+                          conf,
+                          filter_keys_dict=filter_keys_dict,
+                          create_index=create_index)
+        if working_directory is not None:
+            if not Path(working_directory).exists():
+                raise FileNotFoundError(f'{working_directory} does not exist')
+            wf.base_dir = str(working_directory.resolve())
+        if plugin_args is None:
+            plugin_args = {}
+        wf.run(plugin=plugin, plugin_args=plugin_args)
+    finally:
+        derived.removederived(conf, filedict)
 
 
 def get_parser():

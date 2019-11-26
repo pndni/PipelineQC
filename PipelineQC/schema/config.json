@@ -443,6 +443,23 @@
                 }
             }
         },
+	"derived": {
+	    "type": "object",
+	    "patternProperties": {
+		".*": {
+		    "type": "object",
+		    "required": ["requires", "expr"],
+		    "properties": {
+			"requires": {
+			    "type": "array"
+			},
+			"expr": {
+			    "type": "string"
+			}
+		    }
+		}
+	    }
+	},
         "reportlets": {
             "type": "array",
             "items": {

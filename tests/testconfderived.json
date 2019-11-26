@@ -1,0 +1,23 @@
+{
+    "page_keys": ["sub"],
+    "page_filename_template": "sub-{sub}[/ses-{ses}]/sub-{sub}[_ses-{ses}][_acq-{acq}][_rec-{rec}][_run-{run}]_QC.html",
+    "index_filename": "QC_index.html",
+    "patterns": {
+        "derivatives": "(?P<sub>.*)_(?P<suffix>.*)\\.(?P<extension>.*)"
+    },
+    "files": {
+        "T1w": {
+            "pattern": "derivatives",
+            "filter": {"suffix": "T1w"}
+        },
+        "mask": {
+            "pattern": "derivatives",
+            "filter": {"suffix": "mask"}
+        }
+    },
+    "derived": {
+	"T1wmask": {"expr": "T1w * (mask > 0)",
+		    "requires": ["T1w", "mask"]}
+    },
+    "reportlets": []
+}
