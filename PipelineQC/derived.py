@@ -1,6 +1,7 @@
 import nibabel
 import tempfile
 import os
+import numpy as np
 
 
 def procderived(conf, filesdict):
