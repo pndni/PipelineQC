@@ -5,7 +5,7 @@ setup(
     name='PipelineQC',
     version='dev',
     install_requires=[
-        'nipype @ https://github.com/stilley2/nipype/archive/1.2.3-mod.zip',
+        'nipype>=1.3.1',
         'matplotlib>=3',
         'Jinja2>=2.10.1',
         'nibabel>=2.4.0',
