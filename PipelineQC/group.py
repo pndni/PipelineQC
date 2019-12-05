@@ -10,7 +10,6 @@ def make_tsv(list_of_files, outputfile):
     for f in list_of_files:
         data = json.loads(Path(f).read_text())
         df = df.append(data, ignore_index=True)
-    df.set_index('title')
     df.to_csv(outputfile, sep='\t')
 
 
