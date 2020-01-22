@@ -1,7 +1,7 @@
     <div class=rightcolumn>
     <h2>{{ name|e }}</h2>
     {% for widget in widgets %}
-        <h3>{{ widget.name_|e }}</3>
+        <h3>{{ widget.name_|e }}</h3>
         {% if widget.type == "radio" %}
         	<form name="{{ widget.name_no_spaces }}" class=radioform>
         	{% for option in widget.options %}
