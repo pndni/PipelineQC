@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='PipelineQC',
-    version='dev',
+    version='0.14.3',
     install_requires=[
         'nipype>=1.3.1',
         'matplotlib>=3',
