@@ -15,7 +15,7 @@ setup(
         'scikit-learn>=0.19',
         'scipy>=0.19',
         'numpy>=1.11',
-        'pndniworkflows @ git+https://github.com/pndni/pndniworkflows.git:c0b6ff33e43e49861e3e0a28409a6333028c39ee'
+        'pndniworkflows @ git+https://github.com/pndni/pndniworkflows.git@c0b6ff33e43e49861e3e0a28409a6333028c39ee'
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
