@@ -14,12 +14,13 @@ setup(
         'pybids>=0.9.4',
         'scikit-learn>=0.19',
         'scipy>=0.19',
-        'numpy>=1.11'
+        'numpy>=1.11',
+        'pndniworkflows @ git+https://github.com/pndni/pndniworkflows.git:c0b6ff33e43e49861e3e0a28409a6333028c39ee'
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     extras_require={
-        'doc': ['Sphinx', 'sphinx-argparse', 'sphinx-rtd-theme', 'pndniworkflows @ git+https://github.com/pndni/pndniworkflows.git']
+        'doc': ['Sphinx', 'sphinx-argparse', 'sphinx-rtd-theme']
     },
     packages=find_packages(),
     entry_points={
